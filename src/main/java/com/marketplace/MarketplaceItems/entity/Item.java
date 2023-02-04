@@ -7,7 +7,6 @@ import javax.persistence.*;
 public class Item {
 
     @Id
-    //@GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="sku")
     private String sku;
 

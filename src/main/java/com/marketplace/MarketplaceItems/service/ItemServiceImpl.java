@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -27,5 +28,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteBySku(String sku) { itemDAO.deleteById(sku); }
+
+    @Override
+    public void updateItem(Item item) {
+        Optional<Item> searchItem = itemDAO.findById(item.getSku());
+
+        if(searchItem.isPresent()) {
+            Item updateItem = searchItem.get();
+            updateItem.setName(item.getName());
+            updateItem.setCraftable(item.isCraftable());
+            updateItem.setClassItem(item.getClassItem());
+            updateItem.setQuality(item.getQuality());
+            updateItem.setType(item.getType());
+            updateItem.setImage(item.getImage());
+            itemDAO.save(updateItem);
+        } else {
+            System.out.println("Not Found");
+        }
+    }
 
 }

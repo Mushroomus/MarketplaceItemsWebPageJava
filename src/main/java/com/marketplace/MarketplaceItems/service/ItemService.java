@@ -14,4 +14,6 @@ public interface ItemService {
 
     public void deleteBySku(String sku);
 
+    public void updateItem(Item item);
+
 }

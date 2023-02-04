@@ -35,7 +35,6 @@ public class ItemController {
 
     @PostMapping("/add")
     public String addItem(@ModelAttribute("item") Item item) {
-        System.out.println(item);
         itemService.saveItem(item);
         return "redirect:/items/list";
     }
@@ -43,6 +42,13 @@ public class ItemController {
     @PostMapping("/delete")
     public String delete(@RequestParam("itemSku") String itemSku) {
         itemService.deleteBySku(itemSku);
+        return "redirect:/items/list";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute("item") Item item) {
+        System.out.println(item);
+        itemService.updateItem(item);
         return "redirect:/items/list";
     }
 
