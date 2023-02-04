@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <title>Employee Directory</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h3>Item Directory</h3>
+    <hr>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Image</th>
+            <th>Sku</th>
+            <th>Name</th>
+            <th>Craftable</th>
+            <th>Class</th>
+            <th>Quality</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="item : ${items}">
+
+            <td> <img th:src="${item.image}" /> </td>
+            <td th:text="${item.sku}">
+            <td th:text="${item.name}" />
+            <td th:text="${item.craftable}" />
+            <td th:text="${item.classItem}" />
+            <td th:text="${item.quality}" />
+            <td th:text="${item.type}" />
+
+            <td>
+                <form action="#" th:action="@{/items/delete}" method="POST">
+                    <input type="hidden" name="itemSku" th:value="${item.sku}" />
+                    <button type="submit" class="btn btn-danger"
+                            onclick="if (!(confirm('Are you sure you want to delete this Item?'))) return false">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" th:data-itemSku="${item.sku}" th:data-itemName="${item.name}" data-target="#exampleModal">
+                    Open Modal
+                </button>
+            <td/>
+        </tr>
+        </tbody>
+
+        <form action="#" th:action="@{/items/add}" th:object="${item}" method="POST">
+
+            <div class="form-group">
+                <label for="itemSku">Sku</label>
+                <input type="text" class="form-control" id="itemSku" th:field="*{sku}" >
+            </div>
+
+            <div class="form-group">
+                <label for="itemName">Name</label>
+                <input type="text" class="form-control" id="itemName" th:field="*{name}" >
+            </div>
+
+            <div class="form-group">
+                <label for="itemCraftable">Craftable</label>
+                <select class="form-control" id="itemCraftable" th:field="*{craftable}">
+                    <option value="True">Yes</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="itemClass">Class</label>
+                <select class="form-control" id="itemClass" th:field="*{classItem}">
+                    <option value="Multi-class">Multi-class</option>
+                    <option value="Scout">Scout</option>
+                    <option value="Soldier">Soldier</option>
+                    <option value="Pyro">Pyro</option>
+                    <option value="Demoman">Demoman</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="itemQuality">Quality</label>
+                <select class="form-control" id="itemQuality" th:field="*{quality}">
+                    <option value="Genuine">Genuine</option>
+                    <option value="Vintage">Vintage</option>
+                    <option value="Unique">Unique</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="itemType">Type</label>
+                <select class="form-control" id="itemType" th:field="*{type}">
+                    <option value="Cosmetics">Cosmetics</option>
+                    <option value="Tools">Tools</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="itemImage">Image</label>
+                <input type="text" class="form-control" id="itemImage" th:field="*{image}" >
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </table>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <form th:action="@{/items/update}" th:object="${item}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="modalItemSku">Sku</label>
+                            <input type="text" class="form-control"  id="modalItemSku" th:data-itemSku="*{sku}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="modalItemName">Name</label>
+                            <input type="text" class="form-control" id="modalItemName" th:data-itemName="*{name}" />
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+          $('#exampleModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+
+                var itemSku = button.data('itemsku');
+                var itemName = button.data('itemname');
+                console.log(itemSku);
+                console.log(itemName);
+
+                var modal = $(this);
+                modal.find('.modal-body #modalItemSku').val(itemSku);
+                modal.find('.modal-body #modalItemName').val(itemName);
+          })
+        })
+    </script>
+
+</div>
+</body>
+</html>
+
+
+

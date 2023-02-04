@@ -1,0 +1,9 @@
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  margin: 0 10px;
+}
