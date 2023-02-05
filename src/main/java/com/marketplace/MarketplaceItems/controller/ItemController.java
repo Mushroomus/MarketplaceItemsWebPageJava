@@ -49,7 +49,9 @@ public class ItemController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("itemSku") String itemSku, HttpSession session) {
+    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session) {
+
+        System.out.println(itemSku);
 
         try {
             itemService.deleteBySku(itemSku);
@@ -64,7 +66,6 @@ public class ItemController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute("item") Item item) {
-        System.out.println(item);
         itemService.updateItem(item);
         return "redirect:/items/list";
     }
