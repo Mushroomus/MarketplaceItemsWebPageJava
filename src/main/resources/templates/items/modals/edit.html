@@ -1,0 +1,82 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="editModal" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form th:action="@{/items/update}" th:object="${item}" method="post">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="modalItemSku">Sku</label>
+                        <input hidden type="text" class="form-control"  id="modalItemSku" th:field="*{sku}" th:data-itemSku="${sku}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemName">Name</label>
+                        <input type="text" class="form-control" id="modalItemName" th:field="*{name}" th:data-itemName="${name}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemCraftable">Craftable</label>
+                        <select class="form-control" id="modalItemCraftable" th:field="*{craftable}" th:data-itemCraftable="${craftable}">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemClass">Class</label>
+                        <select class="form-control" id="modalItemClass" th:field="*{classItem}" th:data-itemClass="${classItem}">
+                            <option value="Multi-class">Multi-class</option>
+                            <option value="Scout">Scout</option>
+                            <option value="Soldier">Soldier</option>
+                            <option value="Pyro">Pyro</option>
+                            <option value="Demoman">Demoman</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemQuality">Quality</label>
+                        <select class="form-control" id="modalItemQuality" th:field="*{quality}" th:data-itemQuality="${quality}">
+                            <option value="Genuine">Genuine</option>
+                            <option value="Vintage">Vintage</option>
+                            <option value="Unique">Unique</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemType">Type</label>
+                        <select class="form-control" id="modalItemType" th:field="*{type}" th:data-itemType="${type}">
+                            <option value="Cosmetics">Cosmetics</option>
+                            <option value="Tools">Tools</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalItemImage">Image</label>
+                        <input type="text" class="form-control" id="modalItemImage" th:field="*{image}" th:data-itemImage="${image}" >
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</html>

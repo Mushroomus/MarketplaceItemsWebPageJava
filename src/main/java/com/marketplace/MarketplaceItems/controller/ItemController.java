@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -19,7 +20,15 @@ public class ItemController {
     }
 
     @GetMapping("/list")
-    public String listItems(Model theModel) {
+    public String listItems(Model theModel, HttpSession session) {
+
+        String message = (String) session.getAttribute("message");
+
+        System.out.println("Message: " + message);
+        if (message != null) {
+            theModel.addAttribute("message", message);
+            session.removeAttribute("message");
+        }
 
         // get employees from db
         List<Item> items = itemService.findAll();
@@ -40,8 +49,16 @@ public class ItemController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("itemSku") String itemSku) {
-        itemService.deleteBySku(itemSku);
+    public String delete(@RequestParam("itemSku") String itemSku, HttpSession session) {
+
+        try {
+            itemService.deleteBySku(itemSku);
+        } catch (Exception e) {
+            session.setAttribute("message", "Error occured while removing item");
+            return "redirect:/items/list";
+        }
+
+        session.setAttribute("message", "Item was removed");
         return "redirect:/items/list";
     }
 
