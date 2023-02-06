@@ -42,6 +42,12 @@ public class ItemServiceImpl implements ItemService {
     };
 
     @Override
+    public Page<Item> findAll(Pageable pageable, String search) {
+        String searchPattern = "%" + search + "%";
+        return itemDAO.findByNameLikeIgnoreCaseOrSkuLikeIgnoreCase(searchPattern, searchPattern, pageable);
+    }
+
+    @Override
     public void saveItem(Item item) { itemDAO.save(item); };
 
     @Override

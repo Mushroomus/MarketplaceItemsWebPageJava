@@ -14,6 +14,8 @@ public interface ItemService {
 
     public Page<Item> findAll(Pageable page, List<String> classes);
 
+    public Page<Item> findAll(Pageable page, String search);
+
     public void saveItem(Item item);
 
     public void deleteBySku(String sku);

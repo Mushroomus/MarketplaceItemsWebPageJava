@@ -26,31 +26,38 @@ public class ItemController {
     }
 
     @GetMapping("/list")
-    public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") List<String> classes) {
+    public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") List<String> classes) {
 
-        System.out.println(classes);
+        int pageSize = 1;
+        Page<Item> items;
+        Pageable pageable = PageRequest.of(page,pageSize);
 
-        List<String> classesList = Arrays.asList("Soldier", "Pyro");
-        // Add the list to the model
+        System.out.println(search);
+
+        if(search != null && !search.equals("")) {
+            System.out.println("Search");
+            items = itemService.findAll(pageable, search);
+        } else {
+            System.out.println("Classes");
+            items = itemService.findAll(pageable, classes);
+            theModel.addAttribute("selectedClasses", classes);
+        }
+
+        // create list of values to checkboxes and attach to the model
+        List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
+        List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
+        List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
+
         theModel.addAttribute("classesList", classesList);
-
-        theModel.addAttribute("selectedClasses", classes);
-
-
+        theModel.addAttribute("qualityList", qualityList);
+        theModel.addAttribute("typeList", typeList);
 
         String message = (String) session.getAttribute("message");
 
-        System.out.println("Message: " + message);
         if (message != null) {
             theModel.addAttribute("message", message);
             session.removeAttribute("message");
         }
-
-        int pageSize = 1;
-        Pageable pageable = PageRequest.of(page,pageSize);
-
-        Page<Item> items = itemService.findAll(pageable, classes);
-
 
         int totalPages = items.getTotalPages();
         theModel.addAttribute("totalPages", totalPages);
@@ -58,13 +65,9 @@ public class ItemController {
         List<Integer> pageArray = IntStream.range(0, totalPages).boxed().collect(Collectors.toList());
         theModel.addAttribute("pageArray", pageArray);
 
-        // get employees from db
-        //List<Item> items = itemService.findAll();
-
         // add to the spring model
         theModel.addAttribute("items", items);
         theModel.addAttribute("currentPage", page);
-
 
         Item item = new Item();
         theModel.addAttribute("item",item);

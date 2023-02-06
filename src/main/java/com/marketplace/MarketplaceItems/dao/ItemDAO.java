@@ -12,6 +12,5 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface ItemDAO extends JpaRepository<Item, String>, JpaSpecificationExecutor<Item> {
-    //Page<Item> findAll(Pageable pageable, Predicate<Item> filter);
-
+    Page<Item> findByNameLikeIgnoreCaseOrSkuLikeIgnoreCase(String name, String sku, Pageable pageable);
 }
