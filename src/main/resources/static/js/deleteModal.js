@@ -5,15 +5,10 @@
                 var itemSku = button.data('itemsku');
                 var itemName = button.data('itemname');
 
-                itemName = itemName + ' will be deleted permanently'
+                itemName = "'" + itemName + "' will be deleted permanently. Are you sure?";
 
                 var modal = $(this);
                 modal.find('.modal-body #modalDeleteItemSku').val(itemSku);
-
-                //modal.find('.modal-body #itemSku').attr('itemSku', itemSku);
-
                 modal.find('.modal-body #modalDeleteItemName').text(itemName);
-
-                console.log( modal.find('.modal-body #itemSku').val() );
           })
         })
