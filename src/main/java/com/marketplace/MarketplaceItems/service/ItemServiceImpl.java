@@ -3,10 +3,15 @@ package com.marketplace.MarketplaceItems.service;
 import com.marketplace.MarketplaceItems.dao.ItemDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -21,6 +26,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> findAll() {
         return itemDAO.findAll();
+    };
+
+    @Override
+    public Page<Item> findAll(Pageable pageable, List<String> classes) {
+
+            Specification<Item> spec = (root, query, builder) -> {
+                if (classes == null || classes.isEmpty()) {
+                    return builder.conjunction();
+                }
+                return root.get("classItem").in(classes);
+            };
+            return itemDAO.findAll(spec, pageable);
+
     };
 
     @Override
