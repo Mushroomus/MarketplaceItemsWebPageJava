@@ -13,7 +13,12 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <input hidden type="text" id="modalDeleteItemSku" th:name="itemSku"/>
+                        <input hidden type="text" id="modalDeleteItemSku" name="itemSku" />
+                        <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
+                        <input hidden type="text" id="modalDeleteCraftable" name="craftable" th:value="${selectedCraftable}"/>
+                        <input hidden type="text" id="modalDeleteQualities" name="qualities" th:value="${selectedQualities}"/>
+                        <input hidden type="text" id="modalDeleteTypes" name="types" th:value="${selectedTypes}"/>
+                        <input hidden type="text" id="modalDeleteClasses" name="classes" th:value="${selectedClasses}"/>
                         <p class="text" id="modalDeleteItemName"></p>
                     </div>
                 </div>

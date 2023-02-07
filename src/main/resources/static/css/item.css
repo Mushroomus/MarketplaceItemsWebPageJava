@@ -32,4 +32,11 @@
 
 .form-check-label {
     padding-right: 15px;
+}
+
+.alert {
+       position: absolute !important;
+      top: 30px;
+     right: 40%;
   }
+

@@ -33,15 +33,12 @@ public class ItemController {
         Page<Item> items;
         Pageable pageable = PageRequest.of(page,pageSize);
 
-        System.out.println(search);
-
         if(search != null && !search.equals("")) {
-            System.out.println("Search");
             items = itemService.findAll(pageable, search);
         } else {
             items = itemService.findAll(pageable, craftable, classes, qualities, types);
+
             theModel.addAttribute("selectedCraftable", craftable);
-            System.out.println("Selected: " + craftable);
             theModel.addAttribute("selectedClasses", classes);
             theModel.addAttribute("selectedQualities", qualities);
             theModel.addAttribute("selectedTypes", types);
@@ -80,6 +77,35 @@ public class ItemController {
         return "items/list-items";
     }
 
+    private String redirect(String search, int page, String craftable, List<String> classes, List<String> qualities, List<String> types) {
+        if(search != null && !search.isEmpty()) {
+            return "redirect:/items/list?search=" + search + "&page=" + page;
+        } else {
+
+            StringBuilder urlBuilder = new StringBuilder("/items/list?page=" + page);
+
+            String classesString = classes.toString().replace("[", "").replace("]", "").replace(", ", ",");
+            String qualitiesString = qualities.toString().replace("[", "").replace("]", "").replace(", ", ",");
+            String typesString = types.toString().replace("[", "").replace("]", "").replace(", ", ",");
+
+            if (!craftable.isEmpty())
+                urlBuilder.append("&craftable=" + craftable);
+
+            if (!classesString .isEmpty())
+                urlBuilder.append("&classes=" + String.join(",", classesString));
+
+            if (!qualitiesString.isEmpty())
+                urlBuilder.append("&qualities=" + String.join(",", qualitiesString));
+
+            if (!typesString.isEmpty())
+                urlBuilder.append("&types=" + String.join(",", typesString));
+
+            return "redirect:" + urlBuilder.toString();
+
+
+        }
+    }
+
     @PostMapping("/add")
     public String addItem(@ModelAttribute("item") Item item) {
         itemService.saveItem(item);
@@ -87,19 +113,15 @@ public class ItemController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session) {
-
-        System.out.println(itemSku);
-
+    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftable, @RequestParam(defaultValue = "") List<String> classes,
+                         @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
         try {
             itemService.deleteBySku(itemSku);
+            session.setAttribute("message", "Item was deleted");
         } catch (Exception e) {
             session.setAttribute("message", "Error occured while removing item");
-            return "redirect:/items/list";
         }
-
-        session.setAttribute("message", "Item was removed");
-        return "redirect:/items/list";
+        return redirect(search, page, craftable, classes, qualities, types);
     }
 
     @PostMapping("/update")
