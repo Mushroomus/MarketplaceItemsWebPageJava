@@ -12,6 +12,13 @@
             <form th:action="@{/items/update}" th:object="${item}" method="post">
                 <div class="modal-body">
 
+                    <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
+                    <input hidden type="text" id="modalDeleteCraftable" name="craftableForm" th:value="${selectedCraftable}"/>
+                    <input hidden type="text" id="modalDeleteQualities" name="qualities" th:value="${selectedQualities}"/>
+                    <input hidden type="text" id="modalDeleteTypes" name="types" th:value="${selectedTypes}"/>
+                    <input hidden type="text" id="modalDeleteClasses" name="classes" th:value="${selectedClasses}"/>
+                    <input hidden type="text" id="modalDeleteSearch" name="search" th:value="${searchedData}"/>
+
                     <div class="form-group">
                         <label hidden class="form-label" for="modalItemSku">Sku</label>
                         <input hidden type="text" class="form-control"  id="modalItemSku" th:field="*{sku}" th:data-itemSku="${sku}" />

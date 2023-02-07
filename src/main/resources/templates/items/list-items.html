@@ -97,7 +97,15 @@
 
                     <button class="btn btn-primary" id="toggleBtn"><i class="fas fa-arrow-left"></i></button>
 
-                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add Item
+                    <form class="form-inline" th:action="@{list}" method="get">
+                        <div class="input-group">
+                            <button class="btn btn-danger" id="clearFilter"><i class="fa fa-filter"></i></button>
+                        </div>
+                    </form>
+
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"
+                            th:data-page="${currentPage}" th:data-craftable="${selectedCraftable}" th:data-qualities="${selectedQualities}" th:data-types="${selectedTypes}"
+                            th:data-classes="${selectedClasses}" th:data-search="${searchedData}">Add Item
                         <i class="fas fa-plus"></i>
                     </button>
 
@@ -111,7 +119,6 @@
                             </button>
                         </div>
                     </form>
-
                 </div>
                 <br>
 
@@ -146,13 +153,14 @@
                             <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
                                     th:data-itemSku="${item.sku}" th:data-itemName="${item.name}"
                                     th:data-page="${currentPage}" th:data-craftable="${selectedCraftable}" th:data-qualities="${selectedQualities}" th:data-types="${selectedTypes}"
-                                    th:data-classes="${selectedClasses}">
+                                    th:data-classes="${selectedClasses}" th:data-search="${searchedData}">
                                 <i class="fas fa-trash"></i>
                             </button>
 
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     th:data-itemSku="${item.sku}" th:data-itemName="${item.name}" th:data-itemCraftable="${item.craftable}" th:data-itemClass="${item.classItem}"
-                                    th:data-itemQuality="${item.quality}" th:data-itemType="${item.type}" th:data-itemImage="${item.image}"
+                                    th:data-itemQuality="${item.quality}" th:data-itemType="${item.type}" th:data-itemImage="${item.image}" th:data-page="${currentPage}" th:data-craftable="${selectedCraftable}" th:data-qualities="${selectedQualities}" th:data-types="${selectedTypes}"
+                                    th:data-classes="${selectedClasses}" th:data-search="${searchedData}"
                                     data-bs-target="#editModal">
                                 <i class="fas fa-pencil-alt"></i>
                             </button>
@@ -166,13 +174,17 @@
                         <ul class="pagination">
                             <li class="page-item" th:class="${currentPage == 0} ? 'page-item disabled' : ''">
 
-
-                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any'}" th:href="@{list(page=0, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${searchedData != '' && searchedData != null}" th:href="@{list(page=0, search=${searchedData})}">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
 
-                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any'}" th:href="@{list(page=0, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=0, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+
+                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=0, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
@@ -180,12 +192,17 @@
                             </li>
                             <li class="page-item" th:class="${currentPage > 0} ? '' : 'page-item disabled'">
 
-                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any'}" th:href="@{list(page=${currentPage-1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${searchedData != '' && searchedData != null}" th:href="@{list(page=${currentPage-1}, search=${searchedData})}">
                                     <span aria-hidden="true">&lsaquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
 
-                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any'}" th:href="@{list(page=${currentPage-1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${currentPage-1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                    <span aria-hidden="true">&lsaquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+
+                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${currentPage-1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
                                     <span aria-hidden="true">&lsaquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
@@ -193,18 +210,25 @@
                             </li>
                             <li class="page-item" th:each="i : ${pageArray}" th:class="${i == currentPage} ? 'page-item active' : ''">
 
-                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any'}" th:href="@{list(page=${i}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">[[${i + 1}]]</a>
-                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any'}" th:href="@{list(page=${i}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">[[${i + 1}]]</a>
+                                <a class="page-link" th:if="${searchedData != '' && searchedData != null}" th:href="@{list(page=${i}, search=${searchedData})}">[[${i + 1}]]</a>
+
+                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any' && (searchedData == '' || searchedData == null) }" th:href="@{list(page=${i}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">[[${i + 1}]]</a>
+                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any' && (searchedData == '' || searchedData == null) }" th:href="@{list(page=${i}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">[[${i + 1}]]</a>
 
                             </li>
                             <li class="page-item" th:class="${currentPage == totalPages - 1} ? 'page-item disabled' : ''">
 
-                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any'}" th:href="@{list(page=${currentPage + 1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${searchedData != '' && searchedData != null}" th:href="@{list(page=${currentPage + 1}, search=${searchedData})}">
                                     <span aria-hidden="true">&rsaquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
 
-                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any'}" th:href="@{list(page=${currentPage + 1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${currentPage + 1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                    <span aria-hidden="true">&rsaquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+
+                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${currentPage + 1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
                                     <span aria-hidden="true">&rsaquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
@@ -212,12 +236,17 @@
                             </li>
                             <li class="page-item" th:class="${ currentPage == totalPages - 1} ? 'page-item disabled' : ''">
 
-                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any'}" th:href="@{list(page=${totalPages - 1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${searchedData != '' && searchedData != null}" th:href="@{list(page=${totalPages - 1}, search=${searchedData})}">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
 
-                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any'}" th:href="@{list(page=${totalPages - 1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                <a class="page-link" th:if="${selectedCraftable != '' && craftable != 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${totalPages - 1}, craftable=${selectedCraftable}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+
+                                <a class="page-link" th:if="${selectedCraftable == '' || craftable == 'Any' && (searchedData == '' || searchedData == null)}" th:href="@{list(page=${totalPages - 1}, qualities=${selectedQualities}, types=${selectedTypes}, classes=${selectedClasses})}">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>

@@ -35,6 +35,7 @@ public class ItemController {
 
         if(search != null && !search.equals("")) {
             items = itemService.findAll(pageable, search);
+            theModel.addAttribute("searchedData", search);
         } else {
             items = itemService.findAll(pageable, craftable, classes, qualities, types);
 
@@ -78,8 +79,8 @@ public class ItemController {
     }
 
     private String redirect(String search, int page, String craftable, List<String> classes, List<String> qualities, List<String> types) {
-        if(search != null && !search.isEmpty()) {
-            return "redirect:/items/list?search=" + search + "&page=" + page;
+        if(search != null && !search.equals("")) {
+            return "redirect:/items/list?page=" + page + "&search=" + search;
         } else {
 
             StringBuilder urlBuilder = new StringBuilder("/items/list?page=" + page);
@@ -107,27 +108,40 @@ public class ItemController {
     }
 
     @PostMapping("/add")
-    public String addItem(@ModelAttribute("item") Item item) {
-        itemService.saveItem(item);
-        return "redirect:/items/list";
+    public String addItem(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
+                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
+        try{
+            itemService.saveItem(item);
+            session.setAttribute("message", "Item was added");
+        } catch(Exception e) {
+            session.setAttribute("message", "Error occured while adding an item");
+        }
+
+        return redirect(search, page, craftableForm, classes, qualities, types);
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftable, @RequestParam(defaultValue = "") List<String> classes,
+    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
         try {
             itemService.deleteBySku(itemSku);
             session.setAttribute("message", "Item was deleted");
         } catch (Exception e) {
-            session.setAttribute("message", "Error occured while removing item");
+            session.setAttribute("message", "Error occured while removing an item");
         }
-        return redirect(search, page, craftable, classes, qualities, types);
+        return redirect(search, page, craftableForm, classes, qualities, types);
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("item") Item item) {
-        itemService.updateItem(item);
-        return "redirect:/items/list";
+    public String update(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
+                         @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
+        try {
+            itemService.updateItem(item);
+            session.setAttribute("message", "Item was updated");
+        } catch (Exception e) {
+            session.setAttribute("message", "Error occured while updating an item");
+        }
+        return redirect(search, page, craftableForm, classes, qualities, types);
     }
 
 
