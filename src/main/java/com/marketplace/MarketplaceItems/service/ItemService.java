@@ -12,7 +12,7 @@ public interface ItemService {
 
     public List<Item> findAll();
 
-    public Page<Item> findAll(Pageable page, List<String> classes);
+    public Page<Item> findAll(Pageable page, String craftable, List<String> classes, List<String> qualities, List<String> types);
 
     public Page<Item> findAll(Pageable page, String search);
 

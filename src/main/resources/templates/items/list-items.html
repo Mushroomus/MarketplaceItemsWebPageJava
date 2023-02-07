@@ -46,9 +46,12 @@
                     <!-- Dropdown Filter -->
                     <div class="form-group">
                         <label for="filterCraftableDropdown">Craftable</label>
-                        <select class="form-control" id="filterCraftableDropdown">
-                            <option>Yes</option>
-                            <option>No</option>
+                        <select class="form-control" id="filterCraftableDropdown" name="craftable">
+                            <option th:each="craftableOption : ${craftableOptions}"
+                                    th:value="${craftableOption}"
+                                    th:selected="${selectedCraftable == craftableOption}"
+                                    th:text="${craftableOption}">
+                            </option>
                         </select>
                     </div>
                     <!-- Checkbox Filter -->
@@ -199,16 +202,6 @@
     </div>
 </div>
 
-<!--
-    $("#toggleBtn").click(function() {
-  $('.sidebar-container').toggleClass("d-md-block");
-  if ($('.sidebar-container').hasClass("d-md-block")) {
-    $("#toggleBtn i").removeClass("fas fa-arrow-right").addClass("fas fa-arrow-left");
-  } else {
-    $("#toggleBtn i").removeClass("fas fa-arrow-left").addClass("fas fa-arrow-right");
-  }
-});
--->
 <script>
  $("#toggleBtn").click(function() {
   $('.sidebar-container').toggleClass("d-md-block");

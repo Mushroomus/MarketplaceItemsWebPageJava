@@ -26,7 +26,8 @@ public class ItemController {
     }
 
     @GetMapping("/list")
-    public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") List<String> classes) {
+    public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftable, @RequestParam(defaultValue = "") List<String> classes,
+    @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
 
         int pageSize = 1;
         Page<Item> items;
@@ -38,9 +39,12 @@ public class ItemController {
             System.out.println("Search");
             items = itemService.findAll(pageable, search);
         } else {
-            System.out.println("Classes");
-            items = itemService.findAll(pageable, classes);
+            items = itemService.findAll(pageable, craftable, classes, qualities, types);
+            theModel.addAttribute("selectedCraftable", craftable);
+            System.out.println("Selected: " + craftable);
             theModel.addAttribute("selectedClasses", classes);
+            theModel.addAttribute("selectedQualities", qualities);
+            theModel.addAttribute("selectedTypes", types);
         }
 
         // create list of values to checkboxes and attach to the model
@@ -48,6 +52,7 @@ public class ItemController {
         List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
         List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
 
+        theModel.addAttribute("craftableOptions", Arrays.asList("Any", "Yes", "No"));
         theModel.addAttribute("classesList", classesList);
         theModel.addAttribute("qualityList", qualityList);
         theModel.addAttribute("typeList", typeList);
