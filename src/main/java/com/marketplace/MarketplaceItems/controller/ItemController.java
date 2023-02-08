@@ -29,6 +29,9 @@ public class ItemController {
     public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftable, @RequestParam(defaultValue = "") List<String> classes,
     @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
 
+        if(page < 0)
+            page = 0;
+
         int pageSize = 1;
         Page<Item> items;
         Pageable pageable = PageRequest.of(page,pageSize);
@@ -56,10 +59,13 @@ public class ItemController {
         theModel.addAttribute("typeList", typeList);
 
         String message = (String) session.getAttribute("message");
+        String messageType = (String) session.getAttribute("messageType");
 
         if (message != null) {
             theModel.addAttribute("message", message);
+            theModel.addAttribute("messageType", messageType);
             session.removeAttribute("message");
+            session.removeAttribute("messageType");
         }
 
         int totalPages = items.getTotalPages();
@@ -78,7 +84,13 @@ public class ItemController {
         return "items/list-items";
     }
 
-    private String redirect(String search, int page, String craftable, List<String> classes, List<String> qualities, List<String> types) {
+    private String redirect(String search, int page, int totalPages, String craftable, List<String> classes, List<String> qualities, List<String> types) {
+
+        // that if is made to check we will not return page of out range when we delete any Item, but still problem persist with update
+        //  a lot of data need to be passed to check if edited item will disappear if filter was used
+        if( totalPages != -1 && page >= totalPages - 1 && page != 0)
+            page--;
+
         if(search != null && !search.equals("")) {
             return "redirect:/items/list?page=" + page + "&search=" + search;
         } else {
@@ -107,29 +119,33 @@ public class ItemController {
         }
     }
 
+    public void setMessageAttributes(HttpSession session, String message, String typeMessage) {
+        session.setAttribute("message", message);
+        session.setAttribute("messageType", typeMessage);
+    }
+
     @PostMapping("/add")
     public String addItem(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
                           @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
         try{
             itemService.saveItem(item);
-            session.setAttribute("message", "Item was added");
+            setMessageAttributes(session, "Item was added", "success");
         } catch(Exception e) {
-            session.setAttribute("message", "Error occured while adding an item");
+            setMessageAttributes(session, "Error occured while adding an item", "danger");
         }
-
-        return redirect(search, page, craftableForm, classes, qualities, types);
+        return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
+    public String delete(@RequestParam(value = "itemSku") String itemSku, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "0") int totalPages, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
         try {
             itemService.deleteBySku(itemSku);
-            session.setAttribute("message", "Item was deleted");
+            setMessageAttributes(session, "Item was deleted", "success");
         } catch (Exception e) {
-            session.setAttribute("message", "Error occured while removing an item");
+            setMessageAttributes(session, "Error occured while removing an item", "danger");
         }
-        return redirect(search, page, craftableForm, classes, qualities, types);
+        return redirect(search, page, totalPages, craftableForm, classes, qualities, types);
     }
 
     @PostMapping("/update")
@@ -137,11 +153,11 @@ public class ItemController {
                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
         try {
             itemService.updateItem(item);
-            session.setAttribute("message", "Item was updated");
+            setMessageAttributes(session, "Item was updated", "success");
         } catch (Exception e) {
-            session.setAttribute("message", "Error occured while updating an item");
+            setMessageAttributes(session, "Error occured while updating an item", "danger");
         }
-        return redirect(search, page, craftableForm, classes, qualities, types);
+        return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
 
 
