@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 
 @SpringBootApplication
 public class MarketplaceItemsApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(MarketplaceItemsApplication.class, args);
 	}

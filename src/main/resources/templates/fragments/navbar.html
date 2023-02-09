@@ -11,7 +11,10 @@
         <li class="nav-item">
           <a class="navbar-brand" href="#" th:href="@{/}">Home</a>
         </li>
-        <li class="nav-item" sec:authorize="isAuthenticated()">
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+          <a class="navbar-brand" href="#" th:href="@{/users/list}">Users</a>
+        </li>
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
           <a class="navbar-brand" href="#" th:href="@{/items/list}">Items</a>
         </li>
         <li class="ms-auto" sec:authorize="isAuthenticated()">

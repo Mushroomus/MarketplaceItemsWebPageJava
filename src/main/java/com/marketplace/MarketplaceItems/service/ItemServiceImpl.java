@@ -26,11 +26,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> findAll() {
-        return itemDAO.findAll();
-    };
-
-    @Override
     public Page<Item> findAll(Pageable pageable, String craftable, List<String> classes, List<String> qualities, List<String> types) {
 
         Specification<Item> spec = (root, query, builder) -> {

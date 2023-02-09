@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+
+    <link rel="stylesheet" th:href="@{/css/item.css}">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript" th:src="@{/js/deleteModalUser.js}"></script>
+
+</head>
+
+<body>
+
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+<br>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3 d-md-block sidebar sidebar-container">
+
+            <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
+                <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
+
+                <!--
+
+                <form class="form" th:action="@{list}" method="get">
+
+
+                    <div class="form-group">
+                        <label for="filterCraftableDropdown">Craftable</label>
+                        <select class="form-control" id="filterCraftableDropdown" name="craftable">
+                            <option th:each="craftableOption : ${craftableOptions}"
+                                    th:value="${craftableOption}"
+                                    th:selected="${selectedCraftable == craftableOption}"
+                                    th:text="${craftableOption}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-3"><label class="d-block font-weight-bold mb-2">Class</label>
+                        <div th:each="class : ${classesList}" class="form-check-label">
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" th:value="${class}" th:text="' ' +${class}"
+                                       th:checked="${selectedClasses != null && selectedClasses.contains(class)}" />
+                            </label>
+                        </div>
+
+                        <label class="d-block font-weight-bold mb-2 mt-3">Quality</label>
+                        <div th:each="quality : ${qualityList}" class="form-check-label">
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="qualities" th:value="${quality}" th:text="' ' + ${quality}"
+                                       th:checked="${selectedQualities != null && selectedQualities.contains(quality)}" />
+                            </label>
+                        </div>
+
+                        <label class="d-block font-weight-bold mb-2 mt-3">Type</label>
+                        <div th:each="type : ${typeList}" class="form-check-label">
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="types" th:value="${type}" th:text="' ' +${type}"
+                                       th:checked="${selectedTypes != null && selectedTypes.contains(type)}" />
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                    </div>
+
+                </form>
+                -->
+            </div>
+
+        </div>
+        <div class="col-9 main-content">
+
+            <div class="container">
+                <h3>Manage Users</h3>
+                <hr>
+
+                <div th:if="${message}" id="alertMessage" class="alert" th:class="${messageType == 'success' ? 'alert alert-success' : 'alert alert-danger'}" role="alert" th:text="${message}"></div>
+
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-primary" id="toggleBtn"><i class="fas fa-arrow-left"></i></button>
+
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal" th:data-page="${currentPage}" >Add User
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <br>
+
+                <p class="fs-3" th:style="${totalPages == 0 ? 'display:block' : 'display:none'}" > No Users </p>
+
+                <table  th:style="${totalPages == 0 ? 'display:none' : ''}"  class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="user : ${users}">
+
+                        <td th:text="${user.username}" />
+                        <td th:text="${user.role}" />
+                        <td th:text="${#temporals.format(user.date, 'dd.MM.yyyy HH:mm')}" />
+
+                        <td>
+                            <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                    th:data-userId="${user.id}" th:data-username="${user.username}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:replace="user/modals/delete.html :: deleteModal"></div>
+            </div>
+            <div th:replace="user/modals/add.html :: addModal"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+ $("#toggleBtn").click(function() {
+  $('.sidebar-container').toggleClass("d-md-block");
+  if ($('.sidebar-container').hasClass("d-md-block")) {
+    $("#toggleBtn i").removeClass("fas fa-arrow-right").addClass("fas fa-arrow-left");
+    $('.sidebar-container').css("animation-name", "fadeInLeft");
+  } else {
+    $("#toggleBtn i").removeClass("fas fa-arrow-left").addClass("fas fa-arrow-right");
+    $('.sidebar-container').css("animation-name", "fadeOutRight");
+  }
+});
+</script>
+
+
+</body>
+</html>
+
+
+

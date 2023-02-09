@@ -1,0 +1,50 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="addModal" class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="addModalLabel">New Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form action="#" th:action="@{/users/add}" th:object="${user}" method="POST">
+
+        <div class="modal-body">
+
+          <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
+
+          <div class="form-group">
+            <label for="userUsername">Username</label>
+            <input type="text" class="form-control" id="userUsername" th:field="*{username}" >
+          </div>
+
+          <div class="form-group">
+            <label for="userPassword">Password</label>
+            <input type="text" class="form-control" id="userPassword" th:field="*{password}" >
+          </div>
+
+          <div class="form-group">
+            <label for="userPasswordRepeat">Repeat Password</label>
+            <input type="text" class="form-control" id="userPasswordRepeat">
+          </div>
+
+          <div class="form-group">
+            <label for="userRole">Role</label>
+            <select class="form-control" id="userRole" th:field="*{role}">
+              <option value="ADMIN">Admin</option>
+              <option value="USER">User</option>
+            </select>
+          </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
