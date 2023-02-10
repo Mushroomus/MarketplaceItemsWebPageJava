@@ -1,6 +1,7 @@
 package com.marketplace.MarketplaceItems.controller;
 
 import com.marketplace.MarketplaceItems.entity.Item;
+import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -124,15 +125,45 @@ public class ItemController {
         session.setAttribute("messageType", typeMessage);
     }
 
+    private String validationItem(Item item, HttpSession session, boolean edit) {
+
+        String sku = item.getSku();
+        String name = item.getName();
+
+        if(sku == null || sku.equals("")) {
+            setMessageAttributes(session, "Sku is empty", "danger");
+            return "invalid";
+        }
+
+        if(edit == false) {
+            Item existingItem = itemService.findItemBySku(sku);
+            if (existingItem != null) {
+                setMessageAttributes(session, "Item already exists", "danger");
+                return "invalid";
+            }
+        }
+
+        if(name == null || name.equals("")) {
+            setMessageAttributes(session, "Name is empty", "danger");
+            return "invalid";
+        }
+
+        return "valid";
+    }
+
     @PostMapping("/add")
     public String addItem(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
                           @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
-        try{
-            itemService.saveItem(item);
-            setMessageAttributes(session, "Item was added", "success");
-        } catch(Exception e) {
-            setMessageAttributes(session, "Error occured while adding an item", "danger");
+
+        if(validationItem(item,session,false).equals("valid")) {
+            try{
+                itemService.saveItem(item);
+                setMessageAttributes(session, "Item was added", "success");
+            } catch(Exception e) {
+                setMessageAttributes(session, "Error occured while adding an item", "danger");
+            }
         }
+
         return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
 
@@ -151,11 +182,14 @@ public class ItemController {
     @PostMapping("/update")
     public String update(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
-        try {
-            itemService.updateItem(item);
-            setMessageAttributes(session, "Item was updated", "success");
-        } catch (Exception e) {
-            setMessageAttributes(session, "Error occured while updating an item", "danger");
+
+        if(validationItem(item,session,true).equals("valid")) {
+            try {
+                itemService.updateItem(item);
+                setMessageAttributes(session, "Item was updated", "success");
+            } catch (Exception e) {
+                setMessageAttributes(session, "Error occured while updating an item", "danger");
+            }
         }
         return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }

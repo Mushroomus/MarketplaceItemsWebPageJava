@@ -13,4 +13,6 @@ import java.util.function.Predicate;
 
 public interface ItemDAO extends JpaRepository<Item, String>, JpaSpecificationExecutor<Item> {
     Page<Item> findByNameLikeIgnoreCaseOrSkuLikeIgnoreCase(String name, String sku, Pageable pageable);
+
+    Item findItemBySku(String sku);
 }

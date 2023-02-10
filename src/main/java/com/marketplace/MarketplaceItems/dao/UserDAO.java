@@ -12,5 +12,4 @@ public interface UserDAO extends JpaRepository<User, Integer> {
     User findByUsername(String username);
     Page<User> findAll(Pageable pageable);
 
-    void deleteById(Integer id);
 }

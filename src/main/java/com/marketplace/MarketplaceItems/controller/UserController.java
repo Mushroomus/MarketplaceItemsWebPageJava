@@ -61,6 +61,9 @@ public class UserController {
         User user = new User();
         theModel.addAttribute("user", user);
 
+        String changePassword = null;
+        theModel.addAttribute("changePassword", changePassword);
+
         return "user/list-users";
     }
 
@@ -69,8 +72,45 @@ public class UserController {
         session.setAttribute("messageType", typeMessage);
     }
 
+    private String validateUser(User user, HttpSession session,int page, String changePassword) {
+
+        String username = user.getUsername();
+
+        if(username == null || username.equals("")) {
+            setMessageAttributes(session, "Username is empty", "danger");
+            return "redirect:list?page=" + page;
+        }
+
+        User existingUser = userService.findByUsername(username);
+        if (existingUser != null) {
+            setMessageAttributes(session, "Username already exists", "danger");
+            return "redirect:list?page=" + page;
+        }
+
+        String password;
+
+        if(changePassword != null && !changePassword.equals(""))
+            password = changePassword;
+        else
+            password = user.getPassword();
+
+        String pattern = "^(?=.*[0-9])(?=.*[!@#$%^&+=])(?=\\S+$).{6,}$";
+
+        if (!password.matches(pattern)) {
+            setMessageAttributes(session, "Password should be at least 6 characters long and contain at least one number and one special character", "danger");
+            return "redirect:list?page=" + page;
+        }
+
+        return "valid";
+    }
+
     @PostMapping("/add")
     public String addItem(@ModelAttribute("user") User user, HttpSession session, @RequestParam(defaultValue = "0") int page) {
+
+        String resultValidation = validateUser(user,session,page, null);
+
+        if(!resultValidation.equals("valid"))
+            return resultValidation;
 
         user.setPassword( BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)) );
         user.setDate(LocalDateTime. now());
@@ -95,5 +135,28 @@ public class UserController {
         return "redirect:list?page=" + page;
     }
 
+    @PostMapping("/update")
+    public String update(@ModelAttribute("user") User user, @ModelAttribute("changePassword") String changePassword, HttpSession session, @RequestParam(defaultValue = "0") int page) {
+
+        String resultValidation = validateUser(user,session,page, changePassword);
+
+        if(!resultValidation.equals("valid"))
+            return resultValidation;
+
+        user.setDate(LocalDateTime. now());
+
+        if(changePassword != null && !changePassword.equals(""))
+            user.setPassword( BCrypt.hashpw(changePassword, BCrypt.gensalt(10)) );
+
+        System.out.println("After if " + user.getPassword());
+
+        try {
+            userService.updateUser(user);
+            setMessageAttributes(session, "User was updated", "success");
+        } catch (Exception e) {
+            setMessageAttributes(session, "Error occured while updating an user", "danger");
+        }
+        return "redirect:list?page=" + page;
+    }
 
 }

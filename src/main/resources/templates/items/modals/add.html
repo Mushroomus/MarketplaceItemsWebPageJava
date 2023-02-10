@@ -9,6 +9,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
+            <div id="modalAddItemMessage" role="alert" ></div>
+
             <form action="#" th:action="@{/items/add}" th:object="${item}" method="POST">
 
                 <div class="modal-body">
@@ -89,7 +91,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="submit" class="btn btn-primary" id="addModalItemSubmit">Add</button>
                 </div>
             </form>
         </div>

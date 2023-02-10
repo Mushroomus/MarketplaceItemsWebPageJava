@@ -20,4 +20,5 @@ public interface ItemService {
 
     public void updateItem(Item item);
 
+    public Item findItemBySku(String sku);
 }

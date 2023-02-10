@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="editModal" class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div id="modalMessage" role="alert" ></div>
+
+            <form th:action="@{/users/update}" th:object="${user}" method="post">
+                <div class="modal-body">
+
+                    <input hidden type="text" id="modalEditPage" name="page" th:value="${currentPage}"/>
+                    <input hidden type="text" id="modalUserPassword" name="password" th:field="*{password}" th:data-userPassword="${password}"/>
+
+                    <div class="form-group">
+                        <label hidden class="form-label" for="modalUserId"></label>
+                        <input hidden type="text" class="form-control"  id="modalUserId" th:field="*{id}" th:data-userId="${sku}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="modalUsername">Username</label>
+                        <input type="text" class="form-control" id="modalUsername" th:field="*{username}" th:data-userName="${username}" />
+                    </div>
+
+                    <div class="form-group">
+                        <input type="checkbox" id="changePasswordCheckbox">
+                        <label for="changePasswordCheckbox">Change password</label>
+                    </div>
+
+                    <div class="form-group" id="passwordField">
+                        <label class="form-label" for="modalPassword">Password</label>
+                        <input type="password" class="form-control" id="modalPassword" name="changePassword" th:value="${changePassword}" />
+                    </div>
+
+                    <div class="form-group" id="repeatPasswordField">
+                        <label class="form-label" for="modalPasswordRepeat">Repeat password</label>
+                        <input type="password" class="form-control" id="modalPasswordRepeat" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="modalUserRole">Role</label>
+                        <select class="form-control" id="modalUserRole" th:field="*{role}" th:data-userRole="${role}">
+                            <option value="ADMIN">Admin</option>
+                            <option value="USER">User</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmit">Save changes</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</html>
