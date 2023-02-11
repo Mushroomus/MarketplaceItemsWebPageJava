@@ -11,20 +11,16 @@
 
       <div id="modalEditMessage" role="alert" ></div>
 
-      <form action="#" th:action="@{/users/add}" th:object="${user}" method="POST">
-
         <div class="modal-body">
-
-          <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
 
           <div class="form-group">
             <label for="userUsername">Username</label>
-            <input type="text" class="form-control" id="userUsername" th:field="*{username}" >
+            <input type="text" class="form-control" id="userUsername" >
           </div>
 
           <div class="form-group">
             <label for="userPassword">Password</label>
-            <input type="password" class="form-control" id="userPassword" th:field="*{password}" >
+            <input type="password" class="form-control" id="userPassword">
           </div>
 
           <div class="form-group">
@@ -34,7 +30,7 @@
 
           <div class="form-group">
             <label for="userRole">Role</label>
-            <select class="form-control" id="userRole" th:field="*{role}">
+            <select class="form-control" id="userRole">
               <option value="ADMIN">Admin</option>
               <option value="USER">User</option>
             </select>
@@ -42,9 +38,8 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="addModalSubmit" >Add</button>
+          <button type="button" class="btn btn-primary" id="addModalSubmit" >Add</button>
         </div>
-      </form>
     </div>
   </div>
 

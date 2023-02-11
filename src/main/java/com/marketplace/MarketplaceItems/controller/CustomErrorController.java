@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
+/*
 @Controller
 public class CustomErrorController implements ErrorController {
     @RequestMapping("/error")
@@ -32,3 +33,4 @@ public class CustomErrorController implements ErrorController {
         return "/error";
     }
 }
+*/

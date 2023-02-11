@@ -7,15 +7,21 @@ import com.marketplace.MarketplaceItems.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,7 +38,7 @@ public class UserController {
     @GetMapping("/list")
     public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue = "0") int page) {
 
-        int pageSize = 10;
+        int pageSize = 1;
         Page<User> users;
         Pageable pageable = PageRequest.of(page,pageSize);
 
@@ -72,6 +78,7 @@ public class UserController {
         session.setAttribute("messageType", typeMessage);
     }
 
+    /*
     private String validateUser(User user, HttpSession session,int page, String changePassword) {
 
         String username = user.getUsername();
@@ -103,10 +110,132 @@ public class UserController {
 
         return "valid";
     }
+     */
+
+    private String validateUser(User user, String changePassword) {
+
+        String username = user.getUsername();
+
+        if(username == null || username.equals(""))
+            return "Username is empty";
+
+
+        User existingUser = userService.findByUsername(username);
+        if (existingUser != null)
+            return "Username already exists";
+
+        String password;
+
+        if(changePassword != null && !changePassword.equals(""))
+            password = changePassword;
+        else
+            password = user.getPassword();
+
+        String pattern = "^(?=.*[0-9])(?=.*[!@#$%^&+=])(?=\\S+$).{6,}$";
+
+        if (!password.matches(pattern))
+            return "Password should be at least 6 characters long and contain at least one number and one special character";
+
+        return "valid";
+    }
+
+    public class ResponseMessage {
+        private String message;
+
+        public ResponseMessage(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
 
     @PostMapping("/add")
-    public String addItem(@ModelAttribute("user") User user, HttpSession session, @RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<ResponseMessage> addItem(@RequestBody User user) {
 
+        String resultValidation = validateUser(user, null);
+
+        if (!resultValidation.equals("valid"))
+            return new ResponseEntity<>(new ResponseMessage(resultValidation), HttpStatus.BAD_REQUEST);
+
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)));
+        user.setDate(LocalDateTime.now());
+
+        try {
+            userService.saveUser(user);
+            return new ResponseEntity<>(new ResponseMessage("User was added"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseMessage("Error occured while adding an user"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public class PagedResponse<T> {
+        private List<T> content;
+        private int page;
+        private int size;
+        private long totalElements;
+        private int totalPages;
+        private boolean last;
+
+        public PagedResponse(List<T> content, int page, int size, long totalElements, int totalPages, boolean last) {
+            this.content = content;
+            this.page = page;
+            this.size = size;
+            this.totalElements = totalElements;
+            this.totalPages = totalPages;
+            this.last = last;
+        }
+
+        public PagedResponse(Page<T> page) {
+            this.content = page.getContent();
+            this.page = page.getNumber();
+            this.size = page.getSize();
+            this.totalElements = page.getTotalElements();
+            this.totalPages = page.getTotalPages();
+            this.last = page.isLast();
+        }
+
+        // getters and setters for each member variable
+    }
+
+
+    @GetMapping("/list-refresh")
+    public ResponseEntity<PagedModel<User>> refreshList(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "size", defaultValue = "1") int size,
+                                                        @RequestParam(value = "search", required = false) String search,
+                                                        @RequestParam(value = "role", required = false) String role,
+                                                        @RequestParam(value = "startDate", required = false) String startDate,
+                                                        @RequestParam(value = "endDate", required = false) String endDate) {
+        Page<User> users;
+        Pageable pageable = PageRequest.of(page, size);
+
+        LocalDateTime start = null;
+        if (startDate != null && !startDate.equals("null")) {
+            start = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        }
+
+        LocalDateTime end = null;
+        if (endDate != null && !endDate.equals("null")) {
+            end = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        }
+
+        users = userService.findAll(pageable, search, role, start, end);
+
+        PagedModel<User> pagedModel = PagedModel.of(users.getContent(), new PagedModel.PageMetadata(users.getSize(), users.getNumber(), users.getTotalElements()));
+
+        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+    }
+
+
+
+
+        /*
         String resultValidation = validateUser(user,session,page, null);
 
         if(!resultValidation.equals("valid"))
@@ -122,7 +251,9 @@ public class UserController {
             setMessageAttributes(session, "Error occured while adding an user", "danger");
         }
         return "redirect:list?page=" + page;
+
     }
+*/
 
     @PostMapping("/delete")
     public String delete(@RequestParam(value = "userId") int id, HttpSession session, @RequestParam(defaultValue = "0") int page) {
@@ -135,6 +266,7 @@ public class UserController {
         return "redirect:list?page=" + page;
     }
 
+    /*
     @PostMapping("/update")
     public String update(@ModelAttribute("user") User user, @ModelAttribute("changePassword") String changePassword, HttpSession session, @RequestParam(defaultValue = "0") int page) {
 
@@ -158,5 +290,6 @@ public class UserController {
         }
         return "redirect:list?page=" + page;
     }
+     */
 
 }

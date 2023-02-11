@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public interface UserService {
 
@@ -17,4 +19,6 @@ public interface UserService {
     public void updateUser(User user);
 
     public User findByUsername(String username);
+
+    public Page<User> findAll(Pageable pageable, String search, String role, LocalDateTime startDate, LocalDateTime endDate);
 }

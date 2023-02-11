@@ -26,6 +26,8 @@
     <script type="text/javascript" th:src="@{/js/deleteModalUser.js}"></script>
     <script type="text/javascript" th:src="@{/js/editModalUser.js}"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
 </head>
 
 <body>
@@ -40,50 +42,30 @@
             <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
                 <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
 
-                <!--
 
-                <form class="form" th:action="@{list}" method="get">
+                <div class="form-group">
+                    <label for="filterRoleDropdown">Role</label>
+                    <select class="form-control" id="filterRoleDropdown" name="role">
+                        <option value="ADMIN">Admin</option>
+                        <option value="USER">User</option>
+                    </select>
+                </div><br>
+
+                <div class="form-group">
+                    <label for="filterStartDatePicker">Start Date</label>
+                    <input type="text" class="form-control" id="filterStartDatePicker" name="startDate">
+                </div><br>
+
+                <div class="form-group">
+                    <label for="filterEndDatePicker">End Date</label>
+                    <input type="text" class="form-control" id="filterEndDatePicker" name="endDate">
+                </div><br>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="filterButton()">Filter</button>
+                </div><br>
 
 
-                    <div class="form-group">
-                        <label for="filterCraftableDropdown">Craftable</label>
-                        <select class="form-control" id="filterCraftableDropdown" name="craftable">
-                            <option th:each="craftableOption : ${craftableOptions}"
-                                    th:value="${craftableOption}"
-                                    th:selected="${selectedCraftable == craftableOption}"
-                                    th:text="${craftableOption}">
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="form-group mt-3"><label class="d-block font-weight-bold mb-2">Class</label>
-                        <div th:each="class : ${classesList}" class="form-check-label">
-                            <label>
-                                <input type="checkbox" class="form-check-input" name="classes" th:value="${class}" th:text="' ' +${class}"
-                                       th:checked="${selectedClasses != null && selectedClasses.contains(class)}" />
-                            </label>
-                        </div>
-
-                        <label class="d-block font-weight-bold mb-2 mt-3">Quality</label>
-                        <div th:each="quality : ${qualityList}" class="form-check-label">
-                            <label>
-                                <input type="checkbox" class="form-check-input" name="qualities" th:value="${quality}" th:text="' ' + ${quality}"
-                                       th:checked="${selectedQualities != null && selectedQualities.contains(quality)}" />
-                            </label>
-                        </div>
-
-                        <label class="d-block font-weight-bold mb-2 mt-3">Type</label>
-                        <div th:each="type : ${typeList}" class="form-check-label">
-                            <label>
-                                <input type="checkbox" class="form-check-input" name="types" th:value="${type}" th:text="' ' +${type}"
-                                       th:checked="${selectedTypes != null && selectedTypes.contains(type)}" />
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-3">Filter</button>
-                    </div>
-
-                </form>
-                -->
             </div>
 
         </div>
@@ -101,7 +83,18 @@
                     <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal" th:data-page="${currentPage}" >Add User
                         <i class="fas fa-plus"></i>
                     </button>
+
+                    <div class="input-group">
+                        <div class="form-outline">
+                            <input placeholder="Search by Username" type="text" id="searchInput" class="form-control" />
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="searchButton()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
                 </div>
+
                 <br>
 
                 <p class="fs-3" th:style="${totalPages == 0 ? 'display:block' : 'display:none'}" > No Users </p>
@@ -137,6 +130,50 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <div th:style="${totalPages == 0 ? 'display:none' : ''}">
+                    <nav aria-label="...">
+                        <ul class="pagination">
+                            <li class="page-item" th:class="${currentPage == 0} ? 'page-item disabled' : ''">
+
+                                <a class="page-link" th:href="@{list(page=0)}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+
+                            </li>
+                            <li class="page-item" th:class="${currentPage > 0} ? '' : 'page-item disabled'">
+
+                                <a class="page-link" th:href="@{list(page=${currentPage-1})}">
+                                    <span aria-hidden="true">&lsaquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+
+                            </li>
+                            <li class="page-item" th:each="i : ${pageArray}" th:class="${i == currentPage} ? 'page-item active' : ''">
+
+                                <a class="page-link"  th:href="@{list(page=${i})}">[[${i + 1}]]</a>
+
+                            </li>
+                            <li class="page-item" th:class="${currentPage == totalPages - 1} ? 'page-item disabled' : ''">
+
+                                <a class="page-link" th:href="@{list(page=${currentPage + 1})}">
+                                    <span aria-hidden="true">&rsaquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+
+                            </li>
+                            <li class="page-item" th:class="${ currentPage == totalPages - 1} ? 'page-item disabled' : ''">
+
+                                <a class="page-link" th:href="@{list(page=${totalPages - 1})}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+
+                            </li>
+                        </ul>
+                    </nav>
+
                 <div th:replace="user/modals/delete.html :: deleteModal"></div>
                 <div th:replace="user/modals/edit.html :: editModal"></div>
             </div>
@@ -156,6 +193,7 @@
     $('.sidebar-container').css("animation-name", "fadeOutRight");
   }
 });
+
 </script>
 
 
