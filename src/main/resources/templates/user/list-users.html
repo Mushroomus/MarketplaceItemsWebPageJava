@@ -8,17 +8,32 @@
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/jQuery-provider.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+
+
+
     <link rel="stylesheet" th:href="@{/css/item.css}">
     <link rel="stylesheet" th:href="@{/css/user.css}">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <script type="text/javascript" th:src="@{/js/alertSlideUp.js}"></script>
 
@@ -26,7 +41,6 @@
     <script type="text/javascript" th:src="@{/js/deleteModalUser.js}"></script>
     <script type="text/javascript" th:src="@{/js/editModalUser.js}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 </head>
 
@@ -52,6 +66,28 @@
                 </div><br>
 
                 <div class="form-group">
+                    <label for="datetimepickerInputStartDate" class="form-label">Start Date</label>
+                    <div class="input-group" id="datetimepickerStartDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                        <input id="datetimepickerInputStartDate" type="text" class="form-control" data-td-target="#datetimepickerStartDate"/>
+                        <span class="input-group-text" data-td-target="#datetimepickerStartDate" data-td-toggle="datetimepicker">
+                            <span class="fas fa-calendar"></span>
+                         </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="datetimepickerInputEndDate" class="form-label">End Date</label>
+                    <div class="input-group" id="datetimepickerEndDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                        <input id="datetimepickerInputEndDate" type="text" class="form-control" data-td-target="#datetimepickerEndDate"/>
+                        <span class="input-group-text" data-td-target="#datetimepickerEndDate" data-td-toggle="datetimepicker">
+                            <span class="fas fa-calendar"></span>
+                         </span>
+                    </div>
+                </div><br>
+
+
+                <!--
+                <div class="form-group">
                     <label for="filterStartDatePicker">Start Date</label>
                     <input type="text" class="form-control" id="filterStartDatePicker" name="startDate">
                 </div><br>
@@ -60,9 +96,9 @@
                     <label for="filterEndDatePicker">End Date</label>
                     <input type="text" class="form-control" id="filterEndDatePicker" name="endDate">
                 </div><br>
-
+                -->
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary" onclick="filterButton()">Filter</button>
+                    <button type="button" class="btn btn-primary" onclick="filterButton()">Filter</button>
                 </div><br>
 
 
@@ -181,6 +217,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
+      //put your config here
+    });
+
+     window.datetimepickerEndDate = $('#datetimepickerEndDate').tempusDominus({
+      //put your config here
+    });
+</script>
 
 <script>
  $("#toggleBtn").click(function() {

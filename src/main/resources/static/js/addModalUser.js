@@ -1,11 +1,11 @@
-
     function filterButton() {
         var role = $("#filterRoleDropdown").val();
         var startDate = $("filterStartDatePicker").val();
         var endDate = $("filterEndDatePicker").val();
 
         let urlParams = new URLSearchParams(window.location.search);
-        let start = urlParams.get("search");
+        let search = urlParams.get("search");
+        let page = urlParams.get("page");
 
         if(page == null || page == "")
             page = 0;
