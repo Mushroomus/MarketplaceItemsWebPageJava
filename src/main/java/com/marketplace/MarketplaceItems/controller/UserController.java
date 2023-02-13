@@ -259,6 +259,63 @@ public class UserController {
         }
     }
 
+    public static class UpdateUserRequest {
+        private User user;
+        private String changePassword;
+
+        public UpdateUserRequest() { }
+
+        public UpdateUserRequest(User user, String changePassword) {
+            this.user = user;
+            this.changePassword = changePassword;
+        }
+
+        public User getUser() {
+            return user;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
+        }
+
+        public String getChangePassword() {
+            return changePassword;
+        }
+
+        public void setChangePassword(String changePassword) {
+            this.changePassword = changePassword;
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody UpdateUserRequest request) {
+
+        System.out.println(request);
+        User user = request.getUser();
+        String changePassword = request.getChangePassword();
+
+        System.out.println(user);
+        System.out.println(changePassword);
+
+        String resultValidation = validateUser(user, changePassword);
+
+        if (!resultValidation.equals("valid")) {
+            return new ResponseEntity<>(resultValidation, HttpStatus.BAD_REQUEST);
+        }
+
+        user.setDate(LocalDateTime. now());
+
+        if(changePassword != null && !changePassword.equals(""))
+            user.setPassword( BCrypt.hashpw(changePassword, BCrypt.gensalt(10)) );
+
+        try {
+            userService.updateUser(user);
+            return new ResponseEntity<>("User was updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /*
     @PostMapping("/update")
     public String update(@ModelAttribute("user") User user, @ModelAttribute("changePassword") String changePassword, HttpSession session, @RequestParam(defaultValue = "0") int page) {
