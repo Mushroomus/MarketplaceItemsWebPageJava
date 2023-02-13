@@ -249,36 +249,14 @@ public class UserController {
 
 
 
-
-        /*
-        String resultValidation = validateUser(user,session,page, null);
-
-        if(!resultValidation.equals("valid"))
-            return resultValidation;
-
-        user.setPassword( BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)) );
-        user.setDate(LocalDateTime. now());
-
-        try{
-            userService.saveUser(user);
-            setMessageAttributes(session, "User was added", "success");
-        } catch(Exception e) {
-            setMessageAttributes(session, "Error occured while adding an user", "danger");
-        }
-        return "redirect:list?page=" + page;
-
-    }
-*/
-
-    @PostMapping("/delete")
-    public String delete(@RequestParam(value = "userId") int id, HttpSession session, @RequestParam(defaultValue = "0") int page) {
+    @GetMapping("/delete")
+    public ResponseEntity<ResponseMessage> delete(@RequestParam int id) {
         try {
             userService.deleteUserById(id);
-            setMessageAttributes(session, "User was deleted", "success");
+            return new ResponseEntity<>(new ResponseMessage("User was deleted"), HttpStatus.OK);
         } catch (Exception e) {
-            setMessageAttributes(session, "Error occured while removing an user", "danger");
+            return new ResponseEntity<>(new ResponseMessage("Failed to delete user"), HttpStatus.OK);
         }
-        return "redirect:list?page=" + page;
     }
 
     /*

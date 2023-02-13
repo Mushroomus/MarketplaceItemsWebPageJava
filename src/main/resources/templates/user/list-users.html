@@ -85,18 +85,6 @@
                     </div>
                 </div><br>
 
-
-                <!--
-                <div class="form-group">
-                    <label for="filterStartDatePicker">Start Date</label>
-                    <input type="text" class="form-control" id="filterStartDatePicker" name="startDate">
-                </div><br>
-
-                <div class="form-group">
-                    <label for="filterEndDatePicker">End Date</label>
-                    <input type="text" class="form-control" id="filterEndDatePicker" name="endDate">
-                </div><br>
-                -->
                 <div class="form-group">
                     <button type="button" class="btn btn-primary" onclick="filterButton()">Filter</button>
                 </div><br>
@@ -111,22 +99,25 @@
                 <h3>Manage Users</h3>
                 <hr>
 
-
                 <div class="d-flex gap-2 align-items-center">
+
+
                     <button class="btn btn-primary" id="toggleBtn"><i class="fas fa-arrow-left"></i></button>
 
-                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add User
-                        <i class="fas fa-plus"></i>
-                    </button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add User
+                            <i class="fas fa-plus"></i>
+                        </button>
 
-                    <div class="input-group">
+                        <button class="btn btn-danger" id="clearFilters" onclick="clearFilters()"><i class="fa fa-filter" ></i></button>
+
+
                         <div class="form-outline">
                             <input placeholder="Search by Username" type="text" id="searchInput" class="form-control" />
                         </div>
+
                         <button type="button" class="btn btn-primary" onclick="searchButton()">
                             <i class="fas fa-search"></i>
                         </button>
-                    </div>
 
                 </div>
 
@@ -154,7 +145,7 @@
                         </ul>
                     </nav>
 
-                <!--<div th:replace="user/modals/delete.html :: deleteModal"></div> -->
+                <div th:replace="user/modals/delete.html :: deleteModal"></div>
                 <!-- <div th:replace="user/modals/edit.html :: editModal"></div> -->
             </div>
              <div th:replace="user/modals/add.html :: addModal"></div>

@@ -4,6 +4,13 @@
    var currentPage = 0;
 
 
+    function clearFilters() {
+        filter = false;
+        searchFilter = false;
+        currentPage = 0;
+        refreshTable(0);
+    }
+
     function stringToCorrectDate(stringDate) {
         let dateString = stringDate;
         let dateComponents = dateString.split(".");
@@ -90,6 +97,10 @@
                     $("#noUsers").show();
                 }
                 else {
+
+                     if(currentPage == data.page.totalPages)
+                        refreshTable(--currentPage);
+
                     $("table").show();
                     $("#noUsers").hide();
                     if(data._embedded && data._embedded.userList)
@@ -177,6 +188,54 @@
 
 $(document).ready(function() {
 
+$('#deleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+
+                var userId = button.data('userid');
+                var username = button.data('username');
+
+                username = "'" + username + "' will be deleted permanently. Are you sure?";
+
+                var modal = $(this);
+                modal.find('.modal-body #modalDeleteUserId').val(userId);
+                modal.find('.modal-body #modalDeleteUserName').text(username);
+          });
+
+
+ $("#deleteModalSubmit").click(function() {
+
+                var userId = $("#modalDeleteUserId").val();
+
+                $.ajax({
+                        url: "delete?id=" + userId,
+                        type: "GET",
+                        contentType: "application/json",
+                        dataType: 'json',
+                        success: function(response, status, xhr) {
+                            if (xhr.status == 200) {
+
+                                 $("#modalDeleteMessage").text(response.message).addClass("alert alert-success").show();
+                                 refreshTable(currentPage);
+
+                            }
+                            else if (xhr.status == 400)
+                                $("#modalDeleteMessage").text(response.message).addClass("alert alert-danger").show();
+                            else
+                                $("#modalDeleteMessage").text(response.message).addClass("alert alert-danger").show();
+
+                            },
+                             error: function(xhr, status, error) {
+                                console.error(error);
+                                console.error(xhr.responseText);
+                             }
+                        });
+
+                         setTimeout(function() {
+                            $("#modalDeleteMessage").fadeOut('slow');
+                         }, 2000);
+
+                 });
+
  $("#addModalSubmit").click(function() {
 
                 event.preventDefault();
@@ -186,7 +245,6 @@ $(document).ready(function() {
                 var repeatPassword = $("#userPasswordRepeat").val();
                 var role = $("#userRole").val();
 
-/*
                 if (username == "" || password == "" || password != repeatPassword ){
 
                     if(username == "")
@@ -213,7 +271,7 @@ $(document).ready(function() {
                     }, 2000);
                     return;
                 }
-*/
+
                 $.ajax({
                     url: "add",
                     type: "POST",
@@ -246,7 +304,6 @@ $(document).ready(function() {
                      setTimeout(function() {
                         $("#modalEditMessage").fadeOut('slow');
                      }, 2000);
-
 
              });
 
