@@ -17,9 +17,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +40,7 @@ public class UserController {
     @GetMapping("/list")
     public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue = "0") int page) {
 
+        /*
         int pageSize = 1;
         Page<User> users;
         Pageable pageable = PageRequest.of(page,pageSize);
@@ -69,7 +72,7 @@ public class UserController {
 
         String changePassword = null;
         theModel.addAttribute("changePassword", changePassword);
-
+        */
         return "user/list-users";
     }
 
@@ -215,15 +218,27 @@ public class UserController {
         Page<User> users;
         Pageable pageable = PageRequest.of(page, size);
 
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
         LocalDateTime start = null;
         if (startDate != null && !startDate.equals("null")) {
-            start = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            long timestamp = Long.parseLong(startDate);
+            Date date = new Date(timestamp);
+            String dateStartString = formatter.format(date);
+            System.out.println(dateStartString );
+            start = LocalDateTime.parse(dateStartString, formatterDate);
         }
 
         LocalDateTime end = null;
         if (endDate != null && !endDate.equals("null")) {
-            end = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            long timestamp = Long.parseLong(endDate);
+            Date date = new Date(timestamp);
+            String dateEndString = formatter.format(date);
+            System.out.println(dateEndString);
+            end = LocalDateTime.parse(dateEndString, formatterDate);
         }
+
 
         users = userService.findAll(pageable, search, role, start, end);
 

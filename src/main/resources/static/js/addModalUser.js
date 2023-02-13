@@ -1,95 +1,103 @@
+   refreshTable(0);
+   var filter = false;
+   var searchFilter = false;
+   var currentPage = 0;
+
+
+    function stringToCorrectDate(stringDate) {
+        let dateString = stringDate;
+        let dateComponents = dateString.split(".");
+        let day = dateComponents[0];
+        let month = dateComponents[1];
+        let yearAndTime = dateComponents[2].split(", ");
+        let year = yearAndTime[0];
+        let time = yearAndTime[1];
+
+        return new Date(year, month - 1, day, time.split(":")[0], time.split(":")[1]);
+    }
+
     function filterButton() {
-        var role = $("#filterRoleDropdown").val();
-        var startDate = $("filterStartDatePicker").val();
-        var endDate = $("filterEndDatePicker").val();
-
-        let urlParams = new URLSearchParams(window.location.search);
-        let search = urlParams.get("search");
-        let page = urlParams.get("page");
-
-        if(page == null || page == "")
-            page = 0;
-
-            let url = "list-refresh";
-            url += "?page=" + page;
-
-            if(search != null)
-                url += "&search=" + search;
-
-            url += "&role=" + role;
-            url += "&startDate=" + startDate;
-            url += "&endDate=" + endDate;
-
-             $.ajax({
-                  url: url,
-                  type: "GET",
-                  dataType: 'json',
-                  success: function(data) {
-                  updateTable(data._embedded.userList);
-                  updatePagination(data.page)
-                }
-                });
+        filter = true;
+        refreshTable(0);
     }
 
 
     function searchButton() {
-         var search = $("#searchInput").val();
+        searchFilter = true;
+        refreshTable(0);
+    }
 
-         let urlParams = new URLSearchParams(window.location.search);
-         var page = urlParams.get("page");
-         let role = urlParams.get("role");
-         let startDate = urlParams.get("startDate");
-         let endDate = urlParams.get("endDate");
+    function createUrl(page) {
 
-         if(page == null || page == "")
+        if(page == null || page == "") {
+            currentPage = 0;
             page = 0;
+        }
+        currentPage = page;
 
-             let url = "list-refresh";
-             url += "?page=" + page;
-                if (search != null && search != "") {
-                    url += "&search=" + search;
-                }
-                if (role != null && role != "") {
-                    url += "&role=" + role;
-                }
-                if (startDate != null && startDate != "") {
-                    url += "&startDate=" + startDate;
-                }
-                if (endDate != null && endDate != "") {
-                    url += "&endDate=" + endDate;
-                }
+        let url = "list-refresh";
+        url += "?page=" + page;
 
-         $.ajax({
-              url: url,
-              type: "GET",
-              dataType: 'json',
-              success: function(data) {
-              //console.log(data);
-              updateTable(data._embedded.userList);
-              updatePagination(data.page)
+        if(searchFilter == true) {
+            var search = $("#searchInput").val();
+
+            if(searchFilter != null)
+                url += "&search=" + search;
+        }
+
+        if(filter == true) {
+
+            var role = $("#filterRoleDropdown").val();
+
+            var timestampStartDate = null;
+            var timestampEndDate = null;
+
+            if($("#datetimepickerInputStartDate").val() != "" && $("#datetimepickerInputStartDate").val() != null) {
+                var startDate = stringToCorrectDate( $("#datetimepickerInputStartDate").val() );
+                timestampStartDate = startDate.getTime();
             }
-            });
 
+            if($("#datetimepickerInputEndDate").val() != "" && $("#datetimepickerInputStartDate").val() != null) {
+                var endDate = stringToCorrectDate( $("#datetimepickerInputEndDate").val() );
+                timestampEndDate = endDate.getTime();
+            }
+
+            if (role != null && role != "")
+                url += "&role=" + role;
+            if (startDate != null && startDate != "")
+                url += "&startDate=" + timestampStartDate;
+            if (endDate != null && endDate != "")
+                url += "&endDate=" + timestampEndDate;
+        }
+
+        return url;
     }
 
 
     function refreshTable(page) {
 
-                let urlParams = new URLSearchParams(window.location.search);
-
-                  var page = urlParams.get("page");
-                  let role = urlParams.get("role");
-                  let startDate = urlParams.get("startDate");
-                  let endDate = urlParams.get("endDate");
-
                $.ajax({
-                 url: "list-refresh?page=" + page + "&search=" + search,
+                 url: createUrl(page),
                  type: "GET",
                  dataType: 'json',
                  success: function(data) {
-                 console.log(data);
-                 updateTable(data._embedded.userList);
-                 updatePagination(data.page)
+                 //console.log(data);
+
+                if(data.page.totalPages == 0) {
+                    $("table tbody").empty();
+                    $("table").hide();
+                    $(".pagination").empty();
+                    $("#noUsers").show();
+                }
+                else {
+                    $("table").show();
+                    $("#noUsers").hide();
+                    if(data._embedded && data._embedded.userList)
+                        updateTable(data._embedded.userList);
+
+                    updatePagination(data.page)
+                }
+
                }
                });
              }
@@ -99,33 +107,42 @@
                // Clear the current table
                $("table tbody").empty();
 
-               // Loop through the list of users and add them to the table
-               data.forEach(function(user) {
-                 let first_date = moment(user.date).format('DD.MM.YYYY HH:MM');
-                 let newRow = "<tr>" +
-                   "<td>" + user.username + "</td>" +
-                   "<td>" + user.role + "</td>" +
-                   "<td>" + first_date + "</td>" +
-                   "<td>" +
-                   "<button type='submit' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
-                   "data-userId='" + user.id + "' data-username='" + user.username + "'>" +
-                   "<i class='fas fa-trash'></i>" +
-                   "</button>" +
-                   "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#editModal'" +
-                   "data-userId='" + user.id + "' data-username='" + user.username + "' data-role='" + user.role + "' data-password='" + user.password + "'>" +
-                   "<i class='fas fa-pencil-alt'></i>" +
-                   "</button>" +
-                   "</td>" +
-                   "</tr>";
-                 $("table tbody").append(newRow);
-               });
+                   data.forEach(function(user) {
+                     let first_date = moment(user.date).format('DD.MM.YYYY HH:MM');
+                     let newRow = "<tr>" +
+                       "<td>" + user.username + "</td>" +
+                       "<td>" + user.role + "</td>" +
+                       "<td>" + first_date + "</td>" +
+                       "<td>" +
+                       "<button type='submit' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
+                       "data-userId='" + user.id + "' data-username='" + user.username + "'>" +
+                       "<i class='fas fa-trash'></i>" +
+                       "</button>" +
+                       "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#editModal'" +
+                       "data-userId='" + user.id + "' data-username='" + user.username + "' data-role='" + user.role + "' data-password='" + user.password + "'>" +
+                       "<i class='fas fa-pencil-alt'></i>" +
+                       "</button>" +
+                       "</td>" +
+                       "</tr>";
+                     $("table tbody").append(newRow);
+                   });
              }
 
              function updatePagination(data) {
                  var pagination = $(".pagination");
                  pagination.empty();
 
-                 var previousButton = "<li class='page-item " + (data.number === 0 ? "disabled" : "") + "'>" +
+                if(data.totalPages != 0) {
+
+                     var firstButton = "<li class='page-item " + (data.number === 0 ? "disabled" : "") + "'>" +
+                        "<a class='page-link' href='#' onclick='refreshTable(0)'>" +
+                        "<span aria-hidden='true'>&laquo;</span>" +
+                        "<span class='sr-only'>First</span>" +
+                        "</a>" +
+                        "</li>";
+                      pagination.append(firstButton);
+
+                     var previousButton = "<li class='page-item " + (data.number === 0 ? "disabled" : "") + "'>" +
                      "<a class='page-link' href='#' " + (data.number === 0 ? "" : "onclick='refreshTable(" + (data.number - 1) + ")'") + ">" +
                      "<span aria-hidden='true'>&lsaquo;</span>" +
                      "<span class='sr-only'>Previous</span>" +
@@ -146,6 +163,15 @@
                      "</a>" +
                      "</li>";
                  pagination.append(nextButton);
+
+                  var lastButton = "<li class='page-item " + (data.number === data.totalPages - 1 ? "disabled" : "") + "'>" +
+                     "<a class='page-link' href='#' onclick='refreshTable(" + (data.totalPages - 1) + ")'>" +
+                     "<span aria-hidden='true'>&raquo;</span>" +
+                     "<span class='sr-only'>Last</span>" +
+                     "</a>" +
+                     "</li>";
+                   pagination.append(lastButton);
+                }
              }
 
 
@@ -202,10 +228,6 @@ $(document).ready(function() {
                         if (xhr.status == 200) {
 
                              $("#modalEditMessage").text("added").addClass("alert alert-success").show();
-                             var currentPage = parseInt(window.location.search.split("=")[1]);
-                             if(currentPage == null || currentPage == "")
-                                currentPage = 0;
-
                              refreshTable(currentPage);
 
                         }
