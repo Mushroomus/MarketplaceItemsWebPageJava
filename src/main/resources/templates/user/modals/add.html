@@ -11,21 +11,24 @@
 
       <div id="modalEditMessage" role="alert" ></div>
 
-        <div class="modal-body">
+        <div id="modalBody" class="modal-body">
 
           <div class="form-group">
             <label for="userUsername">Username</label>
-            <input type="text" class="form-control" id="userUsername" >
+            <input type="text" class="form-control" id="userUsername">
+            <div class="invalid-feedback" id="usernameValidation" style="display: none;"></div>
           </div>
 
           <div class="form-group">
             <label for="userPassword">Password</label>
             <input type="password" class="form-control" id="userPassword">
+            <div class="invalid-feedback" id="passwordValidation" style="display: none;"></div>
           </div>
 
           <div class="form-group">
             <label for="userPasswordRepeat">Repeat Password</label>
             <input type="password" class="form-control" id="userPasswordRepeat">
+            <div class="invalid-feedback" id="passwordMatchError" style="display: none;"></div>
           </div>
 
           <div class="form-group">
@@ -38,8 +41,9 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="addModalSubmit" >Add</button>
+          <button type="submit" class="btn btn-primary" id="addSubmit">Add</button>
         </div>
+
     </div>
   </div>
 

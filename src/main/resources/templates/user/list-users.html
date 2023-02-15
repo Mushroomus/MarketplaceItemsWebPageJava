@@ -35,12 +35,12 @@
     <link rel="stylesheet" th:href="@{/css/item.css}">
     <link rel="stylesheet" th:href="@{/css/user.css}">
 
-    <script type="text/javascript" th:src="@{/js/alertSlideUp.js}"></script>
+    <script type="text/javascript" th:src="@{/js/global.js}"></script>
 
-    <script type="text/javascript" th:src="@{/js/addModalUser.js}"></script>
-    <!--<script type="text/javascript" th:src="@{/js/deleteModalUser.js}"></script>
-    <script type="text/javascript" th:src="@{/js/editModalUser.js}"></script>-->
-
+    <script type="text/javascript" th:src="@{/js/users/user.js}"></script>
+    <script type="text/javascript" th:src="@{/js/users/addModal.js}"></script>
+    <script type="text/javascript" th:src="@{/js/users/editModal.js}"></script>
+    <script type="text/javascript" th:src="@{/js/users/deleteModal.js}"></script>
 
 </head>
 
@@ -153,31 +153,6 @@
     </div>
 </div>
 </div>
-
-<script>
-    window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
-      //put your config here
-    });
-
-     window.datetimepickerEndDate = $('#datetimepickerEndDate').tempusDominus({
-      //put your config here
-    });
-</script>
-
-<script>
- $("#toggleBtn").click(function() {
-  $('.sidebar-container').toggleClass("d-md-block");
-  if ($('.sidebar-container').hasClass("d-md-block")) {
-    $("#toggleBtn i").removeClass("fas fa-arrow-right").addClass("fas fa-arrow-left");
-    $('.sidebar-container').css("animation-name", "fadeInLeft");
-  } else {
-    $("#toggleBtn i").removeClass("fas fa-arrow-left").addClass("fas fa-arrow-right");
-    $('.sidebar-container').css("animation-name", "fadeOutRight");
-  }
-});
-
-</script>
-
 
 </body>
 </html>
