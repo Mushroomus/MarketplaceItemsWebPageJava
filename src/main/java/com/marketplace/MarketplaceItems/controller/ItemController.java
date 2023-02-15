@@ -194,5 +194,11 @@ public class ItemController {
         return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
 
+    @GetMapping("/create-list")
+    public String createTable() {
+
+        return "items/create-list-items";
+    }
+
 
 }
