@@ -11,6 +11,8 @@ $(document).ready(function() {
                      $("#usernameValidation").hide();
                      $("#userUsername").removeClass("is-invalid").addClass("is-valid");
                    }
+
+                   $('#addSubmit').prop('disabled', !checkAllInputsValid());
                  });
 
                    $('#userPassword').on('input', function() {
@@ -28,6 +30,8 @@ $(document).ready(function() {
                       }
 
                       $('#userPasswordRepeat').trigger('input');
+
+                      $('#addSubmit').prop('disabled', !checkAllInputsValid());
 
                     });
 
@@ -47,6 +51,9 @@ $(document).ready(function() {
                    $("#passwordMatchError").hide();
                    $("#userPasswordRepeat").removeClass("is-invalid").addClass("is-valid");
                  }
+
+                  $('#addSubmit').prop('disabled', !checkAllInputsValid());
+
                });
 
                $('#userUsername').trigger('input');
@@ -81,25 +88,30 @@ $(document).ready(function() {
                     success: function(response, status, xhr) {
                         if (xhr.status == 200) {
 
-                             $("#modalEditMessage").text("added").addClass("alert alert-success").show();
+                             $("#modalEditMessage").text("Item successfully added").removeClass("alert alert-danger").addClass("alert alert-success").show();
                              refreshTable(currentPage);
 
+                              var username = $("#userUsername").val('');
+                              var password = $("#userPassword").val('');
+                              var repeatPassword = $("#userPasswordRepeat").val('');
+                              var role = $("#userRole").val('ADMIN');
+
+                              $('#userUsername').trigger('input');
+                              $('#userPassword').trigger('input');
                         }
                         else if (xhr.status == 400)
-                            $("#modalEditMessage").text("added").addClass("alert alert-danger").show();
+                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
                         else
-                            $("#modalEditMessage").text("added").addClass("alert alert-danger").show();
-
+                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
                         },
                          error: function(xhr, status, error) {
-                            console.error(error);
-                            console.error(xhr.responseText);
+                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
                          }
                     });
 
                      setTimeout(function() {
                         $("#modalEditMessage").fadeOut('slow');
-                     }, 2000);
+                     }, 5000);
 
              });
 });

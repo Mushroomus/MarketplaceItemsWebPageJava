@@ -1,6 +1,93 @@
+ function checkEditInputsValid() {
+
+    var username = $('#modalUsername');
+    var password = $('#modalPassword');
+    var repeatPassword = $('#modalPasswordRepeat');
+
+    var checkbox = $("#changePasswordCheckbox").prop('checked');
+
+    if(username.hasClass('is-invalid'))
+        return false;
+
+    if(checkbox) {
+       if(password.hasClass('is-invalid'))
+            return false;
+
+       if(repeatPassword.hasClass('is-invalid'))
+            return false;
+    }
+
+     return true;
+ }
+
+
  $(document).ready(function() {
 
-    $("#passwordField").hide();
+    $('#modalUsername').on('input', function() {
+
+       var username = $(this).val();
+
+       if (username == "") {
+         // Show custom error message
+         $("#usernameValidation").text("Username can't be empty").show();
+         $("#modalUsername").removeClass("is-valid").addClass("is-invalid");
+       } else {
+         $("#usernameValidation").hide();
+         $("#modalUsername").removeClass("is-invalid").addClass("is-valid");
+       }
+
+        $('#modalSubmit').prop('disabled', !checkEditInputsValid());
+     });
+
+     $('#modalPassword').on('input', function() {
+
+           var password = $(this).val();
+           var pattern = new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&+=])(?=\\S+$).{6,}$");
+
+         if($("#changePasswordCheckbox").prop('checked')) {
+                if (!pattern.test(password)) {
+                     // Show custom error message
+                     $("#passwordValidation").text("At least six length, one special char and one number").show();
+                     $("#modalPassword").removeClass("is-valid").addClass("is-invalid");
+                   } else {
+                     $("#passwordValidation").hide();
+                     $("#modalPassword").removeClass("is-invalid").addClass("is-valid");
+                   }
+
+                   $('#modalPasswordRepeat').trigger('input');
+
+                 }
+
+                  $('#modalSubmit').prop('disabled', !checkEditInputsValid());
+            });
+
+
+    $('#modalPasswordRepeat').on('input', function() {
+      var password = $("#modalPassword").val();
+      var repeatPassword = $(this).val();
+
+    if($("#changePasswordCheckbox").prop('checked')) {
+          if(password == "") {
+             $("#passwordMatchError").text("Password is empty").show();
+             $("#modalPasswordRepeat").removeClass("is-valid").addClass("is-invalid");
+          }
+          else if (password !== repeatPassword) {
+            // Show custom error message
+            $("#passwordMatchError").text("Passwords do not match").show();
+            $("#modalPasswordRepeat").removeClass("is-valid").addClass("is-invalid");
+          } else {
+            $("#passwordMatchError").hide();
+            $("#modalPasswordRepeat").removeClass("is-invalid").addClass("is-valid");
+          }
+      }
+
+      $('#modalSubmit').prop('disabled', !checkEditInputsValid());
+    });
+
+
+
+    $('#modalUsername').trigger('input');
+             $("#passwordField").hide();
              $("#repeatPasswordField").hide();
              $("#alertMessage").hide();
 
@@ -11,7 +98,6 @@
                              var username = button.data('username');
                              var role = button.data('role');
                              var password = button.data('password');
-                             console.log(password);
 
                              var modal = $(this);
 
@@ -19,6 +105,10 @@
                              modal.find('.modal-body #modalUserName').val(username);
                              modal.find('.modal-body #modalUserRole').val(role);
                              modal.find('.modal-body #modalUserPassword').val(password);
+
+                             modal.find('.modal-body #modalPassword').val('');
+                             modal.find('.modal-body #modalPasswordRepeat').val('');
+
                        });
 
                        $("#changePasswordCheckbox").change(function() {
@@ -28,10 +118,17 @@
                               if (this.checked) {
                                  passwordField.slideDown();
                                  passwordRepeatField.slideDown();
+                                 $('#modalPassword').trigger('input');
                               } else {
                                  passwordField.slideUp();
                                  passwordRepeatField.slideUp();
+
+                                 passwordField.val('');
+                                 passwordRepeatField.val('');
+                                 $("#modalPassword").removeClass("is-valid").removeClass("is-invalid");
+                                 $("#modalPasswordRepeat").removeClass("is-valid").removeClass("is-invalid");
                               }
+                              $('#modalSubmit').prop('disabled', !checkEditInputsValid());
                          });
 
                         $("#modalSubmit").click(function() {

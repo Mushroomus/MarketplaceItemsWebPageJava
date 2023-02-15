@@ -23,6 +23,7 @@
                     <div class="form-group">
                         <label class="form-label" for="modalUsername">Username</label>
                         <input type="text" class="form-control" id="modalUsername" />
+                        <div class="invalid-feedback" id="usernameValidation" style="display: none;"></div>
                     </div>
 
                     <div class="form-group">
@@ -33,11 +34,13 @@
                     <div class="form-group" id="passwordField">
                         <label class="form-label" for="modalPassword">Password</label>
                         <input type="password" class="form-control" id="modalPassword" name="changePassword" />
+                        <div class="invalid-feedback" id="passwordValidation" style="display: none;"></div>
                     </div>
 
                     <div class="form-group" id="repeatPasswordField">
                         <label class="form-label" for="modalPasswordRepeat">Repeat password</label>
                         <input type="password" class="form-control" id="modalPasswordRepeat" />
+                        <div class="invalid-feedback" id="passwordMatchError" style="display: none;"></div>
                     </div>
 
                     <div class="form-group">

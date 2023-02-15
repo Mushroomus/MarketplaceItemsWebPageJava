@@ -1,0 +1,42 @@
+.sidebar-container {
+  display: none;
+  animation-duration: 0.5s;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.form-group {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.form-check-label {
+    padding-right: 15px;
+}
+
+.alert {
+       position: absolute;
+      top: 5px;
+     right: 30%;
+  }
+
