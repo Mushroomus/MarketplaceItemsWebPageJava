@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
 
     <script type="text/javascript" th:src="@{/js/items/list.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/item.css}">
 </head>
 <body>
 
@@ -29,39 +31,22 @@
         <div class="col-sm-6">
             <h2>All Items</h2>
             <ul id="list1" class="list-group">
-                <li class="list-group-item">
-                    <span class="item-text">Item 1</span>
-                    <button class="btn btn-success move-item" style="margin-left: 10px;"><i class='fas fa-arrow-right'></i></button>
-                    <button class="btn btn-primary details-item" data-bs-toggle="popover" data-bs-placement="left">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                </li>
-                <li class="list-group-item">
-                    <span class="item-text">Item 2</span>
-                    <button class="btn btn-success move-item" style="margin-left: 10px;"><i class='fas fa-arrow-right'></i></button>
-                    <button class="btn btn-primary details-item" data-bs-toggle="popover" data-bs-placement="left">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                </li>
             </ul>
+
+            <br>
+            <nav class="text-center">
+                    <a id="prev-page" class="page-link d-inline-block" href="#" onclick="updatePagination('prev')">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                <a id="next-page" class="page-link d-inline-block" href="#" onclick="updatePagination('next')">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </nav>
+
         </div>
         <div class="col-sm-6">
             <h2>Selected Items</h2>
             <ul id="list2" class="list-group">
-                <li class="list-group-item">
-                    <span class="item-text">Item 3</span>
-                    <button class="btn btn-danger move-item" style="margin-left: 10px;"><i class='fas fa-arrow-left'></i></button>
-                    <button class="btn btn-primary details-item" data-bs-toggle="popover" data-bs-placement="left">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                </li>
-                <li class="list-group-item">
-                    <span class="item-text">Item 4</span>
-                    <button class="btn btn-danger move-item" style="margin-left: 10px;"><i class='fas fa-arrow-left'></i></button>
-                    <button class="btn btn-primary details-item" data-bs-toggle="popover" data-bs-placement="left">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                </li>
             </ul>
         </div>
     </div>

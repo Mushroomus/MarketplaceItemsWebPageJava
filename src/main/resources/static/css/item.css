@@ -40,3 +40,10 @@
      right: 40%;
   }
 
+a[disabled] {
+    pointer-events: none;
+      opacity: 0.5;
+      text-decoration: none;
+      cursor: not-allowed;
+}
+
