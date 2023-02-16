@@ -17,6 +17,7 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
 
+    <script type="text/javascript" th:src="@{/js/global.js}"></script>
     <script type="text/javascript" th:src="@{/js/items/list.js}"></script>
 
     <link rel="stylesheet" th:href="@{/css/item.css}">
@@ -26,9 +27,189 @@
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 <br>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-sm-6">
+
+        <div class="col-2 d-md-block sidebar sidebar-container">
+
+            <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
+                <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
+
+
+                    <div class="form-group">
+                        <label for="filterCraftableDropdown">Craftable</label>
+                        <select class="form-control" id="filterCraftableDropdown">
+                            <option value="Any">Any</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <!-- Checkbox Filter -->
+                    <div class="form-group mt-3"><label class="d-block font-weight-bold mb-2">Class</label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Multi-class" />
+                                Multi-class
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Scout" />
+                                Scout
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Soldier" />
+                                Soldier
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Pyro" />
+                                Pyro
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Demoman" />
+                                Demoman
+                            </label>
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Heavy" />
+                                Heavy
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Engineer" />
+                                Engineer
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Medic" />
+                                Medic
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Sniper" />
+                                Sniper
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="classes" value="Spy" />
+                                Spy
+                            </label>
+
+                        <label class="d-block font-weight-bold mb-2 mt-3">Quality</label>
+                        <div class="form-check-label">
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Genuine" />
+                                Genuine
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Unique" />
+                                Unique
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Vintage" />
+                                Vintage
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Strange" />
+                                Strange
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Haunted" />
+                                Haunted
+                            </label>
+
+                        </div>
+
+                        <label class="d-block font-weight-bold mb-2 mt-3">Type</label>
+                        <div  class="form-check-label">
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Cosmetics" />
+                                Cosmetics
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Currencies" />
+                                Currencies
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Tools" />
+                                Tools
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Paints" />
+                                Paints
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Action" />
+                                Action
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Weapons" />
+                                Weapons
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Strange Parts" />
+                                Strange Parts
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Botkillers" />
+                                Botkillers
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Festive Weapons" />
+                                Festive Weapons
+                            </label>
+
+                            <label>
+                                <input type="checkbox" class="form-check-input" value="Halloween" />
+                                Halloween
+                            </label>
+
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                    </div><br>
+
+                </form>
+            </div>
+
+        </div>
+
+
+        <div class="col-sm-5">
+
+
+            <div class="d-flex gap-2">
+
+                <button class="btn btn-primary" id="toggleBtn"><i class="fas fa-arrow-left"></i></button>
+                <button class="btn btn-danger" id="clearFilter"><i class="fa fa-filter"></i></button>
+
+                <div class="input-group">
+                    <div class="form-outline">
+                        <input placeholder="Search by SKU or Name" type="text" id="searchInput" class="form-control" />
+                    </div>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+            </div><br>
+
+
             <h2>All Items</h2>
             <ul id="list1" class="list-group">
             </ul>
@@ -44,11 +225,14 @@
             </nav>
 
         </div>
-        <div class="col-sm-6">
+
+        <div class="col-sm-5">
+            <br><br>
             <h2>Selected Items</h2>
             <ul id="list2" class="list-group">
             </ul>
         </div>
+
     </div>
 </div>
 

@@ -2,33 +2,49 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+
   <div class="container-fluid">
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+
+      <ul class="navbar-nav" style="margin-left: 10px;">
+
         <li class="nav-item">
           <a class="navbar-brand" href="#" th:href="@{/}">Home</a>
         </li>
+
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
           <a class="navbar-brand" href="#" th:href="@{/users/list}">Users</a>
         </li>
+
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
           <a class="navbar-brand" href="#" th:href="@{/items/list}">Items</a>
         </li>
+
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
           <a class="navbar-brand" href="#" th:href="@{/items/create-list}">Lists</a>
         </li>
-        <li class="ms-auto" sec:authorize="isAuthenticated()">
+      </ul>
+
+      <ul class="navbar-nav ms-auto" style="margin-right: 10px;">
+
+        <li class="nav-item ms-auto" sec:authorize="isAuthenticated()">
           <a class="navbar-brand"  th:href="@{/logout}">
             <span class="badge rounded-pill bg-dark" sec:authorize="isAuthenticated()" sec:authentication="name"></span> Logout
           </a>
         </li>
-        <li class="ms-auto" sec:authorize="!isAuthenticated()">
+
+        <li class="nav-item" sec:authorize="!isAuthenticated()">
           <a class="navbar-brand"  th:href="@{/login}">Login</a>
         </li>
+
       </ul>
+
     </div>
+
   </div>
 </nav>
