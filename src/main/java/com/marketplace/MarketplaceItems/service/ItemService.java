@@ -14,7 +14,7 @@ public interface ItemService {
 
     public Page<Item> findAll(Pageable page, String search);
 
-    public Page<Item> findAll(Pageable page);
+    public Page<Item> findAllFilters(Pageable pageable, String search, String craftable, List<String> classes, List<String> qualities, List<String> types);
 
     public void saveItem(Item item);
 

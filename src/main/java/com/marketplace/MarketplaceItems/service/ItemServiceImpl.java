@@ -25,9 +25,34 @@ public class ItemServiceImpl implements ItemService {
         itemDAO = theItemDAO;
     }
 
-    @Override
-    public Page<Item> findAll(Pageable pageable) {
-        return itemDAO.findAll(pageable);
+
+    public Page<Item> findAllFilters(Pageable pageable, String search, String craftable, List<String> classes, List<String> qualities, List<String> types) {
+
+        Specification<Item> spec = (root, query, builder) -> {
+            List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            if(search != null && !search.equals("")){
+                String searchPattern = "%" + search + "%";
+                predicates.add(builder.like(root.get("name"), searchPattern ));
+            }
+            if(craftable != null && !craftable.equals("Any")) {
+                boolean craftableValue = craftable.equals("Yes") ? true : false;
+                predicates.add(builder.equal(root.get("craftable"), craftableValue ));
+            }
+            if (classes != null && !classes.isEmpty()) {
+                predicates.add(builder.in(root.get("classItem")).value(classes));
+            }
+            if (qualities != null && !qualities.isEmpty()) {
+                predicates.add(builder.in(root.get("quality")).value(qualities));
+            }
+            if (types != null && !types.isEmpty()) {
+                predicates.add(builder.in(root.get("type")).value(types));
+            }
+            return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
+        };
+
+        return itemDAO.findAll(spec, pageable);
+
     }
 
     @Override
@@ -37,7 +62,6 @@ public class ItemServiceImpl implements ItemService {
             List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
 
             if(craftable != null && !craftable.equals("Any")) {
-                System.out.println(craftable);
                 boolean craftableValue = craftable.equals("Yes") ? true : false;
                 predicates.add(builder.equal(root.get("craftable"), craftableValue ));
             }

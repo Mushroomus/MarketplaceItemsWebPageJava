@@ -101,27 +101,27 @@
                         <div class="form-check-label">
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Genuine" />
+                                <input type="checkbox" class="form-check-input" name="qualities" value="Genuine" />
                                 Genuine
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Unique" />
+                                <input type="checkbox" class="form-check-input" name="qualities" value="Unique" />
                                 Unique
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Vintage" />
+                                <input type="checkbox" class="form-check-input" name="qualities" value="Vintage" />
                                 Vintage
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Strange" />
+                                <input type="checkbox" class="form-check-input" name="qualities" value="Strange" />
                                 Strange
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Haunted" />
+                                <input type="checkbox" class="form-check-input" name="qualities" value="Haunted" />
                                 Haunted
                             </label>
 
@@ -131,60 +131,59 @@
                         <div  class="form-check-label">
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Cosmetics" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Cosmetics" />
                                 Cosmetics
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Currencies" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Currencies" />
                                 Currencies
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Tools" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Tools" />
                                 Tools
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Paints" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Paints" />
                                 Paints
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Action" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Action" />
                                 Action
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Weapons" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Weapons" />
                                 Weapons
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Strange Parts" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Strange Parts" />
                                 Strange Parts
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Botkillers" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Botkillers" />
                                 Botkillers
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Festive Weapons" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Festive Weapons" />
                                 Festive Weapons
                             </label>
 
                             <label>
-                                <input type="checkbox" class="form-check-input" value="Halloween" />
+                                <input type="checkbox" class="form-check-input" name="types" value="Halloween" />
                                 Halloween
                             </label>
 
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                        <button type="button" id="sideFilter" class="btn btn-primary mt-3">Filter</button>
                     </div><br>
 
-                </form>
             </div>
 
         </div>
@@ -202,7 +201,7 @@
                     <div class="form-outline">
                         <input placeholder="Search by SKU or Name" type="text" id="searchInput" class="form-control" />
                     </div>
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" id="searchButton" class="btn btn-primary">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -214,20 +213,46 @@
             <ul id="list1" class="list-group">
             </ul>
 
+            <div id="empty-message" style="display:none; text-align:center;">
+                <h4>No items to display.</h4>
+            </div>
+
             <br>
+
+             <!--
             <nav class="text-center">
                     <a id="prev-page" class="page-link d-inline-block" href="#" onclick="updatePagination('prev')">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                <a id="next-page" class="page-link d-inline-block" href="#" onclick="updatePagination('next')">
+                    <a id="next-page" class="page-link d-inline-block" href="#" onclick="updatePagination('next')">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+            </nav>
+            -->
+
+            <nav class="text-center">
+                <a id="prev-page" class="page-link d-inline-block arrow-left" href="#" onclick="updatePagination('prev')">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <a id="next-page" class="page-link d-inline-block arrow-right" href="#" onclick="updatePagination('next')">
                     <i class="fas fa-arrow-right"></i>
                 </a>
+                <button class="btn btn-primary" id="saveList">Save</button>
             </nav>
+
+
+
 
         </div>
 
         <div class="col-sm-5">
-            <br><br>
+
+            <form class="was-validated">
+                <div>
+                    <input type="text" class="form-control" id="inputName" placeholder="Enter List Name" required>
+                </div>
+            </form>
+            <br>
             <h2>Selected Items</h2>
             <ul id="list2" class="list-group">
             </ul>
