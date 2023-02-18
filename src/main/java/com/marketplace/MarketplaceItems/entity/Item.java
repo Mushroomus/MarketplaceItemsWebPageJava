@@ -1,6 +1,7 @@
 package com.marketplace.MarketplaceItems.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="items")
@@ -27,6 +28,19 @@ public class Item {
 
     @Column(name="image")
     private String image;
+
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemList> itemList;
+
+    public List<ItemList> getUserItemList() {
+        return itemList;
+    }
+
+    public void setUserItemList(List<ItemList> itemList) {
+        this.itemList = itemList;
+    }
+
 
     public Item(String sku, String name, boolean craftable, String classItem, String quality, String type, String image) {
         this.sku = sku;

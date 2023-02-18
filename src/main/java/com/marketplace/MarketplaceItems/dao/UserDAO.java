@@ -12,6 +12,4 @@ import org.springframework.stereotype.Repository;
 public interface UserDAO extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
     User findByUsername(String username);
-    //Page<User> findAll(Pageable pageable);
-
 }

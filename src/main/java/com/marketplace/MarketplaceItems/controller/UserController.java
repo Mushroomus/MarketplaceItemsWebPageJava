@@ -68,7 +68,7 @@ public class UserController {
         return "valid";
     }
 
-    public class ResponseMessage {
+    public static class ResponseMessage {
         private String message;
 
         public ResponseMessage(String message) {

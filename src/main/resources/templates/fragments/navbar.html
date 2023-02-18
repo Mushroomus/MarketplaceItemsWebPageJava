@@ -34,7 +34,7 @@
 
         <li class="nav-item ms-auto" sec:authorize="isAuthenticated()">
           <a class="navbar-brand"  th:href="@{/logout}">
-            <span class="badge rounded-pill bg-dark" sec:authorize="isAuthenticated()" sec:authentication="name"></span> Logout
+            <span class="badge rounded-pill bg-dark" sec:authorize="isAuthenticated()" sec:authentication="name" id="usernameNavbar"></span> Logout
           </a>
         </li>
 

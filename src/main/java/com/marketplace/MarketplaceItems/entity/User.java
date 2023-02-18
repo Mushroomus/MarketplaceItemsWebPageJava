@@ -1,9 +1,8 @@
 package com.marketplace.MarketplaceItems.entity;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -26,6 +25,17 @@ public class User {
     @Column(name="date")
     private LocalDateTime date;
 
+
+    @OneToMany(mappedBy = "user")
+    private List<ItemList> itemList;
+
+    public List<ItemList> getUserItemList() {
+        return itemList;
+    }
+
+    public void setUserItemList(List<ItemList> itemList) {
+        this.itemList = itemList;
+    }
 
     public int getId() {
         return id;

@@ -137,7 +137,43 @@ $(document).ready(function() {
                 currentPage = 0;
                 fetchList();
             }
-        })
+        });
+
+        $("#saveList").click(function() {
+
+                var username = $("#usernameNavbar").text();
+                var listName = $("#inputName").val();
+
+                var itemSku = [];
+
+                $('#list2 li').each(function() {
+                    var sku = $(this).find('.details-item').attr('data-sku');
+                    if (sku) {
+                        itemSku.push(sku);
+                    }
+                });
+
+                console.log(username);
+                console.log(listName);
+                console.log(itemSku);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/lists/create",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        username: username,
+                        itemSku: itemSku,
+                        listName: listName
+                    }),
+                    success: function() {
+                        alert("List created successfully");
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error creating list: " + xhr.responseText);
+                    }
+                });
+        });
 
           $(".list-group").sortable({
             connectWith: ".list-group",
