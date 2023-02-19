@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Service
 public interface UserService {
 
+    public User getCurrentUser();
+
     public Page<User> findAll(Pageable pageable);
 
     public void saveUser(User user);

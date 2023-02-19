@@ -115,9 +115,14 @@ function updatePagination(direction) {
       fetchList();
 }
 
-fetchList();
+// fetchList();
 
 $(document).ready(function() {
+
+        if (window.location.href.indexOf('/lists/create-list') !== -1) {
+            fetchList();
+          }
+
 
         $("#sideFilter").click(function() {
             filter = true;

@@ -196,31 +196,4 @@ public class ItemController {
         }
         return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
-
-    @GetMapping("/create-list")
-    public String createTable() {
-
-        return "items/create-list-items";
-    }
-
-    @GetMapping("/fetch-list")
-    public ResponseEntity<PagedModel<Item>> fetchList(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                      @RequestParam(value = "size", defaultValue = "5") int size,
-                                                      @RequestParam(defaultValue="") String search,
-                                                      @RequestParam(defaultValue = "") String craftable,
-                                                      @RequestParam(defaultValue = "") List<String> classes,
-                                                      @RequestParam(defaultValue = "") List<String> qualities,
-                                                      @RequestParam(defaultValue = "") List<String> types)
-    {
-        Page<Item> items;
-        Pageable pageable = PageRequest.of(page, 5);
-
-        items = itemService.findAllFilters(pageable, search, craftable, classes, qualities, types);
-
-        PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
-
-        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
-    }
-
-
 }

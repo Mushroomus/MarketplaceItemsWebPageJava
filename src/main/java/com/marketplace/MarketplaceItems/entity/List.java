@@ -30,6 +30,10 @@ public class List {
         this.itemList = itemList;
     }
 
+    public int getItemCount() {
+        return itemList.size();
+    }
+
 
     public Long getId() {
         return id;

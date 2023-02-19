@@ -25,9 +25,18 @@
           <a class="navbar-brand" href="#" th:href="@{/items/list}">Items</a>
         </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
-          <a class="navbar-brand" href="#" th:href="@{/items/create-list}">Lists</a>
+
+        <li class="nav-item dropdown" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Lists
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#" th:href="@{/lists/show}">Show Lists</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" th:href="@{/lists/create-list}">Create List</a></li>
+          </ul>
         </li>
+
       </ul>
 
       <ul class="navbar-nav ms-auto" style="margin-right: 10px;">

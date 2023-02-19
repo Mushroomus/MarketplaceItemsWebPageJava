@@ -8,20 +8,31 @@ import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.UserService;
 import com.marketplace.MarketplaceItems.service.ListService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller
 @RequestMapping("/lists")
 public class ItemListController {
+
+    @Autowired
+    private PagedResourcesAssembler<Item> assembler;
 
     private ItemService itemService;
     private UserService userService;
@@ -71,9 +82,30 @@ public class ItemListController {
         }
     }
 
+
+    @GetMapping("/show")
+    public String showLists(Model theModel) {
+        User user = userService.getCurrentUser();
+        java.util.List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
+
+        System.out.println(listInfo.size());
+
+        theModel.addAttribute("listInfo", listInfo);
+
+
+        return "lists/show-list-items";
+    }
+
+    @GetMapping("/create-list")
+    public String createTable() {
+
+        return "lists/create-list-items";
+    }
+
     @PostMapping("/create")
     @Transactional
-    public ResponseEntity<UserController.ResponseMessage> createList(@RequestBody CreateListRequest request) {
+    public ResponseEntity<UserController.ResponseMessage>
+    createList(@RequestBody CreateListRequest request) {
 
         String username = request.getUsername();
         java.util.List<String> itemSku = request.getItemSku();
@@ -101,14 +133,36 @@ public class ItemListController {
                 return new ResponseEntity<>(new UserController.ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
             }
 
-            ItemList itemList = new ItemList();
-            itemList.setUser(user);
-            itemList.setItem(item);
-            itemList.setList(list);
-
+            ItemList itemList = new ItemList(item,user,list);
             itemListService.saveItemList(itemList);
         }
 
         return new ResponseEntity<>(new UserController.ResponseMessage("List was created"), HttpStatus.CREATED);
+    }
+
+
+
+    @GetMapping(value= "/fetch-list")
+    public ResponseEntity<PagedModel<Item>>
+    fetchList(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                      @RequestParam(value = "size", defaultValue = "5") int size,
+                                                      @RequestParam(defaultValue="") String search,
+                                                      @RequestParam(defaultValue = "") String craftable,
+                                                      @RequestParam(defaultValue = "") java.util.List<String> classes,
+                                                      @RequestParam(defaultValue = "") java.util.List<String> qualities,
+                                                      @RequestParam(defaultValue = "") java.util.List<String> types)
+    {
+
+        Page<Item> items;
+        Pageable pageable = PageRequest.of(page, 5);
+
+        items = itemService.findAllFilters(pageable, search, craftable, classes, qualities, types);
+
+        PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
+
+        System.out.println("Paged Model " + pagedModel);
+
+        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+
     }
 }

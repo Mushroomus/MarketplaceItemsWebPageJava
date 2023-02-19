@@ -22,6 +22,17 @@ public class ItemList {
     @JoinColumn(name = "id_list")
     private List list;
 
+
+    public ItemList() {
+
+    }
+
+    public ItemList(Item item, User user, List list) {
+        this.item = item;
+        this.user = user;
+        this.list = list;
+    }
+
     public Long getId() {
         return id;
     }

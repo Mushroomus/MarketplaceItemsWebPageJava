@@ -1,6 +1,11 @@
 package com.marketplace.MarketplaceItems.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,18 +34,19 @@ public class Item {
     @Column(name="image")
     private String image;
 
-
     @OneToMany(mappedBy = "item")
-    private List<ItemList> itemList;
+    private List<ItemList> itemList = new ArrayList<>();
 
+
+    @JsonIgnore
     public List<ItemList> getUserItemList() {
         return itemList;
     }
 
+    @JsonIgnore
     public void setUserItemList(List<ItemList> itemList) {
         this.itemList = itemList;
     }
-
 
     public Item(String sku, String name, boolean craftable, String classItem, String quality, String type, String image) {
         this.sku = sku;
