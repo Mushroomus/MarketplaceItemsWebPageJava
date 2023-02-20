@@ -15,6 +15,15 @@ public class ItemListServiceImpl implements ItemListService{
         itemListDAO = theItemListDAO;
     }
 
+    @Override
+    public java.util.List<ItemList> findByListId(Long listId) {
+        return itemListDAO.findByListId(listId);
+    }
+
+    @Override
+    public java.util.List<ItemList> findByUsernameAndListId(int userId, Long listId) {
+        return itemListDAO.findByUserIdAndListId(userId, listId);
+    }
 
     @Override
     public void saveItemList(ItemList theItemList) {

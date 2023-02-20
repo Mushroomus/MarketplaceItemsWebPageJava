@@ -5,8 +5,11 @@ import com.marketplace.MarketplaceItems.entity.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ListServiceImpl implements ListService {
+
 
     private ListDAO listDAO;
 
@@ -14,6 +17,13 @@ public class ListServiceImpl implements ListService {
     public ListServiceImpl(ListDAO theListDAO) {
         listDAO = theListDAO;
     }
+
+    @Override
+    public List findListByName(String name) { return listDAO.findListByName(name); }
+
+    @Override
+    public void deleteList(List list) { listDAO.delete(list); }
+
 
     @Override
     public void saveList(List theList) { listDAO.save(theList); };

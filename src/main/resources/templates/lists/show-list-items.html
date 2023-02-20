@@ -40,18 +40,18 @@
             <span th:text="${#temporals.format(list.date, 'dd.MM.YYYY HH:MM')}"></span>
           </div>
 
-          <form method="POST" class="mx-1">
-            <input type="hidden" name="listId" />
+          <form method="GET" class="mx-1">
+            <input type="hidden"  />
             <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i></button>
           </form>
 
-          <form method="POST" class="mx-1">
-            <input type="hidden" name="listId" />
+          <form method="GET" th:action="@{edit}" class="mx-1">
+            <input type="hidden" th:value="${list.name}" name="listName" />
             <button type="submit" class="btn btn-warning"><i class="fas fa-pencil-alt"></i></button>
           </form>
 
-          <form method="POST" class="mx-1">
-            <input type="hidden" name="listId" />
+          <form method="GET" th:action="@{delete}" class="mx-1">
+            <input type="hidden" th:value="${list.name}" name="listName" />
             <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
           </form>
 

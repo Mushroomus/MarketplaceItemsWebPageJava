@@ -1,5 +1,6 @@
 package com.marketplace.MarketplaceItems.controller;
 
+import com.marketplace.MarketplaceItems.dao.ItemListDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.User;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -40,13 +43,16 @@ public class ItemListController {
     private ListService listService;
 
     private ItemListService itemListService;
+    private final ItemListDAO itemListDAO;
 
-    public ItemListController(ItemService theItemService, UserService theUserService, ListService theListService, ItemListService theItemListService) {
+    public ItemListController(ItemService theItemService, UserService theUserService, ListService theListService, ItemListService theItemListService,
+                              ItemListDAO itemListDAO) {
 
         itemService = theItemService;
         userService = theUserService;
         listService = theListService;
         itemListService = theItemListService;
+        this.itemListDAO = itemListDAO;
     }
 
 
@@ -88,12 +94,25 @@ public class ItemListController {
         User user = userService.getCurrentUser();
         java.util.List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
 
-        System.out.println(listInfo.size());
-
         theModel.addAttribute("listInfo", listInfo);
-
-
         return "lists/show-list-items";
+    }
+
+    @GetMapping("/delete")
+    public String deleteList(@RequestParam(value = "listName") String name) {
+
+        List foundList = listService.findListByName(name);
+        System.out.println(foundList.getName());
+
+        if ( foundList != null ) {
+
+            java.util.List<ItemList> itemsList = itemListService.findByListId(foundList.getId());
+
+            itemListDAO.deleteAll(itemsList);
+            listService.deleteList(foundList);
+        }
+
+        return "redirect:/lists/show";
     }
 
     @GetMapping("/create-list")
@@ -112,8 +131,6 @@ public class ItemListController {
         String listName = request.getListName();
 
         User user = userService.findByUsername(username);
-
-        System.out.println(user);
 
         if (user == null) {
             return new ResponseEntity<>(new UserController.ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
@@ -165,4 +182,31 @@ public class ItemListController {
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 
     }
+
+    @GetMapping(value= "/edit")
+    public String editList(@RequestParam(value="listName") String name, Model theModel)
+    {
+        theModel.addAttribute("listName", name);
+        return "lists/edit-list-items";
+    }
+
+
+    @GetMapping(value= "/fetch-right-list")
+    public ResponseEntity<java.util.List<Item>>
+    fetchRightList(@RequestParam(value="listName") String name)
+    {
+        User user = userService.getCurrentUser();
+        List list = listService.findListByName(name);
+
+        java.util.List<ItemList> results = itemListService.findByUsernameAndListId(user.getId(), list.getId());
+
+        java.util.List<Item> items = new ArrayList<>();
+
+        for(ItemList record : results) {
+            items.add( record.getItem() );
+        }
+
+        return new ResponseEntity<>(items, HttpStatus.OK);
+    }
+
 }

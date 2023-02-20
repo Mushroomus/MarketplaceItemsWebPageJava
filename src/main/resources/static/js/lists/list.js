@@ -115,13 +115,65 @@ function updatePagination(direction) {
       fetchList();
 }
 
-// fetchList();
+
+function fetchRightList() {
+    return new Promise(function(resolve, reject) {
+                $.ajax({
+                  type: "GET",
+                  url: "fetch-right-list?listName=" + $("#listName").val(),
+                  success: function(response) {
+                    // Clear current items in the list
+                    $('#list2').empty();
+
+                    if(response != null) {
+                        $('#empty-message').hide();
+
+                        $.each(response, function(i, item) {
+
+                            console.log(item.name);
+
+                          var listItem = $('<li class="list-group-item">' +
+                                          '<div class="row">' +
+                                              '<div class="col-9">' +
+
+                                                    '<span class="item-text">' + item.name + '</span>' +
+
+                                              '</div>' +
+                                              '<div class="col-3">' +
+                                                  '<button class="btn btn-danger move-item" style="margin-right: 3px"><i class="fas fa-arrow-left"></i></button>' +
+                                                  '<button class="btn btn-primary details-item" data-sku="' + item.sku + '" data-class-item="' + item.classItem + '" data-craftable="' + item.craftable + '" data-quality="' + item.quality + '" data-type="' + item.type + '" data-bs-toggle="popover" data-bs-placement="left"><i class="fas fa-info-circle"></i> Details</button>' +
+                                              '</div>' +
+                                          '</div>' +
+                                        '</li>');
+
+                          $('#list2').append(listItem);
+                        });
+                    } else {
+                        $('#empty-message').show();
+                    }
+                    resolve();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error fetching list: " + textStatus + ", " + errorThrown);
+                    reject();
+                  }
+              });
+    });
+}
+
 
 $(document).ready(function() {
 
         if (window.location.href.indexOf('/lists/create-list') !== -1) {
             fetchList();
-          }
+        } else if (window.location.href.indexOf('/lists/edit') !== -1) {
+            fetchRightList().then(function() {
+                fetchList();
+            })
+            .catch(function() {
+
+            })
+        }
 
 
         $("#sideFilter").click(function() {
