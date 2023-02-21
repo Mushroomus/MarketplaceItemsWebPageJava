@@ -30,9 +30,9 @@
 <div class="container-fluid">
     <div class="row">
 
-      <input id="listName" hidden type="text" th:value="${listName}">
-
       <div class="col-2 d-md-block sidebar sidebar-container">
+
+        <input id="listName" hidden type="text" th:value="${listName}">
 
         <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
           <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
@@ -229,8 +229,8 @@
             <i class="fas fa-arrow-right"></i>
           </a>
 
-            <button th:if="${listName != null}" class="btn btn-primary" id="editList">Edit</button>
-            <button th:if="${listName == null}" class="btn btn-primary" id="saveList">Save</button>
+          <button th:if="${listName != null}" class="btn btn-primary" id="editList">Edit</button>
+          <button th:if="${listName == null}" class="btn btn-primary" id="saveList">Save</button>
 
         </nav>
 

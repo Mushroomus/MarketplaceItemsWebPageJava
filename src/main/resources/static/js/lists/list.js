@@ -196,6 +196,36 @@ $(document).ready(function() {
             }
         });
 
+        $("#editList").click(function() {
+
+            var listName = $("#listName").val();
+            var itemSku = [];
+
+            $('#list2 li').each(function() {
+                var sku = $(this).find('.details-item').attr('data-sku');
+                if (sku) {
+                    itemSku.push(sku);
+                }
+             });
+
+             $.ajax({
+                    type: "POST",
+                    url: "/lists/saveEdit",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        itemSku: itemSku,
+                        listName: listName
+                    }),
+                    success: function() {
+                        // move to show-list
+                        alert("List was edited");
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error while editing list: " + xhr.responseText);
+                    }
+                });
+        })
+
         $("#saveList").click(function() {
 
                 var username = $("#usernameNavbar").text();
@@ -210,9 +240,6 @@ $(document).ready(function() {
                     }
                 });
 
-                console.log(username);
-                console.log(listName);
-                console.log(itemSku);
 
                 $.ajax({
                     type: "POST",

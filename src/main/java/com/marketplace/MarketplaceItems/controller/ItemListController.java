@@ -190,6 +190,58 @@ public class ItemListController {
         return "lists/edit-list-items";
     }
 
+    public static class EditListRequest {
+
+        private java.util.List<String> itemSku;
+        private String listName;
+
+        public EditListRequest() { };
+
+
+        public java.util.List<String> getItemSku() {
+            return itemSku;
+        }
+
+        public void setItemSku(java.util.List<String> itemSku) {
+            this.itemSku = itemSku;
+        }
+
+        public String getListName() {
+            return listName;
+        }
+
+        public void setListName(String listName) {
+            this.listName = listName;
+        }
+    }
+
+    @PostMapping(value="/saveEdit")
+    public ResponseEntity<UserController.ResponseMessage> saveEditList(@RequestBody EditListRequest request)
+    {
+        try {
+            User user = userService.getCurrentUser();
+            List list = listService.findListByName(request.getListName());
+            java.util.List<ItemList> items = itemListService.findByUsernameAndListId(user.getId(), list.getId());
+
+            itemListDAO.deleteAll(items);
+
+            ItemList itemList;
+            Item itemToAdd;
+
+            for(String itemSku : request.getItemSku()) {
+
+                itemToAdd = itemService.findItemBySku(itemSku);
+                itemList = new ItemList(itemToAdd, user,list);
+                itemListService.saveItemList(itemList);
+            }
+        } catch(Exception e) {
+            return new ResponseEntity<>(new UserController.ResponseMessage("Something went wrong"), HttpStatus.valueOf(404));
+        }
+
+        return new ResponseEntity<>(new UserController.ResponseMessage("List was edited"), HttpStatus.valueOf(200));
+    }
+
+
 
     @GetMapping(value= "/fetch-right-list")
     public ResponseEntity<java.util.List<Item>>
