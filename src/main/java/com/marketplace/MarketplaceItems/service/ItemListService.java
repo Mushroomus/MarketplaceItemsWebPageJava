@@ -11,6 +11,8 @@ public interface ItemListService {
 
     public java.util.List<ItemList> findByUsernameAndListId(int userId, Long listId);
 
+    public void deleteAllByUserId(int id_user);
+
     public void saveItemList(ItemList theItemList);
 
 }

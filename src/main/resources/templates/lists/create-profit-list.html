@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
+    <!-- Include Bootstrap JavaScript file -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+    <table id="profitTable" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Sku</th>
+            <th>Name</th>
+            <th>Marketplace</th>
+            <th>Backpack</th>
+            <th>Profit</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="item : ${resultItems}">
+
+            <td th:text="${item.sku}" />
+            <td th:text="${item.name}" />
+            <td th:text="${item.marketplacePrice}" />
+            <td th:text="${item.backpackPrice}" />
+            <td th:text="${item.calculatedProfit}" />
+
+        </tr>
+        </tbody>
+    </table>
+
+    <button id="generatePdf">Generate PDF</button>
+</div>
+
+<script>
+    console.log(typeof jsPDF);
+
+    document.getElementById("generatePdf").addEventListener("click", function() {
+
+        window.jsPDF = window.jspdf.jsPDF;
+
+        var doc = new jsPDF();
+        doc.autoTable({html: "#profitTable"});
+        doc.save("table.pdf");
+    });
+</script>
+
+
+</body>
+</html>

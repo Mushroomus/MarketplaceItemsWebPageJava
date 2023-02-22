@@ -1,4 +1,17 @@
 $(document).ready(function() {
+
+    $('#addModal').on('show.bs.modal', function (event) {
+        var modal = $(this);
+        modal.find('.modal-body #userUsername').val('');
+        modal.find('.modal-body #userPassword').val('');
+        modal.find('.modal-body #userPasswordRepeat').val('');
+        modal.find('.modal-body #userRole').val('ADMIN');
+
+        $('#userUsername').trigger('input');
+        $('#userPassword').trigger('input');
+        $('#userPasswordRepeat').trigger('input');
+    });
+
                $('#userUsername').on('input', function() {
 
                    var username = $(this).val();
@@ -100,12 +113,12 @@ $(document).ready(function() {
                               $('#userPassword').trigger('input');
                         }
                         else if (xhr.status == 400)
-                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
+                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
                         else
-                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
+                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
                         },
                          error: function(xhr, status, error) {
-                            $("#modalEditMessage").text("Error occured while adding user").removeClass("alert alert-success").addClass("alert alert-danger").show();
+                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
                          }
                     });
 

@@ -48,6 +48,9 @@
 <br>
 
 <div class="container-fluid">
+
+    <div id="alertMessage" role="alert" ></div>
+
     <div class="row">
         <div class="col-3 d-md-block sidebar sidebar-container">
 
@@ -63,25 +66,27 @@
                     </select>
                 </div><br>
 
-                <div class="form-group">
-                    <label for="datetimepickerInputStartDate" class="form-label">Start Date</label>
-                    <div class="input-group" id="datetimepickerStartDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
-                        <input id="datetimepickerInputStartDate" type="text" class="form-control" data-td-target="#datetimepickerStartDate"/>
-                        <span class="input-group-text" data-td-target="#datetimepickerStartDate" data-td-toggle="datetimepicker">
-                            <span class="fas fa-calendar"></span>
-                         </span>
+                <form autocomplete="off">
+                    <div class="form-group">
+                        <label for="datetimepickerInputStartDate" class="form-label">Start Date</label>
+                        <div class="input-group" id="datetimepickerStartDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                            <input id="datetimepickerInputStartDate" type="text" class="form-control" data-td-target="#datetimepickerStartDate"/>
+                            <span class="input-group-text" data-td-target="#datetimepickerStartDate" data-td-toggle="datetimepicker">
+                                <span class="fas fa-calendar"></span>
+                             </span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="datetimepickerInputEndDate" class="form-label">End Date</label>
-                    <div class="input-group" id="datetimepickerEndDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
-                        <input id="datetimepickerInputEndDate" type="text" class="form-control" data-td-target="#datetimepickerEndDate"/>
-                        <span class="input-group-text" data-td-target="#datetimepickerEndDate" data-td-toggle="datetimepicker">
-                            <span class="fas fa-calendar"></span>
-                         </span>
+                    <div class="form-group">
+                        <label for="datetimepickerInputEndDate" class="form-label">End Date</label>
+                        <div class="input-group" id="datetimepickerEndDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                            <input id="datetimepickerInputEndDate" type="text" class="form-control" data-td-target="#datetimepickerEndDate"/>
+                            <span class="input-group-text" data-td-target="#datetimepickerEndDate" data-td-toggle="datetimepicker">
+                                <span class="fas fa-calendar"></span>
+                             </span>
+                        </div>
                     </div>
-                </div><br>
+                </form><br>
 
                 <div class="form-group">
                     <button type="button" class="btn btn-primary" onclick="filterButton()">Filter</button>
@@ -108,15 +113,16 @@
 
                         <button class="btn btn-danger" id="clearFilters" onclick="clearFilters()"><i class="fa fa-filter" ></i></button>
 
+                        <form autocomplete="off">
+                            <div class="d-flex align-items-center">
+                                <input placeholder="Search by Username" type="text" id="searchInput" class="form-control"/>
 
-                        <div class="form-outline">
-                            <input placeholder="Search by Username" type="text" id="searchInput" class="form-control" />
-                        </div>
 
-                        <button type="button" class="btn btn-primary" onclick="searchButton()">
-                            <i class="fas fa-search"></i>
-                        </button>
-
+                                <button type="button" class="btn btn-primary" onclick="searchButton()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
                 </div>
 
                 <br>

@@ -23,7 +23,7 @@
 
  $(document).ready(function() {
 
-    $('#modalUsername').on('input', function() {
+     $('#modalUsername').on('input', function() {
 
        var username = $(this).val();
 
@@ -86,7 +86,7 @@
 
 
 
-    $('#modalUsername').trigger('input');
+             $('#modalUsername').trigger('input');
              $("#passwordField").hide();
              $("#repeatPasswordField").hide();
              $("#alertMessage").hide();
@@ -102,9 +102,13 @@
                              var modal = $(this);
 
                              modal.find('.modal-body #modalUserId').val(userId);
-                             modal.find('.modal-body #modalUserName').val(username);
+                             modal.find('.modal-body #modalUsername').val(username);
                              modal.find('.modal-body #modalUserRole').val(role);
                              modal.find('.modal-body #modalUserPassword').val(password);
+
+                             modal.find('.modal-body #changePasswordCheckbox').prop('checked', false);
+                             $('#passwordField').slideUp();
+                             $('#repeatPasswordField').slideUp();
 
                              modal.find('.modal-body #modalPassword').val('');
                              modal.find('.modal-body #modalPasswordRepeat').val('');
@@ -190,6 +194,13 @@
                                success: function(response) {
                                     $('#editModal').modal('hide');
                                     refreshTable(currentPage);
+
+                                   var alertMessage = parent.$('#alertMessage');
+                                   alertMessage.text('User was edited').addClass('alert alert-success').show();
+
+                                   setTimeout(function() {
+                                       alertMessage.fadeOut('slow');
+                                   }, 2000);
                                },
                                error: function(error) {
                                  console.log(error);

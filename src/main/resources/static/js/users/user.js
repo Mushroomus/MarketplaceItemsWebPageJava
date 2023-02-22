@@ -125,7 +125,6 @@
                });
              }
 
-
              function updateTable(data) {
                // Clear the current table
                $("table tbody").empty();
@@ -198,6 +197,9 @@
              }
 
  $(document).ready(function() {
+
+     $('#searchInput').val('');
+
      window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
            //put your config here
          });

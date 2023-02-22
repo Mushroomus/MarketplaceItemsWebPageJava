@@ -1,7 +1,9 @@
 package com.marketplace.MarketplaceItems.controller;
 
 
+import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,9 +29,12 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private ItemListService itemListService;
 
-    public UserController(UserService theUserService) {
+    public UserController(UserService theUserService, ItemListService theItemListService) {
+
         userService = theUserService;
+        itemListService = theItemListService;
     }
 
     @GetMapping("/list")
@@ -41,17 +47,19 @@ public class UserController {
         session.setAttribute("messageType", typeMessage);
     }
 
-    private String validateUser(User user, String changePassword) {
+    private String validateUser(User user, String changePassword, boolean ifUpdate) {
 
         String username = user.getUsername();
 
         if(username == null || username.equals(""))
             return "Username is empty";
 
+        if(ifUpdate != true) {
 
-        User existingUser = userService.findByUsername(username);
-        if (existingUser != null)
-            return "Username already exists";
+            User existingUser = userService.findByUsername(username);
+            if (existingUser != null)
+                return "Username already exists";
+        }
 
         String password;
 
@@ -87,7 +95,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<ResponseMessage> addItem(@RequestBody User user) {
 
-        String resultValidation = validateUser(user, null);
+        String resultValidation = validateUser(user, null, false);
 
         if (!resultValidation.equals("valid"))
             return new ResponseEntity<>(new ResponseMessage(resultValidation), HttpStatus.BAD_REQUEST);
@@ -174,8 +182,10 @@ public class UserController {
 
 
     @GetMapping("/delete")
+    @Transactional
     public ResponseEntity<ResponseMessage> delete(@RequestParam int id) {
         try {
+            itemListService.deleteAllByUserId(id);
             userService.deleteUserById(id);
             return new ResponseEntity<>(new ResponseMessage("User was deleted"), HttpStatus.OK);
         } catch (Exception e) {
@@ -221,7 +231,7 @@ public class UserController {
         System.out.println(user);
         System.out.println(changePassword);
 
-        String resultValidation = validateUser(user, changePassword);
+        String resultValidation = validateUser(user, changePassword, true);
 
         if (!resultValidation.equals("valid")) {
             return new ResponseEntity<>(resultValidation, HttpStatus.BAD_REQUEST);
@@ -239,31 +249,4 @@ public class UserController {
             return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /*
-    @PostMapping("/update")
-    public String update(@ModelAttribute("user") User user, @ModelAttribute("changePassword") String changePassword, HttpSession session, @RequestParam(defaultValue = "0") int page) {
-
-        String resultValidation = validateUser(user,session,page, changePassword);
-
-        if(!resultValidation.equals("valid"))
-            return resultValidation;
-
-        user.setDate(LocalDateTime. now());
-
-        if(changePassword != null && !changePassword.equals(""))
-            user.setPassword( BCrypt.hashpw(changePassword, BCrypt.gensalt(10)) );
-
-        System.out.println("After if " + user.getPassword());
-
-        try {
-            userService.updateUser(user);
-            setMessageAttributes(session, "User was updated", "success");
-        } catch (Exception e) {
-            setMessageAttributes(session, "Error occured while updating an user", "danger");
-        }
-        return "redirect:list?page=" + page;
-    }
-     */
-
 }

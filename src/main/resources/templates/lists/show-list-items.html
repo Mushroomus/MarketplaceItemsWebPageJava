@@ -40,8 +40,8 @@
             <span th:text="${#temporals.format(list.date, 'dd.MM.YYYY HH:MM')}"></span>
           </div>
 
-          <form method="GET" class="mx-1">
-            <input type="hidden"  />
+          <form method="POST" th:action="@{price-items}" class="mx-1">
+            <input type="hidden" th:value="${list.name}" name="listName" />
             <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i></button>
           </form>
 

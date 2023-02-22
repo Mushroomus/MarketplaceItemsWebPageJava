@@ -30,4 +30,7 @@ public class ItemListServiceImpl implements ItemListService{
         itemListDAO.save(theItemList);
     }
 
+    @Override
+    public void deleteAllByUserId(int id_user) { itemListDAO.deleteAllByUserId(id_user); }
+
 }

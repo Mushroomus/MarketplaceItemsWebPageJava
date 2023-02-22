@@ -75,7 +75,7 @@ function fetchList() {
                                   '</div>' +
                                   '<div class="col-3">' +
                                       '<button class="btn btn-success move-item" data-page="' + response.page.number + '" style="margin-right: 3px"><i class="fas fa-arrow-right"></i></button>' +
-                                      '<button class="btn btn-primary details-item" data-sku="' + item.sku + '" data-class-item="' + item.classItem + '" data-craftable="' + item.craftable + '" data-quality="' + item.quality + '" data-type="' + item.type + '" data-bs-toggle="popover" data-bs-placement="left"><i class="fas fa-info-circle"></i> Details</button>' +
+                                      '<button class="btn btn-primary details-item" data-sku="' + item.sku + '" data-class-item="' + item.classItem + '" data-craftable="' + item.craftable + '" data-quality="' + item.quality + '" data-type="' + item.type + '" data-bs-toggle="popover" data-bs-placement="left"><i class="fas fa-info-circle"></i></button>' +
                                   '</div>' +
                               '</div>' +
                             '</li>');
@@ -141,7 +141,7 @@ function fetchRightList() {
                                               '</div>' +
                                               '<div class="col-3">' +
                                                   '<button class="btn btn-danger move-item" style="margin-right: 3px"><i class="fas fa-arrow-left"></i></button>' +
-                                                  '<button class="btn btn-primary details-item" data-sku="' + item.sku + '" data-class-item="' + item.classItem + '" data-craftable="' + item.craftable + '" data-quality="' + item.quality + '" data-type="' + item.type + '" data-bs-toggle="popover" data-bs-placement="left"><i class="fas fa-info-circle"></i> Details</button>' +
+                                                  '<button class="btn btn-primary details-item" data-sku="' + item.sku + '" data-class-item="' + item.classItem + '" data-craftable="' + item.craftable + '" data-quality="' + item.quality + '" data-type="' + item.type + '" data-bs-toggle="popover" data-bs-placement="left"><i class="fas fa-info-circle"></i></button>' +
                                               '</div>' +
                                           '</div>' +
                                         '</li>');
