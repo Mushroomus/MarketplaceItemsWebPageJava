@@ -27,6 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -103,6 +104,14 @@ public class ItemListController {
         User user = userService.getCurrentUser();
         java.util.List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
 
+        java.util.List<ItemList> lists = itemListService.findByUserId(user.getId());
+
+        if(lists.size() >= 3) {
+            theModel.addAttribute("disableCreateButton", true);
+        } else {
+            theModel.addAttribute("disableCreateButton", false);
+        }
+
         theModel.addAttribute("listInfo", listInfo);
         return "lists/show-list-items";
     }
@@ -125,7 +134,15 @@ public class ItemListController {
     }
 
     @GetMapping("/create-list")
-    public String createTable() {
+    public String createTable(Model theModel) {
+
+        User user = userService.getCurrentUser();
+        java.util.List<ItemList> lists = itemListService.findByUserId(user.getId());
+
+        java.util.List<String> listNames = lists.stream().map(x-> x.getList().getName()).collect(Collectors.toList());
+        String listNamesStr = String.join(",", listNames).replace("[", "").replace("]", "").replace("\"", "");
+
+        theModel.addAttribute("listNames", listNamesStr);
 
         return "lists/create-list-items";
     }

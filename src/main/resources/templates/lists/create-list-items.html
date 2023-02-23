@@ -20,6 +20,8 @@
     <script type="text/javascript" th:src="@{/js/global.js}"></script>
     <script type="text/javascript" th:src="@{/js/lists/list.js}"></script>
 
+    <script type="text/javascript" th:src="@{/js/lists/create.js}"></script>
+
     <link rel="stylesheet" th:href="@{/css/item.css}">
 </head>
 <body>
@@ -29,6 +31,8 @@
 
 <div class="container-fluid">
     <div class="row">
+
+        <div hidden id="list-names" th:text="${listNames}"></div>
 
         <div class="col-2 d-md-block sidebar sidebar-container">
 
@@ -206,7 +210,7 @@
                     </button>
                 </div>
 
-            </div><br>
+            </div><br><br>
 
 
             <h2>All Items</h2>
@@ -227,19 +231,19 @@
                 <a id="next-page" class="page-link d-inline-block arrow-right" href="#" onclick="updatePagination('next')">
                     <i class="fas fa-arrow-right"></i>
                 </a>
-                <button class="btn btn-primary" id="saveList">Save</button>
+                <button class="btn btn-primary" id="saveList" disabled>Save</button>
             </nav>
 
         </div>
 
         <div class="col-sm-5">
 
-            <form class="was-validated">
+            <form>
                 <div>
-                    <input type="text" class="form-control" id="inputName" placeholder="Enter List Name" required>
+                    <input type="text" class="form-control is-invalid" id="inputName" placeholder="Enter List Name">
                 </div>
             </form>
-            <br>
+            <br><br>
             <h2>Selected Items</h2>
             <ul id="list2" class="list-group">
             </ul>

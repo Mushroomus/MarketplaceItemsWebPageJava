@@ -164,7 +164,13 @@ function fetchRightList() {
 
 $(document).ready(function() {
 
-        if (window.location.href.indexOf('/lists/create-list') !== -1) {
+    $(".price-items-button").click(function() {
+        $('#spinnerHide').prop('hidden', true);
+        $('#spinner').prop('hidden', false);
+    });
+
+
+    if (window.location.href.indexOf('/lists/create-list') !== -1) {
             fetchList();
         } else if (window.location.href.indexOf('/lists/edit') !== -1) {
             fetchRightList().then(function() {
@@ -270,14 +276,9 @@ $(document).ready(function() {
 
                            var dataPage = item.find(".move-item").data('page');
 
-                           // if(dataPage == currentPage) {
                               item.appendTo("#list1");
                               button.removeClass("btn-danger").addClass("btn-success");
                               button.html("<i class='fas fa-arrow-right'></i>");
-                            //} else {
-                              //item.remove();
-                            //}
-
 
                         } else {
                           button.removeClass("btn-success").addClass("btn-danger");
@@ -285,6 +286,7 @@ $(document).ready(function() {
                         }
                     }
           }).disableSelection();
+
 
           $(document).on("click", ".move-item", function() {
             var item = $(this).closest(".list-group-item");

@@ -15,4 +15,6 @@ public interface ItemListService {
 
     public void saveItemList(ItemList theItemList);
 
+    public java.util.List<ItemList> findByUserId(int id_user);
+
 }

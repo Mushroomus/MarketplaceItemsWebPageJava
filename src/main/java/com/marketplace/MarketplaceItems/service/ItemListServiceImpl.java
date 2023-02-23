@@ -33,4 +33,7 @@ public class ItemListServiceImpl implements ItemListService{
     @Override
     public void deleteAllByUserId(int id_user) { itemListDAO.deleteAllByUserId(id_user); }
 
+    @Override
+    public java.util.List<ItemList> findByUserId(int id_user) { return itemListDAO.findByUserId(id_user); }
+
 }

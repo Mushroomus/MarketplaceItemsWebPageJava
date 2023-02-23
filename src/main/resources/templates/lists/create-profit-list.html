@@ -22,7 +22,19 @@
 </head>
 <body>
 
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+<br>
+
 <div class="container">
+
+    <div class="d-flex">
+        <button id="generatePdf" class="btn btn-primary" style="margin-right: 5px;">Generate PDF</button>
+
+        <form method="GET" th:action="@{show}">
+            <button class="btn btn-danger">Back to Lists</button>
+        </form>
+    </div><br>
+
     <table id="profitTable" class="table table-bordered">
         <thead>
         <tr>
@@ -47,19 +59,31 @@
         </tbody>
     </table>
 
-    <button id="generatePdf">Generate PDF</button>
 </div>
 
 <script>
-    console.log(typeof jsPDF);
-
     document.getElementById("generatePdf").addEventListener("click", function() {
 
         window.jsPDF = window.jspdf.jsPDF;
 
         var doc = new jsPDF();
-        doc.autoTable({html: "#profitTable"});
-        doc.save("table.pdf");
+
+        doc.setFont("helvetica");
+
+        doc.setFontSize(18);
+        doc.text("Generated Profit List", 14, 10);
+
+        var date = new Date().toLocaleDateString();
+        doc.setFontSize(14);
+        doc.text(date, 14, 18);
+
+        doc.autoTable({html: "#profitTable",
+                        startY: 20,
+                        headStyles: {
+                            fillColor: [211, 211, 211],
+                            textColor: [0, 0, 0]
+                        },});
+        doc.save("generated-table.pdf");
     });
 </script>
 

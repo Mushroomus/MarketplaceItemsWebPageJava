@@ -27,9 +27,21 @@
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 <br>
 
-<div class="container">
+<div class="d-flex justify-content-center align-items-center">
+  <div id="spinner" class="spinner-border" role="status" hidden>
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+<div class="container" id="spinnerHide">
 
     <div class="list-group">
+
+      <form method="GET" th:action="@{create-list}">
+        <button type="submit" class="btn btn-primary" th:attr="disabled=${disableCreateButton}">Create List</button><br>
+        <span th:if="${disableCreateButton}" class="text-danger">You can only create up to 3 lists</span>
+      </form><br>
 
       <th:block th:each="list : ${listInfo}">
         <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
@@ -42,7 +54,7 @@
 
           <form method="POST" th:action="@{price-items}" class="mx-1">
             <input type="hidden" th:value="${list.name}" name="listName" />
-            <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i></button>
+            <button type="submit" class="btn btn-primary price-items-button"><i class="fas fa-play"></i></button>
           </form>
 
           <form method="GET" th:action="@{edit}" class="mx-1">
