@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,13 +54,13 @@ public class ItemController {
         theModel.addAttribute("typeList", typeList);
 
         return "items/list-items";
-    };
+    }
 
 
     @GetMapping("/list-refresh")
     public ResponseEntity<PagedModel<Item>> refreshList(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "1") int size,
-                                                        @RequestParam(value = "search", required = false) String search,
+                                                        @RequestParam(defaultValue = "", required = false) String search,
                                                         @RequestParam(defaultValue = "", required = false) String craftable,
                                                         @RequestParam(defaultValue = "", required = false) List<String> classes,
                                                         @RequestParam(defaultValue = "", required = false) List<String> qualities,
@@ -69,8 +70,8 @@ public class ItemController {
         Page<Item> items;
         Pageable pageable = PageRequest.of(page, size);
 
-
         items = itemService.findAllFilters(pageable, search, craftable, classes, qualities, types);
+        System.out.println(items);
 
         PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
 
@@ -78,23 +79,17 @@ public class ItemController {
     }
 
 
-    /*
     @PostMapping("/add")
-    public String addItem(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
-                          @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
-
-        if(validationItem(item,session,false).equals("valid")) {
-            try{
-                itemService.saveItem(item);
-                setMessageAttributes(session, "Item was added", "success");
-            } catch(Exception e) {
-                setMessageAttributes(session, "Error occured while adding an item", "danger");
-            }
+    public ResponseEntity<UserController.ResponseMessage> addItem(@RequestBody Item item) {
+        try {
+            System.out.println(item);
+            itemService.saveItem(item);
+            return new ResponseEntity<>(new UserController.ResponseMessage("Item was added"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new UserController.ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
-     */
+
 
     @GetMapping("/delete")
     @Transactional

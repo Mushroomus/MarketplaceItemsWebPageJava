@@ -9,8 +9,53 @@ $(document).ready(function() {
 
         event.preventDefault();
 
-        if (addForm[0].checkValidity())
-            addForm[0].submit();
+        if (addForm[0].checkValidity()) {
+
+            var sku = $("#itemSku").val();
+            var name = $("#itemName").val();
+            var craftable = $("#itemCraftable").val();
+            var itemClass = $("#itemClass").val();
+            var quality = $("#itemQuality").val();
+            var type = $("#itemType").val();
+            var image = $("#itemImage").val();
+
+            $.ajax({
+                url: "add",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    sku: sku,
+                    name: name,
+                    craftable: craftable,
+                    classItem: itemClass,
+                    quality: quality,
+                    type: type,
+                    image: image
+                }),
+                dataType: 'json',
+                success: function(response, status, xhr) {
+                    if (xhr.status == 200) {
+
+                        $("#modalAddItemMessage").text("Item successfully added").removeClass("alert alert-danger").addClass("alert alert-success").show();
+                        refreshTable(currentPage);
+
+                    }
+                    else if (xhr.status == 400)
+                        $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                    else
+                        $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                },
+                error: function(xhr, status, error) {
+                    $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                }
+            });
+
+            setTimeout(function() {
+                $("#modalAddItemMessage").fadeOut('slow');
+            }, 5000);
+
+        }
+            //addForm[0].submit();
     });
 
    addForm.on('input', function(event) {

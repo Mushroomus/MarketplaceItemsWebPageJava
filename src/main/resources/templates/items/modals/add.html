@@ -11,32 +11,25 @@
 
             <div id="modalAddItemMessage" role="alert" ></div>
 
-            <form action="#" th:action="@{/items/add}" th:object="${item}" method="POST" id="addForm" class="was-validated" novalidate>
+            <form method="POST" id="addForm" class="was-validated" novalidate>
 
                 <div class="modal-body">
 
-                    <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
-                    <input hidden type="text" id="modalDeleteCraftable" name="craftableForm" th:value="${selectedCraftable}"/>
-                    <input hidden type="text" id="modalDeleteQualities" name="qualities" th:value="${selectedQualities}"/>
-                    <input hidden type="text" id="modalDeleteTypes" name="types" th:value="${selectedTypes}"/>
-                    <input hidden type="text" id="modalDeleteClasses" name="classes" th:value="${selectedClasses}"/>
-                    <input hidden type="text" id="modalDeleteSearch" name="search" th:value="${searchedData}"/>
-
                     <div class="form-group">
                         <label for="itemSku">Sku</label>
-                        <input type="text" class="form-control" id="itemSku" th:field="*{sku}" required>
+                        <input type="text" class="form-control" id="itemSku" required>
                         <div class="invalid-feedback">Sku can't be empty</div>
                     </div>
 
                     <div class="form-group">
                         <label for="itemName">Name</label>
-                        <input type="text" class="form-control" id="itemName" th:field="*{name}" required>
+                        <input type="text" class="form-control" id="itemName" required>
                         <div class="invalid-feedback">Name can't be empty</div>
                     </div>
 
                     <div class="form-group">
                         <label for="itemCraftable">Craftable</label>
-                        <select class="form-control" id="itemCraftable" th:field="*{craftable}">
+                        <select class="form-control" id="itemCraftable">
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
@@ -44,7 +37,7 @@
 
                     <div class="form-group">
                         <label for="itemClass">Class</label>
-                        <select class="form-control" id="itemClass" th:field="*{classItem}">
+                        <select class="form-control" id="itemClass">
                             <option value="Multi-class">Multi-class</option>
                             <option value="Scout">Scout</option>
                             <option value="Soldier">Soldier</option>
@@ -60,7 +53,7 @@
 
                     <div class="form-group">
                         <label for="itemQuality">Quality</label>
-                        <select class="form-control" id="itemQuality" th:field="*{quality}">
+                        <select class="form-control" id="itemQuality">
                             <option value="Genuine">Genuine</option>
                             <option value="Vintage">Vintage</option>
                             <option value="Unique">Unique</option>
@@ -71,7 +64,7 @@
 
                     <div class="form-group">
                         <label for="itemType">Type</label>
-                        <select class="form-control" id="itemType" th:field="*{type}">
+                        <select class="form-control" id="itemType">
                             <option value="Cosmetics">Cosmetics</option>
                             <option value="Currencies">Currencies</option>
                             <option value="Tools">Tools</option>
@@ -87,7 +80,7 @@
 
                     <div class="form-group">
                         <label for="itemImage">Image</label>
-                        <input type="text" class="form-control" id="itemImage" th:field="*{image}" >
+                        <input type="text" class="form-control" id="itemImage">
                     </div>
                 </div>
 

@@ -19,8 +19,10 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <!--
+
     <script type="text/javascript" th:src="@{/js/items/addModal.js}"></script>
+
+    <!--
     <script type="text/javascript"  th:src="@{/js/items/editModal.js}"></script>
     -->
     <script type="text/javascript" th:src="@{/js/items/deleteModal.js}"></script>
@@ -93,16 +95,19 @@
                 <hr>
 
 
-
                 <div class="d-flex gap-2 align-items-center">
 
                     <button class="btn btn-primary" id="toggleBtn"><i class="fas fa-arrow-left"></i></button>
+
+                    <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add Item
+                        <i class="fas fa-plus"></i>
+                    </button>
 
 
                 </div>
                 <br>
 
-                <p class="fs-3" > No Items </p>
+                <p id="noItems" class="fs-3" style="display:none;"> No Items </p>
 
                 <table  class="table table-bordered">
                     <thead>
@@ -128,10 +133,14 @@
                     -->
                     <div th:replace="items/modals/delete.html :: deleteModal"></div>
 
+                    <nav aria-label="...">
+                        <ul class="pagination">
+                        </ul>
+                    </nav>
                 </div>
-                <!--
+
                 <div th:replace="items/modals/add.html :: addModal"></div>
-                -->
+
             </div>
         </div>
     </div>

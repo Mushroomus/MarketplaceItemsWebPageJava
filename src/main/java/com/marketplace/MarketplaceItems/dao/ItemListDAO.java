@@ -13,5 +13,5 @@ public interface ItemListDAO extends JpaRepository<ItemList, Long> {
 
     public void deleteAllByUserId(int id_user);
 
-    public void deleteAllByItemSku(String sku_item);
+    public void deleteAllByItemSku(String id_item);
 }

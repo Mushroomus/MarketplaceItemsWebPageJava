@@ -25,29 +25,31 @@ public class ItemServiceImpl implements ItemService {
         itemDAO = theItemDAO;
     }
 
+    public Page<Item> findAll(Pageable page) { return itemDAO.findAll(page); };
 
     public Page<Item> findAllFilters(Pageable pageable, String search, String craftable, List<String> classes, List<String> qualities, List<String> types) {
 
         Specification<Item> spec = (root, query, builder) -> {
             List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
 
-            if(search != null && !search.equals("")){
+            if(!search.equals("")){
                 String searchPattern = "%" + search + "%";
                 predicates.add(builder.like(root.get("name"), searchPattern ));
             }
-            if(craftable != null && !craftable.equals("Any")) {
+            if(!craftable.equals("")) {
                 boolean craftableValue = craftable.equals("Yes") ? true : false;
                 predicates.add(builder.equal(root.get("craftable"), craftableValue ));
             }
-            if (classes != null && !classes.isEmpty()) {
+            if (classes.size() > 0) {
                 predicates.add(builder.in(root.get("classItem")).value(classes));
             }
-            if (qualities != null && !qualities.isEmpty()) {
+            if (qualities.size() > 0) {
                 predicates.add(builder.in(root.get("quality")).value(qualities));
             }
-            if (types != null && !types.isEmpty()) {
+            if (types.size() > 0) {
                 predicates.add(builder.in(root.get("type")).value(types));
             }
+
             return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
         };
 
