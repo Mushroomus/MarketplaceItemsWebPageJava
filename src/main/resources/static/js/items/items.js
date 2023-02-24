@@ -3,16 +3,31 @@
     var searchFilter = false;
     var currentPage = 0;
 
+
+    function clearAllCheckboxes() {
+        // Select all the checkboxes with the name "classes", "qualities", and "types"
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="classes"], input[type="checkbox"][name="qualities"], input[type="checkbox"][name="types"]');
+        // Loop through all the checkboxes and set their "checked" property to false
+        for (var i = 0; i < checkboxes.length; i++) {
+          checkboxes[i].checked = false;
+        }
+      }
+
     function clearFilters() {
         filter = false;
         searchFilter = false;
         currentPage = 0;
         refreshTable(0);
+
+        $('#searchInput').val('');
+        $('#craftable').val('');
+        clearAllCheckboxes();
     }
 
     function filterButton() {
         filter = true;
         refreshTable(0);
+        $('html, body').animate({scrollTop: 0}, 800);
     }
 
     function searchButton() {
@@ -134,7 +149,7 @@
                 "</button>" +
 
                 "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#editModal'" +
-                "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "' data-itemCraftable='" + item.craftable + "' data-itemClass='" + item.itemClass
+                "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "' data-itemCraftable='" + item.craftable + "' data-itemClass='" + item.classItem
                 + "' data-itemQuality='" + item.quality + "' data-itemType='" + item.type + "' data-itemImage='" + item.image
                 + "'>" +
                 "<i class='fas fa-pencil-alt'></i>" +

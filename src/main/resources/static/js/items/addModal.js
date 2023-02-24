@@ -1,9 +1,23 @@
+function setStartValues() {
+    $("#itemSku").val('');
+    $("#itemName").val('');
+    $("#itemCraftable").val('true');
+    $("#itemClass").val('Multi-class');
+    $("#itemQuality").val('Genuine');
+    $("#itemType").val('Cosmetics');
+    $("#itemImage").val('');
+}
+
 
 $(document).ready(function() {
 
 
     var addForm = $("#addForm");
     var submitButton = $("#addSubmitButton");
+
+    $("#addModal").on('hidden.bs.modal', function (event) {
+            setStartValues();
+      });
 
     addForm.on('submit', function(event) {
 
@@ -35,10 +49,9 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(response, status, xhr) {
                     if (xhr.status == 200) {
-
-                        $("#modalAddItemMessage").text("Item successfully added").removeClass("alert alert-danger").addClass("alert alert-success").show();
+                        $("#modalAddItemMessage").text("Item was added").removeClass("alert alert-danger").addClass("alert alert-success").show();
                         refreshTable(currentPage);
-
+                        setStartValues();
                     }
                     else if (xhr.status == 400)
                         $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
@@ -55,7 +68,6 @@ $(document).ready(function() {
             }, 5000);
 
         }
-            //addForm[0].submit();
     });
 
    addForm.on('input', function(event) {
@@ -65,51 +77,4 @@ $(document).ready(function() {
      else
         submitButton.prop('disabled', true);
    });
-
-/*
-var myForm = $("#addForm");
-
-myForm.addEventListener('submit', function(event) {
-
-  // Prevent the default form submission behavior
-  event.preventDefault();
-
-  // Check if all inputs in the form are valid
-  if (myForm.checkValidity()) {
-    // If all inputs are valid, submit the form
-    myForm.submit();
-  } else {
-    // If any input is invalid, display an error message
-    alert('Please fill out all required fields');
-  }
-});
-
-
- $("#addModalItemSubmit").click(function() {
-        var sku = $("#itemSku").val();
-        var name = $('#itemName').val();
-
-        if ($('.was-validated')[0].checkValidity()) {
-            $('.was-validated').submit();
-          }
-
-    });
-
-
-/*
-  var myForm = document.querySelector('.was-validated');
-  var submitButton = myForm.querySelector('button[type="submit"]');
-
-  myForm.addEventListener('input', function(event) {
-    // Check if all inputs in the form are valid
-    if (myForm.checkValidity()) {
-      // If all inputs are valid, enable the submit button
-      submitButton.disabled = false;
-    } else {
-      // If any input is invalid, disable the submit button
-      submitButton.disabled = true;
-    }
-  });
-  */
-
 });

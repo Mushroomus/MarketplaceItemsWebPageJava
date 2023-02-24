@@ -1,0 +1,10 @@
+#addModal .form-group select:valid,
+#addModal #itemImage:valid,
+#editModal .form-group select:valid,
+#editModal #modalItemImage:valid{
+  border-color: #ced4da;
+  padding-right: calc(1.5em + .75rem);
+  background-image: none;
+  box-shadow: none;
+}
+

@@ -106,11 +106,17 @@ public class ItemListController {
 
         java.util.List<ItemList> lists = itemListService.findByUserId(user.getId());
 
-        if(lists.size() >= 3) {
+        int uniqueListNames = lists.stream()
+                .map(itemList -> itemList.getList().getName())
+                .distinct()
+                .collect(Collectors.toList()).size();
+
+        if(uniqueListNames == 0)
+            return "redirect:/lists/create-list";
+        else if(uniqueListNames >= 3)
             theModel.addAttribute("disableCreateButton", true);
-        } else {
+         else
             theModel.addAttribute("disableCreateButton", false);
-        }
 
         theModel.addAttribute("listInfo", listInfo);
         return "lists/show-list-items";
@@ -274,6 +280,8 @@ public class ItemListController {
     fetchRightList(@RequestParam(value="listName") String name)
     {
         User user = userService.getCurrentUser();
+
+        // need to be findListById
         List list = listService.findListByName(name);
 
         java.util.List<ItemList> results = itemListService.findByUsernameAndListId(user.getId(), list.getId());

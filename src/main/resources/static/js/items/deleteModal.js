@@ -23,20 +23,27 @@
              contentType: "application/json",
              dataType: 'json',
              success: function (response, status, xhr) {
+
+                var alertMessage = parent.$('#alertMessage');
+
                  if (xhr.status == 200) {
 
                      $('#deleteModal').modal('hide');
                      refreshTable(currentPage);
+                     alertMessage.text('Item was deleted').addClass('alert alert-success').show();
+                 } else
+                     alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
 
-                 } else if (xhr.status == 400)
-                     $("#modalDeleteMessage").text(response.message).addClass("alert alert-danger").show();
-                 else
-                     $("#modalDeleteMessage").text(response.message).addClass("alert alert-danger").show();
-
+                  setTimeout(function() {
+                       alertMessage.fadeOut('slow');
+                    }, 2000);
              },
              error: function (xhr, status, error) {
-                 console.error(error);
-                 console.error(xhr.responseText);
+                 alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
+
+                 setTimeout(function() {
+                      alertMessage.fadeOut('slow');
+                   }, 2000);
              }
          });
 

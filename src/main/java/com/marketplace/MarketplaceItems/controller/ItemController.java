@@ -64,9 +64,7 @@ public class ItemController {
                                                         @RequestParam(defaultValue = "", required = false) String craftable,
                                                         @RequestParam(defaultValue = "", required = false) List<String> classes,
                                                         @RequestParam(defaultValue = "", required = false) List<String> qualities,
-                                                        @RequestParam(defaultValue = "", required = false) List<String> types)
-
-    {
+                                                        @RequestParam(defaultValue = "", required = false) List<String> types) {
         Page<Item> items;
         Pageable pageable = PageRequest.of(page, size);
 
@@ -103,20 +101,13 @@ public class ItemController {
         }
     }
 
-    /*
-    @PostMapping("/update")
-    public String update(@ModelAttribute("item") Item item, HttpSession session, @RequestParam(defaultValue="") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String craftableForm, @RequestParam(defaultValue = "") List<String> classes,
-                         @RequestParam(defaultValue = "") List<String> qualities, @RequestParam(defaultValue = "") List<String> types) {
-
-        if(validationItem(item,session,true).equals("valid")) {
-            try {
-                itemService.updateItem(item);
-                setMessageAttributes(session, "Item was updated", "success");
-            } catch (Exception e) {
-                setMessageAttributes(session, "Error occured while updating an item", "danger");
-            }
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody Item item) {
+        try {
+            itemService.updateItem(item);
+            return new ResponseEntity<>("User was updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return redirect(search, page, -1, craftableForm, classes, qualities, types);
     }
-     */
 }

@@ -57,7 +57,6 @@ function fetchList() {
         // Clear current items in the list
         $('#list1').empty();
 
-
         if(response._embedded && response._embedded.itemList) {
             $('#empty-message').hide();
 

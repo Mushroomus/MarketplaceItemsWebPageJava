@@ -29,8 +29,45 @@ $(document).ready(function() {
 
                 event.preventDefault();
 
-                if (editForm[0].checkValidity())
-                    editForm[0].submit();
+                 var sku = $("#modalItemSku").val();
+                 var name = $("#modalItemName").val();
+                 var craftable = $("#modalItemCraftable").val();
+                 var itemClass = $("#modalItemClass").val();
+                 var quality = $("#modalItemQuality").val();
+                 var type = $("#modalItemType").val();
+                 var image = $("#modalItemImage").val();
+
+                if (editForm[0].checkValidity()) {
+                     $.ajax({
+                           url: "update",
+                           type: "PUT",
+                           data: JSON.stringify({
+                              sku: sku,
+                              name: name,
+                              craftable: craftable,
+                              classItem: itemClass,
+                              quality: quality,
+                              type: type,
+                              image: image
+                           }),
+                           contentType: "application/json",
+                           success: function(response) {
+                                $('#editModal').modal('hide');
+                                refreshTable(currentPage);
+
+                               var alertMessage = parent.$('#alertMessage');
+                               alertMessage.text('Item was edited').addClass('alert alert-success').show();
+
+                               setTimeout(function() {
+                                   alertMessage.fadeOut('slow');
+                               }, 2000);
+                           },
+                           error: function(error) {
+                             console.log(error);
+                           }
+                         });
+                }
+
             });
 
            editForm.on('input', function(event) {
@@ -40,21 +77,4 @@ $(document).ready(function() {
              else
                 submitButton.prop('disabled', true);
            });
-
-        /*
-          $("#userEditModalSubmit").click(function() {
-
-                var name = $('#modalItemName').val();
-
-                if (name == ""){
-                    event.preventDefault();
-                     $("#modalEditItemMessage").text("Name is empty").addClass("alert alert-danger").show();
-                }
-
-                setTimeout(function() {
-                        $("#modalEditItemMessage").fadeOut('slow');
-                     }, 2000);
-
-          });
-          */
         });

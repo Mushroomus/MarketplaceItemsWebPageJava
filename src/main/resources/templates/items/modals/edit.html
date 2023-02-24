@@ -12,30 +12,23 @@
             <div id="modalEditItemMessage" role="alert" ></div>
 
             <form th:action="@{/items/update}" th:object="${item}" method="post" id="editForm" class="was-validated" novalidate>
-                <div class="modal-body">
 
-                    <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
-                    <input hidden type="text" id="modalDeleteCraftable" name="craftableForm" th:value="${selectedCraftable}"/>
-                    <input hidden type="text" id="modalDeleteQualities" name="qualities" th:value="${selectedQualities}"/>
-                    <input hidden type="text" id="modalDeleteTypes" name="types" th:value="${selectedTypes}"/>
-                    <input hidden type="text" id="modalDeleteClasses" name="classes" th:value="${selectedClasses}"/>
-                    <input hidden type="text" id="modalDeleteSearch" name="search" th:value="${searchedData}"/>
-                    <input hidden type="text" id="modalDeleteTotalPages" name="totalPages" th:value="${totalPages}"/>
+                <div class="modal-body">
 
                     <div class="form-group">
                         <label hidden class="form-label" for="modalItemSku">Sku</label>
-                        <input hidden type="text" class="form-control"  id="modalItemSku" th:field="*{sku}" th:data-itemSku="${sku}" />
+                        <input hidden type="text" class="form-control"  id="modalItemSku"/>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="modalItemName">Name</label>
-                        <input type="text" class="form-control" id="modalItemName" th:field="*{name}" th:data-itemName="${name}" required/>
+                        <input type="text" class="form-control" id="modalItemName" required/>
                         <div class="invalid-feedback">Name can't be empty</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="modalItemCraftable">Craftable</label>
-                        <select class="form-control" id="modalItemCraftable" th:field="*{craftable}" th:data-itemCraftable="${craftable}">
+                        <select class="form-control" id="modalItemCraftable">
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
@@ -43,7 +36,7 @@
 
                     <div class="form-group">
                         <label class="form-label" for="modalItemClass">Class</label>
-                        <select class="form-control" id="modalItemClass" th:field="*{classItem}" th:data-itemClass="${classItem}">
+                        <select class="form-control" id="modalItemClass">
                             <option value="Multi-class">Multi-class</option>
                             <option value="Scout">Scout</option>
                             <option value="Soldier">Soldier</option>
@@ -59,7 +52,7 @@
 
                     <div class="form-group">
                         <label class="form-label" for="modalItemQuality">Quality</label>
-                        <select class="form-control" id="modalItemQuality" th:field="*{quality}" th:data-itemQuality="${quality}">
+                        <select class="form-control" id="modalItemQuality">
                             <option value="Genuine">Genuine</option>
                             <option value="Vintage">Vintage</option>
                             <option value="Unique">Unique</option>
@@ -70,7 +63,7 @@
 
                     <div class="form-group">
                         <label class="form-label" for="modalItemType">Type</label>
-                        <select class="form-control" id="modalItemType" th:field="*{type}" th:data-itemType="${type}">
+                        <select class="form-control" id="modalItemType">
                             <option value="Cosmetics">Cosmetics</option>
                             <option value="Currencies">Currencies</option>
                             <option value="Tools">Tools</option>
@@ -86,7 +79,7 @@
 
                     <div class="form-group">
                         <label for="modalItemImage">Image</label>
-                        <input type="text" class="form-control" id="modalItemImage" th:field="*{image}" th:data-itemImage="${image}" >
+                        <input type="text" class="form-control" id="modalItemImage">
                     </div>
 
                 </div>
