@@ -9,27 +9,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form th:action="@{/items/delete}" th:object="${item}" method="post">
-
                 <div class="modal-body">
                     <div class="form-group">
                         <input hidden type="text" id="modalDeleteItemSku" name="itemSku" />
-                        <input hidden type="text" id="modalDeletePage" name="page" th:value="${currentPage}"/>
-                        <input hidden type="text" id="modalDeleteCraftable" name="craftableForm" th:value="${selectedCraftable}"/>
-                        <input hidden type="text" id="modalDeleteQualities" name="qualities" th:value="${selectedQualities}"/>
-                        <input hidden type="text" id="modalDeleteTypes" name="types" th:value="${selectedTypes}"/>
-                        <input hidden type="text" id="modalDeleteClasses" name="classes" th:value="${selectedClasses}"/>
-                        <input hidden type="text" id="modalDeleteSearch" name="search" th:value="${searchedData}"/>
-                        <input hidden type="text" id="modalDeleteTotalPages" name="totalPages" th:value="${totalPages}"/>
                         <p class="text" id="modalDeleteItemName"></p>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Delete</button>
+                    <button type="button" id="deleteModalSubmit" class="btn btn-primary">Delete</button>
                 </div>
-            </form>
+
 
         </div>
     </div>

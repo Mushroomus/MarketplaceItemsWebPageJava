@@ -5,6 +5,7 @@ import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +32,13 @@ public class UserController {
     private UserService userService;
     private ItemListService itemListService;
 
-    public UserController(UserService theUserService, ItemListService theItemListService) {
-
+    public UserController(@Qualifier("userServiceImpl") UserService theUserService, @Qualifier("itemListServiceImpl") ItemListService theItemListService) {
         userService = theUserService;
         itemListService = theItemListService;
     }
 
     @GetMapping("/list")
-    public String listItems(Model theModel, HttpSession session, @RequestParam(defaultValue = "0") int page) {
+    public String listItems() {
         return "user/list-users";
     }
 
@@ -137,8 +137,6 @@ public class UserController {
             this.totalPages = page.getTotalPages();
             this.last = page.isLast();
         }
-
-        // getters and setters for each member variable
     }
 
 

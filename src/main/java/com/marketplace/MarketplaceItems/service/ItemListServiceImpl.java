@@ -36,4 +36,7 @@ public class ItemListServiceImpl implements ItemListService{
     @Override
     public java.util.List<ItemList> findByUserId(int id_user) { return itemListDAO.findByUserId(id_user); }
 
+    @Override
+    public void deleteAllByItemSku(String itemSku) { itemListDAO.deleteAllByItemSku(itemSku); }
+
 }

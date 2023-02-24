@@ -17,4 +17,5 @@ public interface ItemListService {
 
     public java.util.List<ItemList> findByUserId(int id_user);
 
+    public void deleteAllByItemSku(String itemSku);
 }
