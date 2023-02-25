@@ -117,8 +117,13 @@
 
                     $("table").show();
                     $("#noItems").hide();
-                    if(data._embedded && data._embedded.itemList)
-                        updateTable(data._embedded.itemList);
+                    if(data._embedded && data._embedded.itemList) {
+
+                        if (window.location.href.indexOf('/items/list-admin') !== -1)
+                            updateTableAdmin(data._embedded.itemList);
+                        else
+                             updateTableUser(data._embedded.itemList);
+                    }
 
                     updatePagination(data.page)
                 }
@@ -127,7 +132,7 @@
     }
 
 
-    function updateTable(data) {
+    function updateTableAdmin(data) {
         // Clear the current table
         $("table tbody").empty();
 
@@ -161,6 +166,47 @@
             $("table tbody").append(newRow);
         });
     }
+
+    function updateTableUser(data) {
+            // Clear the current table
+            $("table tbody").empty();
+
+            data.forEach(function(item) {
+                let newRow = "<tr>" +
+                    "<td>" + item.image + "</td>" +
+                    "<td>" + item.sku + "</td>" +
+                    "<td>" + item.name + "</td>" +
+                    "<td>" + item.craftable + "</td>" +
+                    "<td>" + item.classItem + "</td>" +
+                    "<td>" + item.quality + "</td>" +
+                    "<td>" + item.type + "</td>" +
+
+                    "<td>" +
+
+                    "<button type='submit' class='btn btn-secondary mx-2' data-bs-toggle='modal' data-bs-target='#requestUpdatePriceModal'" +
+                    "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "'>" +
+                    "<i class='fas fa-dollar-sign'></i>" +
+                    "</button>" +
+
+                     "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#requestEditModal'" +
+                    "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "' data-itemCraftable='" + item.craftable + "' data-itemClass='" + item.classItem
+                    + "' data-itemQuality='" + item.quality + "' data-itemType='" + item.type + "' data-itemImage='" + item.image
+                    + "'>" +
+                    "<i class='fas fa-pencil-alt'></i>" +
+                    "</button>" +
+
+                    "<button type='submit' class='btn btn-danger mx-2' data-bs-toggle='modal' data-bs-target='#requestDeleteModal'" +
+                    "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "'>" +
+                    "<i class='fas fa-trash'></i>" +
+                    "</button>" +
+
+                    "</td>" +
+
+                    "</tr>";
+                $("table tbody").append(newRow);
+            });
+        }
+
 
     function updatePagination(data) {
         var pagination = $(".pagination");

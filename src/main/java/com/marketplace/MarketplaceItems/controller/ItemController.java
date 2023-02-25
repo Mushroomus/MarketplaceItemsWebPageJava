@@ -41,8 +41,8 @@ public class ItemController {
     }
 
 
-    @GetMapping("/list")
-    public String listItems(Model theModel) {
+    @GetMapping("/list-admin")
+    public String listItemsAdmin(Model theModel) {
 
         List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
         List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
@@ -53,7 +53,22 @@ public class ItemController {
         theModel.addAttribute("qualityList", qualityList);
         theModel.addAttribute("typeList", typeList);
 
-        return "items/list-items";
+        return "items/list-items-admin";
+    }
+
+    @GetMapping("/list-user")
+    public String listItemsUser(Model theModel) {
+
+        List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
+        List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
+        List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
+
+        theModel.addAttribute("craftableOptions", Arrays.asList("Any", "Yes", "No"));
+        theModel.addAttribute("classesList", classesList);
+        theModel.addAttribute("qualityList", qualityList);
+        theModel.addAttribute("typeList", typeList);
+
+        return "items/list-items-user";
     }
 
 

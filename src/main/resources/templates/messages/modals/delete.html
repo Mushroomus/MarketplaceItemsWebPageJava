@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="requestDeleteModal" class="modal fade" id="requestDeleteModal" tabindex="-1" role="dialog" aria-labelledby="requestDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"> Request </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input hidden type="text" id="requestDeleteSku" />
+                        <p class="text" id="requestDeleteText"></p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="requestDeleteModalSubmit" class="btn btn-primary">Send</button>
+                </div>
+
+
+        </div>
+    </div>
+
+</div>
