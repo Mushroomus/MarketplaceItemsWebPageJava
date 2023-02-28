@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -120,9 +121,25 @@ public class ItemController {
     public ResponseEntity<String> update(@RequestBody Item item) {
         try {
             itemService.updateItem(item);
-            return new ResponseEntity<>("User was updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>("Item was updated successfully", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error occurred while updating the item", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/updatePrice")
+    public ResponseEntity<String> updatePrice(@RequestBody Map<String, Object> requestBody) {
+        try {
+            String sku = (String) requestBody.get("sku");
+            Double mpPrice = Double.parseDouble( (String) requestBody.get("mpPrice"));
+
+            Item item = itemService.findItemBySku(sku);
+            item.setMarketplacePrice(mpPrice);
+            itemService.saveItem(item);
+
+            return new ResponseEntity<>("Price was updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error occurred while updating the price", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

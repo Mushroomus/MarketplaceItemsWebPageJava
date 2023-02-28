@@ -6,6 +6,7 @@ function setStartValues() {
     $("#itemQuality").val('Genuine');
     $("#itemType").val('Cosmetics');
     $("#itemImage").val('');
+    $("#itemMarketplacePrice").val('0.00');
 }
 
 
@@ -32,6 +33,7 @@ $(document).ready(function() {
             var quality = $("#itemQuality").val();
             var type = $("#itemType").val();
             var image = $("#itemImage").val();
+            var marketplacePrice = $("#itemMarketplacePrice").val();
 
             $.ajax({
                 url: "add",
@@ -40,6 +42,7 @@ $(document).ready(function() {
                 data: JSON.stringify({
                     sku: sku,
                     name: name,
+                    marketplacePrice: marketplacePrice,
                     craftable: craftable,
                     classItem: itemClass,
                     quality: quality,

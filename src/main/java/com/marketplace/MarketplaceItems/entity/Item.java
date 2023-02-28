@@ -19,6 +19,9 @@ public class Item {
     @Column(name="name")
     private String name;
 
+    @Column(name="mp_price")
+    private Double marketplacePrice;
+
     @Column(name="craftable")
     private boolean craftable;
 
@@ -48,9 +51,10 @@ public class Item {
         this.itemList = itemList;
     }
 
-    public Item(String sku, String name, boolean craftable, String classItem, String quality, String type, String image) {
+    public Item(String sku, String name, Double marketplacePrice, boolean craftable, String classItem, String quality, String type, String image) {
         this.sku = sku;
         this.name = name;
+        this.marketplacePrice = marketplacePrice;
         this.craftable = craftable;
         this.classItem = classItem;
         this.quality = quality;
@@ -67,6 +71,14 @@ public class Item {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Double getMarketplacePrice() {
+        return marketplacePrice;
+    }
+
+    public void setMarketplacePrice(Double marketplacePrice) {
+        this.marketplacePrice = marketplacePrice;
     }
 
     public String getType() {
@@ -117,16 +129,4 @@ public class Item {
         this.image = image;
     }
 
-    @Override
-    public String toString() {
-        return "Item{" +
-                "sku='" + sku + '\'' +
-                ", name='" + name + '\'' +
-                ", craftable=" + craftable +
-                ", classItem='" + classItem + '\'' +
-                ", quality='" + quality + '\'' +
-                ", type='" + type + '\'' +
-                ", image='" + image + '\'' +
-                '}';
-    }
 }

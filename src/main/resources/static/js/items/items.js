@@ -141,6 +141,7 @@
                 "<td>" + item.image + "</td>" +
                 "<td>" + item.sku + "</td>" +
                 "<td>" + item.name + "</td>" +
+                "<td>"  + item.marketplacePrice + "</td>" +
                 "<td>" + item.craftable + "</td>" +
                 "<td>" + item.classItem + "</td>" +
                 "<td>" + item.quality + "</td>" +
@@ -148,16 +149,21 @@
 
                 "<td>" +
 
-                "<button type='submit' class='btn btn-danger mx-2' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
-                "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "'>" +
-                "<i class='fas fa-trash'></i>" +
+                "<button type='button' class='btn btn-secondary' data-bs-toggle='modal' data-bs-target='#editPriceModal'" +
+                "data-itemName='" + item.name + "' data-itemSku='" + item.sku + "' data-mpPrice='" + item.marketplacePrice + "'>" +
+                "<i class='fas fa-coins'></i>" +
                 "</button>" +
 
-                "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#editModal'" +
+                "<button type='button' class='btn btn-primary  mx-2' data-bs-toggle='modal' data-bs-target='#editModal'" +
                 "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "' data-itemCraftable='" + item.craftable + "' data-itemClass='" + item.classItem
                 + "' data-itemQuality='" + item.quality + "' data-itemType='" + item.type + "' data-itemImage='" + item.image
                 + "'>" +
                 "<i class='fas fa-pencil-alt'></i>" +
+                "</button>" +
+
+                "<button type='submit' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
+                "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "'>" +
+                "<i class='fas fa-trash'></i>" +
                 "</button>" +
 
                 "</td>" +
@@ -176,6 +182,7 @@
                     "<td>" + item.image + "</td>" +
                     "<td>" + item.sku + "</td>" +
                     "<td>" + item.name + "</td>" +
+                    "<td>"  + item.marketplacePrice + "</td>" +
                     "<td>" + item.craftable + "</td>" +
                     "<td>" + item.classItem + "</td>" +
                     "<td>" + item.quality + "</td>" +
@@ -253,4 +260,3 @@
             pagination.append(lastButton);
         }
     }
-
