@@ -19,6 +19,9 @@ public class Message {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "mp_price")
+    private String marketplacePrice;
+
     @Column(name = "craftable")
     private Boolean craftable;
 
@@ -31,12 +34,13 @@ public class Message {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "price")
-    private Float price;
-
     @ManyToOne
     @JoinColumn(name = "sku_item", referencedColumnName = "sku")
     private Item item;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
+    private User user;
 
     public Long getId() {
         return id;
@@ -68,6 +72,14 @@ public class Message {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Double getMarketplacePrice() {
+        return Double.parseDouble(marketplacePrice);
+    }
+
+    public void setMarketplacePrice(String marketplacePrice) {
+        this.marketplacePrice = marketplacePrice;
     }
 
     public Boolean getCraftable() {
@@ -102,15 +114,6 @@ public class Message {
         this.type = type;
     }
 
-    public Float getPrice() {
-        return price;
-    }
-
-    public void setPrice(Float price) {
-        this.price = price;
-    }
-
-
     public Item getItem() {
         return item;
     }
@@ -119,25 +122,32 @@ public class Message {
         this.item = item;
     }
 
+    public User getUser() {
+        return user;
+    }
 
-    @AssertTrue(message = "sku_item is required for messageType 'delete'")
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @AssertTrue(message = "Delete - lack of informations")
     private boolean isValidDelete() {
         return !"delete".equals(messageType) || item != null;
     }
 
-    @AssertTrue(message = "sku_item, craftable, class, quality, and type are required for messageType 'update'")
+    @AssertTrue(message = "Update - lack of informations")
     private boolean isValidUpdate() {
-        return !"update".equals(messageType) || (item != null && craftable != null && itemClass != null && quality != null && type != null);
+        return !"update".equals(messageType) || (item != null && name != null && craftable != null && itemClass != null && quality != null && type != null);
     }
 
-    @AssertTrue(message = "sku, name, craftable, class, quality, and type are required for messageType 'add'")
+    @AssertTrue(message = "Add - lack of informations")
     private boolean isValidAdd() {
-        return !"add".equals(messageType) || (item != null && name != null && craftable != null && itemClass != null && quality != null && type != null);
+        return !"add".equals(messageType) || (sku != null && name != null && marketplacePrice != null && craftable != null && itemClass != null && quality != null && type != null);
     }
 
-    @AssertTrue(message = "sku_item and price are required for messageType 'updatePrice'")
+    @AssertTrue(message = "Update price - lack of informations")
     private boolean isValidUpdatePrice() {
-        return !"updatePrice".equals(messageType) || (item != null && price != null);
+        return !"updatePrice".equals(messageType) || (item != null && marketplacePrice != null);
     }
 
 }

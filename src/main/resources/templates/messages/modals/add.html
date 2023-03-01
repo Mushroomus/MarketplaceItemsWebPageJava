@@ -1,0 +1,97 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="requestAddModal" class="modal fade" id="requestAddModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">New Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" id="addForm" class="was-validated" novalidation>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="itemSku">Sku</label>
+                        <input type="text" class="form-control" id="itemSku" required>
+                        <div class="invalid-feedback">Sku can't be empty</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemName">Name</label>
+                        <input type="text" class="form-control" id="itemName" required>
+                        <div class="invalid-feedback">Name can't be empty</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemMarketplacePrice">Marketplace price</label>
+                        <input type="number" value="0.00" min="0.00" step="0.01" class="form-control" id="itemMarketplacePrice" name="numeric-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemCraftable">Craftable</label>
+                        <select class="form-control" id="itemCraftable">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemClass">Class</label>
+                        <select class="form-control" id="itemClass">
+                            <option value="Multi-class">Multi-class</option>
+                            <option value="Scout">Scout</option>
+                            <option value="Soldier">Soldier</option>
+                            <option value="Pyro">Pyro</option>
+                            <option value="Demoman">Demoman</option>
+                            <option value="Heavy">Heavy</option>
+                            <option value="Engineer">Engineer</option>
+                            <option value="Medic">Medic</option>
+                            <option value="Sniper">Sniper</option>
+                            <option value="Spy">Spy</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemQuality">Quality</label>
+                        <select class="form-control" id="itemQuality">
+                            <option value="Genuine">Genuine</option>
+                            <option value="Vintage">Vintage</option>
+                            <option value="Unique">Unique</option>
+                            <option value="Strange">Strange</option>
+                            <option value="Haunted">Haunted</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemType">Type</label>
+                        <select class="form-control" id="itemType">
+                            <option value="Cosmetics">Cosmetics</option>
+                            <option value="Currencies">Currencies</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Paints">Paints</option>
+                            <option value="Action">Action</option>
+                            <option value="Weapons">Weapons</option>
+                            <option value="Strange parts">Strange parts</option>
+                            <option value="Botkillers">Botkillers</option>
+                            <option value="Festive Weapons">Festive Weapons</option>
+                            <option value="Halloween">Halloween</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemImage">Image</label>
+                        <input type="text" class="form-control" id="itemImage">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="addSubmitButton" disabled>Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

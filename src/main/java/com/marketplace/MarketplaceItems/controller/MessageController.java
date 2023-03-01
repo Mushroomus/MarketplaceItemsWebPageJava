@@ -1,9 +1,11 @@
 package com.marketplace.MarketplaceItems.controller;
 
 import com.marketplace.MarketplaceItems.entity.Message;
+import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.MessageService;
+import com.marketplace.MarketplaceItems.service.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +26,16 @@ public class MessageController {
 
     private MessageService messageService;
     private ItemService itemService;
+    private UserService userService;
+
 
     private Validator validator;
 
-    public MessageController(MessageService theMessageService, ItemService theItemService ){
+    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService ){
 
         messageService = theMessageService;
         itemService = theItemService;
+        userService = theUserService;
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -41,8 +46,20 @@ public class MessageController {
     @PostMapping("create")
     public ResponseEntity<String> createMessage(@RequestBody Message request, @RequestParam(name="sku", required = false) String itemSku) {
 
-        if(itemSku != null)
-            request.setItem( itemService.findItemBySku(itemSku) );
+        try{
+            User user = userService.getCurrentUser();
+            request.setUser(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
+        }
+
+        if(itemSku != null) {
+            try {
+                request.setItem(itemService.findItemBySku(itemSku));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
+            }
+        }
 
         Set<ConstraintViolation<Message>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
@@ -53,14 +70,12 @@ public class MessageController {
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
-
         try {
             messageService.saveMessage(request);
+            return ResponseEntity.ok().body("{\"message\": \"Request was sent\"}");
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
         }
-
-        return new ResponseEntity<>("User was updated successfully", HttpStatus.OK);
     }
 
 }

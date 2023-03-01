@@ -20,7 +20,7 @@
   <script type="text/javascript" th:src="@{/js/global.js}"></script>
   <script type="text/javascript" th:src="@{/js/lists/list.js}"></script>
 
-  <link rel="stylesheet" th:href="@{/css/item.css}">
+  <link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
 <body>
 
@@ -33,8 +33,14 @@
   </div>
 </div>
 
-
 <div class="container" id="spinnerHide">
+
+    <div id="alertMessageList" role="alert" class="alert alert-success"></div>
+
+
+    <div th:text="${deleteAlert}" id="alertDelete" role="alert" th:if="${deleteAlert != null}"
+         th:classappend="${deleteAlert eq 'List was deleted'} ? 'alert alert-success' : 'alert alert-danger'">
+    </div>
 
     <div class="list-group">
 

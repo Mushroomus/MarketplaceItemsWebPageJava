@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Flux;
 
 @Controller
@@ -115,15 +116,21 @@ public class ItemListController {
             return "redirect:/lists/create-list";
         else if(uniqueListNames >= 3)
             theModel.addAttribute("disableCreateButton", true);
-         else
+        else
             theModel.addAttribute("disableCreateButton", false);
+
+        System.out.println(theModel.getAttribute("deleteAlert"));
+
+        String deleteAlert = (String) theModel.getAttribute("deleteAlert");
+        if(deleteAlert != null && !deleteAlert.equals(""))
+            theModel.addAttribute("deleteAlert", deleteAlert);
 
         theModel.addAttribute("listInfo", listInfo);
         return "lists/show-list-items";
     }
 
     @GetMapping("/delete")
-    public String deleteList(@RequestParam(value = "listName") String name) {
+    public String deleteList(@RequestParam(value = "listName") String name, RedirectAttributes redirectAttributes) {
 
         List foundList = listService.findListByName(name);
         System.out.println(foundList.getName());
@@ -134,6 +141,10 @@ public class ItemListController {
 
             itemListDAO.deleteAll(itemsList);
             listService.deleteList(foundList);
+
+            redirectAttributes.addFlashAttribute("deleteAlert", "List was deleted");
+        } else {
+            redirectAttributes.addFlashAttribute("deleteAlert", "Something went wrong");
         }
 
         return "redirect:/lists/show";

@@ -190,8 +190,8 @@
 
                     "<td>" +
 
-                    "<button type='submit' class='btn btn-secondary mx-2' data-bs-toggle='modal' data-bs-target='#requestUpdatePriceModal'" +
-                    "data-itemSku='" + item.sku + "' data-itemName='" + item.name + "'>" +
+                    "<button type='submit' class='btn btn-secondary mx-2' data-bs-toggle='modal' data-bs-target='#requestEditPriceModal'" +
+                    "data-itemSku='" + item.sku + "' data-itemPrice='" + item.marketplacePrice +  "' data-itemName='" + item.name + "'>" +
                     "<i class='fas fa-dollar-sign'></i>" +
                     "</button>" +
 

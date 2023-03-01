@@ -20,7 +20,9 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-
+    <script type="text/javascript" th:src="@{/js/messages/addRequestModal.js}"></script>
+    <script type="text/javascript" th:src="@{/js/messages/editRequestModal.js}"></script>
+    <script type="text/javascript" th:src="@{/js/messages/editRequestPriceModal.js}"></script>
     <script type="text/javascript" th:src="@{/js/messages/deleteRequestModal.js}"></script>
 
 
@@ -38,7 +40,7 @@
 
 <div class="container-fluid">
 
-    <div id="alertMessageUser" role="alert" ></div>
+    <div id="alertMessageUser" role="alert"></div>
 
     <div class="row">
         <div class="col-3 d-md-block sidebar sidebar-container">
@@ -140,13 +142,18 @@
                     </tbody>
                 </table>
 
-                   <div th:replace="messages/modals/delete.html :: requestDeleteModal"></div>
+                    <div th:replace="messages/modals/edit.html :: requestEditModal"></div>
+                    <div th:replace="messages/modals/editPrice.html :: requestEditPriceModal"></div>
+                    <div th:replace="messages/modals/delete.html :: requestDeleteModal"></div>
 
                     <nav aria-label="...">
                         <ul class="pagination">
                         </ul>
                     </nav>
                 </div>
+
+                    <div th:replace="messages/modals/add.html :: requestAddModal"></div>
+
 
             </div>
         </div>

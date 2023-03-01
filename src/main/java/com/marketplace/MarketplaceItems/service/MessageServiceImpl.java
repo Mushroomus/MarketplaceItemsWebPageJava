@@ -20,4 +20,15 @@ public class MessageServiceImpl implements MessageService{
     public void saveMessage(Message theMessage) {
         messageDAO.save(theMessage);
     }
+
+    @Override
+    public void deleteAllByItemSku(String itemSku) {
+        messageDAO.deleteAllByItemSku(itemSku);
+    }
+
+    @Override
+    public void deleteAllByUserId(int id_user) {
+        messageDAO.deleteAllByUserId(id_user);
+    }
+
 }

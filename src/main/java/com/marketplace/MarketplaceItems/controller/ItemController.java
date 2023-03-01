@@ -4,6 +4,7 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
+import com.marketplace.MarketplaceItems.service.MessageService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,9 +37,13 @@ public class ItemController {
 
     private ItemListService itemListService;
 
-    public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService, @Qualifier("itemListServiceImpl") ItemListService theItemListService) {
+    private MessageService messageService;
+
+    public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService, @Qualifier("itemListServiceImpl") ItemListService theItemListService,
+                          @Qualifier("messageServiceImpl") MessageService theMessageService) {
         itemService = theItemService;
         itemListService = theItemListService;
+        messageService = theMessageService;
     }
 
 
@@ -110,6 +115,7 @@ public class ItemController {
     public ResponseEntity<UserController.ResponseMessage> delete(@RequestParam(value = "sku") String itemSku) {
         try {
             itemListService.deleteAllByItemSku(itemSku);
+            messageService.deleteAllByItemSku(itemSku);
             itemService.deleteBySku(itemSku);
             return new ResponseEntity<>(new UserController.ResponseMessage("Item was deleted"), HttpStatus.OK);
         } catch (Exception e) {
@@ -137,9 +143,9 @@ public class ItemController {
             item.setMarketplacePrice(mpPrice);
             itemService.saveItem(item);
 
-            return new ResponseEntity<>("Price was updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>("Price was updated", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the price", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -9,4 +9,7 @@ public interface MessageService {
 
     public void saveMessage(Message theMessage);
 
+    public void deleteAllByItemSku(String itemSku);
+
+    public void deleteAllByUserId(int id_user);
 }

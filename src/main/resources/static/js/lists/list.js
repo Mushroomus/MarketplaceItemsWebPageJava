@@ -2,7 +2,6 @@ var currentPage = 0;
 var totalPages = 0;
 var filter = false;
 
-
 function createUrl(page) {
     var url = "fetch-list?page=" + page;
 
@@ -163,6 +162,24 @@ function fetchRightList() {
 
 $(document).ready(function() {
 
+    $('#alertMessageList').hide();
+
+    var alertList = localStorage.getItem('alertList');
+    console.log(alertList);
+
+    if(alertList && window.location.href.indexOf('/lists/show') !== -1) {
+        if(alertList == "create")
+            $('#alertMessageList').text("List was created").show();
+        else
+            $('#alertMessageList').text("List was edited").show();
+
+        setTimeout(function() {
+            $("#alertMessageList").fadeOut('slow');
+        }, 5000)
+
+        localStorage.removeItem('alertList');
+    }
+
     $(".price-items-button").click(function() {
         $('#spinnerHide').prop('hidden', true);
         $('#spinner').prop('hidden', false);
@@ -221,12 +238,25 @@ $(document).ready(function() {
                         itemSku: itemSku,
                         listName: listName
                     }),
-                    success: function() {
-                        // move to show-list
-                        alert("List was edited");
+                    success: function(response, status, xhr) {
+                        if(xhr.status == 200) {
+                            localStorage.setItem('alertList',"edit");
+                            window.location.href = "show";
+                        }
+                        else {
+                            $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
+
+                            setTimeout(function() {
+                                $("#alertMessageList").fadeOut('slow');
+                            }, 5000)
+                        }
                     },
                     error: function(xhr, status, error) {
-                        alert("Error while editing list: " + xhr.responseText);
+                        $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
+
+                        setTimeout(function() {
+                            $("#alertMessageList").fadeOut('slow');
+                        }, 5000);
                     }
                 });
         })
@@ -245,7 +275,6 @@ $(document).ready(function() {
                     }
                 });
 
-
                 $.ajax({
                     type: "POST",
                     url: "/lists/create",
@@ -255,11 +284,26 @@ $(document).ready(function() {
                         itemSku: itemSku,
                         listName: listName
                     }),
-                    success: function() {
-                        alert("List created successfully");
+                    success: function(response, status, xhr) {
+                        if(xhr.status == 201) {
+                            localStorage.setItem('alertList',"create");
+                            window.location.href = "show";
+                        }
+                        else {
+                            $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
+
+                            setTimeout(function() {
+                                $("#alertMessageList").fadeOut('slow');
+                            }, 5000)
+                        }
                     },
                     error: function(xhr, status, error) {
-                        alert("Error creating list: " + xhr.responseText);
+
+                        $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
+
+                        setTimeout(function() {
+                            $("#alertMessageList").fadeOut('slow');
+                        }, 5000);
                     }
                 });
         });

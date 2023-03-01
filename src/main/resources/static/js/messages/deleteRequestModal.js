@@ -17,7 +17,7 @@ $(document).ready(function() {
      $("#requestDeleteModalSubmit").click(function () {
 
          var itemSku = $("#requestDeleteSku").val();
-         console.log(itemSku);
+         var alertMessage = parent.$('#alertMessageUser');
 
          $.ajax({
              url: "/messages/create?sku=" + itemSku,
@@ -29,30 +29,26 @@ $(document).ready(function() {
              dataType: 'json',
              success: function (response, status, xhr) {
 
-                var alertMessage = parent.$('#alertMessageUser');
-                console.log(alertMessage);
+                 var alertMessage = parent.$('#alertMessageUser');
+                 $('#requestDeleteModal').modal('hide');
 
-                 if (xhr.status == 200) {
-                     $('#requestDeleteModal').modal('hide');
-                    // alertMessage.text('Request was sent').addClass('alert alert-success').show();
-                 } else {
-                     /*
+                 if (xhr.status == 200)
+                     alertMessage.text('Request was sent').addClass('alert alert-success').show();
+                 else
                      alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
 
-                  setTimeout(function() {
-                       alertMessage.fadeOut('slow');
-                    }, 2000);
-                    */
-                  }
+                 setTimeout(function() {
+                     alertMessage.fadeOut('slow');
+                 }, 2000);
              },
              error: function (xhr, status, error) {
-             /*
+
                  alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
+                 $('#requestDeleteModal').modal('hide');
 
                  setTimeout(function() {
                       alertMessage.fadeOut('slow');
                    }, 2000);
-                   */
              }
          });
 
