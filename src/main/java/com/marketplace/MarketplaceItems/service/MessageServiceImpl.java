@@ -4,6 +4,8 @@ import com.marketplace.MarketplaceItems.dao.ListDAO;
 import com.marketplace.MarketplaceItems.dao.MessageDAO;
 import com.marketplace.MarketplaceItems.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,4 +33,8 @@ public class MessageServiceImpl implements MessageService{
         messageDAO.deleteAllByUserId(id_user);
     }
 
+    @Override
+    public Page<Message> findAll(Pageable page) {
+        return messageDAO.findAll(page);
+    }
 }

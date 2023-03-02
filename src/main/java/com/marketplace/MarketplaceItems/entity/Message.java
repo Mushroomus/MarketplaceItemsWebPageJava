@@ -34,6 +34,9 @@ public class Message {
     @Column(name = "type")
     private String type;
 
+    @Transient
+    private String username;
+
     @ManyToOne
     @JoinColumn(name = "sku_item", referencedColumnName = "sku")
     private Item item;
@@ -75,7 +78,11 @@ public class Message {
     }
 
     public Double getMarketplacePrice() {
-        return Double.parseDouble(marketplacePrice);
+
+        if(marketplacePrice != null)
+            return Double.parseDouble(marketplacePrice);
+        else
+            return null;
     }
 
     public void setMarketplacePrice(String marketplacePrice) {
@@ -128,6 +135,14 @@ public class Message {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @AssertTrue(message = "Delete - lack of informations")
