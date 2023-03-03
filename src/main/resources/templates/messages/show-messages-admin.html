@@ -30,6 +30,9 @@
   <script type="text/javascript" th:src="@{/js/global.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/message.js}"></script>
 
+  <script type="text/javascript" th:src="@{/js/messages/addModalInformations.js}"></script>
+  <script type="text/javascript" th:src="@{/js/messages/updateModalInformations.js}"></script>
+  <script type="text/javascript" th:src="@{/js/messages/updatePriceModalInformations.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/deleteModalInformations.js}"></script>
 
   <link rel="stylesheet" th:href="@{/css/list.css}">
@@ -119,6 +122,9 @@
       </div>
 
     </div>
+      <div th:replace="messages/modals/addInformations.html :: addModalInformations"></div>
+      <div th:replace="messages/modals/updateInformations.html :: updateModalInformations"></div>
+      <div th:replace="messages/modals/updatePriceInformations.html :: updatePriceModalInformations"></div>
       <div th:replace="messages/modals/deleteInformations.html :: deleteModalInformations"></div>
   </div>
 </div>

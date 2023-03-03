@@ -5,14 +5,19 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Item</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Item Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
                 <div class="modal-body">
-                    <div class="form-group">
-                        <p class="text" id="modalDeleteItemName"></p>
-                    </div>
+                    <ul>
+                        <li><strong>Sku:</strong> <span id="deleteModalSku"></span></li>
+                        <li><strong>Name:</strong> <span id="deleteModalName"></span></li>
+                        <li><strong>Type:</strong> <span id="deleteModalType"></span></li>
+                        <li><strong>Class:</strong> <span id="deleteModalClass"></span></li>
+                        <li><strong>Quality:</strong> <span id="deleteModalQuality"></span></li>
+                        <li><strong>Craftable:</strong> <span id="deleteModalCraftable"></span></li>
+                    </ul>
                 </div>
 
                 <div class="modal-footer">

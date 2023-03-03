@@ -25,31 +25,61 @@ function addMessageToList(message) {
     else
         body = $('<p>').addClass('mb-1').text('Item: ' + message.item.name);
 
-    var button = $('<button>').addClass('btn btn-primary btn-sm float-end')
-                                   .text('View Details')
-                                   .attr('data-bs-toggle', 'modal');
+    var button = $('<button>').addClass('btn btn-primary float-end')
+                                   .attr('data-bs-toggle', 'modal')
+                                   .append($('<i>').addClass('fas fa-info-circle'));
 
      switch (message.messageType) {
             case 'delete':
                 button.attr('data-bs-target', '#deleteModalInformations');
+                button.data('itemSku', message.item.sku);
                 button.data('itemName', message.item.name);
+                button.data('itemCraftable', message.item.craftable);
+                button.data('itemClass', message.item.classItem);
+                button.data('itemQuality', message.item.quality);
+                button.data('itemType', message.item.type);
                 break;
             case 'add':
-                button.attr('data-bs-target', '#addModal');
+                button.attr('data-bs-target', '#addModalInformations');
+                button.data('itemSku', message.sku);
                 button.data('itemName', message.name);
+                button.data('itemCraftable', message.craftable);
+                button.data('itemClass', message.itemClass);
+                button.data('itemQuality', message.quality);
+                button.data('itemImage', message.image);
+                button.data('itemPrice', message.marketplacePrice);
+                button.data('itemType', message.type);
                 break;
             case 'update':
-                button.attr('data-bs-target', '#updateModal');
-                button.data('itemId', message.item.name);
+                button.attr('data-bs-target', '#updateModalInformations');
+
+                button.data('oldItemSku', message.item.sku);
+                button.data('oldItemName', message.item.name);
+                button.data('oldItemCraftable', message.item.craftable);
+                button.data('oldItemClass', message.item.classItem);
+                button.data('oldItemQuality', message.item.quality);
+                button.data('oldItemType', message.item.type);
+
+                button.data('itemName', message.name);
+                button.data('itemCraftable', message.craftable);
+                button.data('itemClass', message.itemClass);
+                button.data('itemQuality', message.quality);
+                button.data('itemType', message.type);
+
                 break;
             case 'updatePrice':
-                button.attr('data-bs-target', '#updatePriceModal');
-                button.data('itemId', message.item.name);
-                button.data('marketplacePrice', message.marketplacePrice);
-                break;
-            default:
-                // handle other message types if needed
-                break;
+                button.attr('data-bs-target', '#updatePriceModalInformations');
+
+                 button.data('oldItemSku', message.item.sku);
+                 button.data('oldItemName', message.item.name);
+                 button.data('oldItemCraftable', message.item.craftable);
+                 button.data('oldItemClass', message.item.classItem);
+                 button.data('oldItemQuality', message.item.quality);
+                 button.data('oldItemType', message.item.type);
+                  button.data('oldItemPrice', message.item.marketplacePrice);
+
+                 button.data('itemPrice', message.marketplacePrice);
+                 break;
         }
 
 
