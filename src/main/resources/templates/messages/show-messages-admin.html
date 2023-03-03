@@ -8,17 +8,29 @@
 
   <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+
   <!-- Include Bootstrap JavaScript file -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Include Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
 
-
+  <!-- Fonts -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/jQuery-provider.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
 
   <script type="text/javascript" th:src="@{/js/global.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/message.js}"></script>
+
+  <script type="text/javascript" th:src="@{/js/messages/deleteModalInformations.js}"></script>
 
   <link rel="stylesheet" th:href="@{/css/list.css}">
 </head>
@@ -27,6 +39,89 @@
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 <br>
 
+<div class="container-fluid">
+
+  <div class="row">
+
+    <div class="col-3 d-md-block sidebar sidebar-container">
+
+      <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
+
+        <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
+
+        <div class="form-group">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="addSwitch" checked>
+            <label class="form-check-label" for="addSwitch">Add</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="deleteSwitch" checked>
+            <label class="form-check-label" for="deleteSwitch">Delete</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="updateSwitch" checked>
+            <label class="form-check-label" for="updateSwitch">Update</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="updatePriceSwitch" checked>
+            <label class="form-check-label" for="updatePriceSwitch">Update Price</label>
+          </div>
+        </div><br>
+
+        <div class="form-group">
+          <label for="datetimepickerInputStartDate" class="form-label">Start Date</label>
+          <div class="input-group" id="datetimepickerStartDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+            <input id="datetimepickerInputStartDate" type="text" class="form-control" data-td-target="#datetimepickerStartDate"/>
+            <span class="input-group-text" data-td-target="#datetimepickerStartDate" data-td-toggle="datetimepicker">
+              <span class="fas fa-calendar"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="datetimepickerInputEndDate" class="form-label">End Date</label>
+          <div class="input-group" id="datetimepickerEndDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+            <input id="datetimepickerInputEndDate" type="text" class="form-control" data-td-target="#datetimepickerEndDate"/>
+            <span class="input-group-text" data-td-target="#datetimepickerEndDate" data-td-toggle="datetimepicker">
+              <span class="fas fa-calendar"></span>
+            </span>
+          </div>
+        </div><br>
+
+        <div class="form-group">
+          <button type="button" class="btn btn-primary">Filter</button>
+        </div><br>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="col-9 main-content">
+
+      <div class="container">
+        <h3>Messages</h3>
+        <hr>
+
+        <ul id="message-list" class="list-group">
+        </ul>
+
+      </div>
+
+    </div>
+      <div th:replace="messages/modals/deleteInformations.html :: deleteModalInformations"></div>
+  </div>
+</div>
 
 </body>
 </html>
