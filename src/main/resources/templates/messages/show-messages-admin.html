@@ -30,6 +30,9 @@
   <script type="text/javascript" th:src="@{/js/global.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/message.js}"></script>
 
+  <script type="text/javascript" th:src="@{/js/messages/acceptRequest.js}"></script>
+  <script type="text/javascript" th:src="@{/js/messages/rejectRequest.js}"></script>
+
   <script type="text/javascript" th:src="@{/js/messages/addModalInformations.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/updateModalInformations.js}"></script>
   <script type="text/javascript" th:src="@{/js/messages/updatePriceModalInformations.js}"></script>
@@ -43,6 +46,8 @@
 <br>
 
 <div class="container-fluid">
+
+  <div id="alertMessageAdmin" role="alert"></div>
 
   <div class="row">
 
@@ -122,6 +127,9 @@
       </div>
 
     </div>
+      <div th:replace="messages/modals/acceptRequest.html :: acceptRequest"></div>
+      <div th:replace="messages/modals/rejectRequest.html :: rejectRequest"></div>
+
       <div th:replace="messages/modals/addInformations.html :: addModalInformations"></div>
       <div th:replace="messages/modals/updateInformations.html :: updateModalInformations"></div>
       <div th:replace="messages/modals/updatePriceInformations.html :: updatePriceModalInformations"></div>

@@ -116,4 +116,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item findItemBySku(String sku) { return itemDAO.findItemBySku(sku); }
 
+    @Override
+    public void updateMarketplacePriceBySku(String sku, Double marketplacePrice) {
+        itemDAO.updateMarketplacePriceBySku(sku, marketplacePrice);
+    }
+
 }

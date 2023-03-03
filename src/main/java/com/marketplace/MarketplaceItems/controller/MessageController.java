@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.MessageService;
 import com.marketplace.MarketplaceItems.service.UserService;
@@ -18,11 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -35,17 +38,20 @@ public class MessageController {
     private ItemService itemService;
     private UserService userService;
 
+    private ItemListService itemListService;
+
     private Validator validator;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService ){
+    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService, ItemListService theItemListService){
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         messageService = theMessageService;
         itemService = theItemService;
         userService = theUserService;
+        itemListService = theItemListService;
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -54,6 +60,91 @@ public class MessageController {
     @GetMapping("list")
     public String messageList() {
         return "messages/show-messages-admin";
+    }
+
+
+    @Transactional
+    @GetMapping("accept")
+    public ResponseEntity<String> acceptMessage(@RequestParam(name="messageId") Long id) {
+
+        Optional<Message> theMessageOptional = messageService.findById(id);
+
+        Message theMessage;
+
+        if(theMessageOptional.isPresent()) {
+            theMessage = theMessageOptional.get();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+        }
+
+        try {
+            switch (theMessage.getMessageType()) {
+                case "add":
+                    Item theAddItem = new Item(theMessage.getSku(), theMessage.getName(), theMessage.getMarketplacePrice(),
+                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), "");
+
+                    itemService.saveItem(theAddItem);
+                    messageService.deleteById(theMessage.getId());
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+
+                case "update":
+                    Item theUpdateItem = new Item(theMessage.getItem().getSku(), theMessage.getName(), theMessage.getItem().getMarketplacePrice(),
+                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), theMessage.getItem().getImage());
+
+                    itemService.saveItem(theUpdateItem);
+                    messageService.deleteById(theMessage.getId());
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+
+                case "updatePrice":
+                    String sku = theMessage.getItem().getSku();
+                    Double price = theMessage.getMarketplacePrice();
+                    itemService.updateMarketplacePriceBySku(sku, price);
+                    messageService.deleteById(theMessage.getId());
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+
+                case "delete":
+                    String skuToDelete = theMessage.getItem().getSku();
+                    messageService.deleteById(theMessage.getId());
+                    itemListService.deleteAllByItemSku(skuToDelete);
+                    messageService.deleteAllByItemSku(skuToDelete);
+                    itemService.deleteBySku(skuToDelete);
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+
+                default:
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body("{ \"error\": \"" + "Invalid message type" + "\" }");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+        }
+
+    }
+
+    @GetMapping("reject")
+    public ResponseEntity<String> rejectMessage(@RequestParam(name="messageId") Long id) {
+        try {
+            messageService.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{ \"error\": \"" + "Request was rejected" + "\" }");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+        }
     }
 
     @GetMapping("fetch")

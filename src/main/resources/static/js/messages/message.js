@@ -1,7 +1,6 @@
 
 function addMessageToList(message) {
 
-    console.log(message);
     var list = $('#message-list');
 
     var item = $('<li>').addClass('list-group-item');
@@ -76,14 +75,25 @@ function addMessageToList(message) {
                  button.data('oldItemClass', message.item.classItem);
                  button.data('oldItemQuality', message.item.quality);
                  button.data('oldItemType', message.item.type);
-                  button.data('oldItemPrice', message.item.marketplacePrice);
+                 button.data('oldItemPrice', message.item.marketplacePrice);
 
                  button.data('itemPrice', message.marketplacePrice);
                  break;
         }
 
+            var rejectButton = $('<button>').addClass('btn btn-danger float-end')
+                                               .attr('data-bs-toggle', 'modal')
+                                               .append($('<i>').addClass('fas fa-times'))
+                                               .attr('data-bs-target', '#rejectRequest')
+                                               .data('messageId', message.id);
 
-    item.append(title).append(body).append(username).append(button);
+            var acceptButton = $('<button>').addClass('btn btn-success float-end')
+                                                           .attr('data-bs-toggle', 'modal')
+                                                           .append($('<i>').addClass('fas fa-check'))
+                                                           .attr('data-bs-target', '#acceptRequest')
+                                                           .data('messageId', message.id);
+
+    item.append(title).append(body).append(username).append(button).append(rejectButton).append(acceptButton);
     list.append(item);
 }
 

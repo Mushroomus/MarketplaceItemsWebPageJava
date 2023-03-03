@@ -5,7 +5,7 @@ import javax.validation.constraints.AssertTrue;
 
 @Entity
 @Table(name = "messages")
-public class Message {
+public class Message implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -84,6 +84,7 @@ public class Message {
         else
             return null;
     }
+
 
     public void setMarketplacePrice(String marketplacePrice) {
         this.marketplacePrice = marketplacePrice;
