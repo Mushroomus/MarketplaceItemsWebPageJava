@@ -91,12 +91,14 @@ function addMessageToList(message) {
                                                .attr('data-bs-toggle', 'modal')
                                                .append($('<i>').addClass('fas fa-times'))
                                                .attr('data-bs-target', '#rejectRequest')
+                                               .css('margin-right', '10px')
                                                .data('messageId', message.id);
 
             var acceptButton = $('<button>').addClass('btn btn-success float-end')
                                                            .attr('data-bs-toggle', 'modal')
                                                            .append($('<i>').addClass('fas fa-check'))
                                                            .attr('data-bs-target', '#acceptRequest')
+                                                           .css('margin-right', '10px')
                                                            .data('messageId', message.id);
 
     item.append(title).append(body).append(username).append(button).append(rejectButton).append(acceptButton);

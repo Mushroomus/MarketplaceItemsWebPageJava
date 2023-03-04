@@ -27,9 +27,20 @@ $(document).ready(function() {
                          diffList.empty();
 
                          var priceDiff = parseFloat(itemPrice) - parseFloat(oldItemPrice);
-                         var priceDiffPercentage = ((priceDiff / parseFloat(oldItemPrice)) * 100).toFixed(2) + '%';
 
-                         diffList.append('<li>' + 'MP Price: ' + oldItemPrice + ' <i class="fas fa-arrow-right fa-sm"></i> ' +  itemPrice + ' (' + priceDiff.toFixed(2) + ', ' + priceDiffPercentage + ')</li>');
+                         var priceDifferenceCharacter;
+
+                         if(priceDiff > 0)
+                            priceDifferenceCharacter = '+' + priceDiff.toFixed(2) + '$';
+                         else
+                            priceDifferenceCharacter = priceDiff.toFixed(2) + '$';
+
+                         if(parseFloat(oldItemPrice) != 0.0) {
+                            var priceDiffPercentage = ((priceDiff / parseFloat(oldItemPrice)) * 100).toFixed(2) + '%';
+                            diffList.append('<li>' + 'MP Price: ' + oldItemPrice + ' <i class="fas fa-arrow-right fa-sm"></i> ' +  itemPrice + ' (' + priceDifferenceCharacter + ', ' + priceDiffPercentage + ')</li>');
+                         } else {
+                            diffList.append('<li>' + 'MP Price: ' + oldItemPrice + ' <i class="fas fa-arrow-right fa-sm"></i> ' +  itemPrice + ' (' + priceDifferenceCharacter + ')</li>');
+                         }
 
     });
 

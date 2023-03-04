@@ -202,11 +202,9 @@
              $('.sidebar-container').toggleClass("d-md-block");
              if ($('.sidebar-container').hasClass("d-md-block")) {
                $("#toggleButton svg").removeClass("fa-arrow-right").addClass("fa-arrow-left");
-               //$("#toggleButton i").toggleClass("fa-arrow-right fa arrow-left");
                $('.sidebar-container').css("animation-name", "fadeInLeft");
              } else {
                $("#toggleButton svg").removeClass("fa-arrow-left").addClass("fa-arrow-right");
-               //$("#toggleButton i").toggleClass("fa-arrow-left fa arrow-right");
                $('.sidebar-container').css("animation-name", "fadeOutRight");
              }
           });
