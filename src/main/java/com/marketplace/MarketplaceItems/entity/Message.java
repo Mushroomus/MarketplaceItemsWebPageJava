@@ -2,6 +2,7 @@ package com.marketplace.MarketplaceItems.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
@@ -33,6 +34,9 @@ public class Message implements Cloneable{
 
     @Column(name = "type")
     private String type;
+
+    @Column(name="date")
+    private LocalDateTime date;
 
     @Transient
     private String username;
@@ -144,6 +148,14 @@ public class Message implements Cloneable{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     @AssertTrue(message = "Delete - lack of informations")

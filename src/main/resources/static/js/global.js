@@ -5,13 +5,13 @@
           }, 2000);
 
 
-           $("#toggleBtn").click(function() {
+           $("#toggleButton").click(function() {
             $('.sidebar-container').toggleClass("d-md-block");
             if ($('.sidebar-container').hasClass("d-md-block")) {
-              $("#toggleBtn i").removeClass("fas fa-arrow-right").addClass("fas fa-arrow-left");
+              $("#toggleButton i").removeClass("fa-arrow-right").addClass("fa-arrow-left");
               $('.sidebar-container').css("animation-name", "fadeInLeft");
             } else {
-              $("#toggleBtn i").removeClass("fas fa-arrow-left").addClass("fas fa-arrow-right");
+              $("#toggleButton i").removeClass("fa-arrow-left").addClass("fa-arrow-right");
               $('.sidebar-container').css("animation-name", "fadeOutRight");
             }
           });

@@ -23,7 +23,7 @@
 
                       console.log(xhr.status);
                       if (xhr.status == 200) {
-                          //refreshTable(currentPage);
+                          refreshTable(currentPage);
                           alertMessage.text('Request was rejected').addClass('alert alert-success').show();
                       } else
                           alertMessage.text('Something went wrong').addClass("alert alert-danger").show();

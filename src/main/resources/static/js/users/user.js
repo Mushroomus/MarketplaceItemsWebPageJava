@@ -198,13 +198,24 @@
 
  $(document).ready(function() {
 
+         $("#toggleButton").click(function() {
+             $('.sidebar-container').toggleClass("d-md-block");
+             if ($('.sidebar-container').hasClass("d-md-block")) {
+               $("#toggleButton svg").removeClass("fa-arrow-right").addClass("fa-arrow-left");
+               //$("#toggleButton i").toggleClass("fa-arrow-right fa arrow-left");
+               $('.sidebar-container').css("animation-name", "fadeInLeft");
+             } else {
+               $("#toggleButton svg").removeClass("fa-arrow-left").addClass("fa-arrow-right");
+               //$("#toggleButton i").toggleClass("fa-arrow-left fa arrow-right");
+               $('.sidebar-container').css("animation-name", "fadeOutRight");
+             }
+          });
+
      $('#searchInput').val('');
 
      window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
-           //put your config here
          });
 
           window.datetimepickerEndDate = $('#datetimepickerEndDate').tempusDominus({
-           //put your config here
          });
-     });
+});

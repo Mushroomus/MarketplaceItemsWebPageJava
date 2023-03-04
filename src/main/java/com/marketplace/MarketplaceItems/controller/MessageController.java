@@ -24,9 +24,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -149,11 +150,39 @@ public class MessageController {
 
     @GetMapping("fetch")
     public ResponseEntity<String> getAllMessagesWithPagination(@RequestParam(defaultValue = "0") int page,
-                                                                      @RequestParam(defaultValue = "4") int size) {
+                                                               @RequestParam(defaultValue = "4") int size,
+                                                               @RequestParam(value = "search", required = false) String search,
+                                                               @RequestParam(value = "types", required = false) String types,
+                                                               @RequestParam(value = "startDate", required = false) String startDate,
+                                                               @RequestParam(value = "endDate", required = false) String endDate) {
 
         Pageable paging = PageRequest.of(page, size);
 
-        Page<Message> messagesPage = messageService.findAll(paging);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        LocalDateTime start = null;
+        if (startDate != null && !startDate.equals("null")) {
+            long timestamp = Long.parseLong(startDate);
+            Date date = new Date(timestamp);
+            String dateStartString = formatter.format(date);
+            start = LocalDateTime.parse(dateStartString, formatterDate);
+        }
+
+        LocalDateTime end = null;
+        if (endDate != null && !endDate.equals("null")) {
+            long timestamp = Long.parseLong(endDate);
+            Date date = new Date(timestamp);
+            String dateEndString = formatter.format(date);
+            end = LocalDateTime.parse(dateEndString, formatterDate);
+        }
+
+        List<String> typeList = null;
+
+        if(types != null && !types.equals(""))
+            typeList = Arrays.asList(types.split(","));
+
+        Page<Message> messagesPage = messageService.findAll(paging, search, typeList, start, end);
 
         List<Message> editedMessages = messagesPage.stream()
                 .map(message -> {
@@ -166,7 +195,6 @@ public class MessageController {
                 })
                 .collect(Collectors.toList());
 
-        List<Message> messages = messagesPage.getContent();
         int currentPage = messagesPage.getNumber();
         int totalPages = messagesPage.getTotalPages();
         long totalItems = messagesPage.getTotalElements();
@@ -175,7 +203,7 @@ public class MessageController {
         response.setMessages(editedMessages);
         response.setTotalPages(totalPages);
         response.setTotalElements(totalItems);
-        response.setCurrentPage(page);
+        response.setCurrentPage(currentPage);
 
         try {
             String jsonResponse = objectMapper.writeValueAsString(response);
@@ -253,6 +281,8 @@ public class MessageController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
             }
         }
+
+        request.setDate(LocalDateTime.now());
 
         Set<ConstraintViolation<Message>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
