@@ -1,5 +1,7 @@
 package com.marketplace.MarketplaceItems.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,7 +13,7 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "orderId")
+    @Column(name = "order_id")
     private String orderId;
 
     @Column(name = "date")
@@ -32,6 +34,7 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
     private User user;
 
     public Long getId() {

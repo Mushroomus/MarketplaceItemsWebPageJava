@@ -1,0 +1,29 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="addSales" class="modal fade" id="addSales" tabindex="-1" role="dialog" aria-labelledby="addSalesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSalesModal">Add Sales</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+                <div class="modal-body">
+
+                    <p>Select .csv file with Marketplace sales</p>
+                    <input type="file" id="csv-file" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="load-csv-btn">Load CSV</button>
+
+                </div>
+
+
+        </div>
+    </div>
+
+</div>

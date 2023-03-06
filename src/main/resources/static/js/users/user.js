@@ -150,6 +150,7 @@
                    });
              }
 
+
              function updatePagination(data) {
                  var pagination = $(".pagination");
                  pagination.empty();

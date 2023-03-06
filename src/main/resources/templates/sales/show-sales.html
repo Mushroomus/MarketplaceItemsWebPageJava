@@ -8,17 +8,34 @@
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"  crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/jQuery-provider.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+
+    <script type="text/javascript" th:src="@{/js/sales/sale.js}"></script>
     <script type="text/javascript" th:src="@{/js/global.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+
+    <script type="text/javascript" th:src="@{/js/sales/addSalesModal.js}"></script>
 
 </head>
 
@@ -29,22 +46,82 @@
 
 <div class="container-fluid">
 
-    <div id="alertMessageUser" role="alert"></div>
+    <div id="alertMessageSale" role="alert"></div>
 
     <div class="row">
         <div class="col-3 d-md-block sidebar sidebar-container">
 
-
-
             <div class="d-none d-md-block bg-light border rounded ml-3" id="sidebar">
-                <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5>
+                <h5 class="text-center font-weight-bold mt-3 mb-3 display-4">Filter</h5><br>
 
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabSales">Sales</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabItems">Items</button>
+                    </li>
+                </ul>
 
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="tabSales">
+
+                        <br><div class="form-group">
+                        <label for="min-price">Min Price:</label>
+                        <input type="number" class="form-control" id="min-price" placeholder="Min Price">
+                    </div>
+
+                        <div class="form-group">
+                            <label for="max-price">Max Price:</label>
+                            <input type="number" class="form-control" id="max-price" placeholder="Max Price">
+                        </div>
+
+                    </div>
+
+                    <div class="tab-pane fade" id="tabItems">
+
+                        <br>
+                        <div class="form-group">
+                            <label for="filterCraftableDropdown">Craftable</label>
+                            <select class="form-control" id="filterCraftableDropdown" name="craftable">
+                                <option th:each="craftableOption : ${craftableOptions}" th:value="${craftableOption}" th:selected="${selectedCraftable == craftableOption}" th:text="${craftableOption}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mt-3"><label class="d-block font-weight-bold mb-2">Class</label>
+                            <div th:each="class : ${classesList}" class="form-check-label">
+                                <label>
+                                    <input type="checkbox" class="form-check-input" name="classes" th:value="${class}" th:text="' ' +${class}" th:checked="${selectedClasses != null && selectedClasses.contains(class)}" />
+                                </label>
+                            </div>
+
+                            <label class="d-block font-weight-bold mb-2 mt-3">Quality</label>
+                            <div th:each="quality : ${qualityList}" class="form-check-label">
+                                <label>
+                                    <input type="checkbox" class="form-check-input" name="qualities" th:value="${quality}" th:text="' ' + ${quality}" th:checked="${selectedQualities != null && selectedQualities.contains(quality)}" />
+                                </label>
+                            </div>
+
+                            <label class="d-block font-weight-bold mb-2 mt-3">Type</label>
+                            <div th:each="type : ${typeList}" class="form-check-label">
+                                <label>
+                                    <input type="checkbox" class="form-check-input" name="types" th:value="${type}" th:text="' ' +${type}" th:checked="${selectedTypes != null && selectedTypes.contains(type)}" />
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mx-3 mt-3 mb-3">Filter</button>
+
+                </div>
             </div>
-
-
-
         </div>
+
+
         <div class="col-9 main-content">
 
             <div class="container">
@@ -56,10 +133,9 @@
 
                     <button class="btn btn-primary" id="toggleButton"><i class="fas fa-arrow-left"></i></button>
 
-                    <form action="#" th:action="@{fetchCSV}" th:method="POST" enctype="multipart/form-data">
-                        <input type="file" name="file" />
-                        <button type="submit">Load CSV</button>
-                    </form>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSales">
+                        Add Sales
+                    </button>
 
 
                     <button class="btn btn-danger" id="clearFilters"><i class="fa fa-filter" ></i></button>
@@ -79,7 +155,38 @@
 
                 <p id="noSales" class="fs-3" style="display:none;"> No Sales </p>
 
+                <div class="d-flex justify-content-center align-items-center">
+                    <div id="spinner" class="spinner-border" role="status" hidden>
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
+
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Net</th>
+                        <th>Fee</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+
+                <div th:replace="sales/modals/addSales.html :: addSales"></div>
+
+                <nav id="spinnerPaginationHide" aria-label="...">
+                    <ul class="pagination">
+                    </ul>
+                </nav>
+
+                </div>
+
+
             </div>
         </div>
     </div>

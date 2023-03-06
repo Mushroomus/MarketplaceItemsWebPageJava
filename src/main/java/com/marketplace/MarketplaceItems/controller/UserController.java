@@ -183,7 +183,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/delete")
     @Transactional
     public ResponseEntity<ResponseMessage> delete(@RequestParam int id) {
