@@ -67,10 +67,33 @@
 
                     <div class="tab-pane fade show active" id="tabSales">
 
-                        <br><div class="form-group">
-                        <label for="min-price">Min Price:</label>
-                        <input type="number" class="form-control" id="min-price" placeholder="Min Price">
-                    </div>
+                        <br>
+                        <form autocomplete="off">
+                            <div class="form-group">
+                                <label for="datetimepickerInputStartDate" class="form-label">Start Date</label>
+                                <div class="input-group" id="datetimepickerStartDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                                    <input id="datetimepickerInputStartDate" type="text" class="form-control" data-td-target="#datetimepickerStartDate"/>
+                                    <span class="input-group-text" data-td-target="#datetimepickerStartDate" data-td-toggle="datetimepicker">
+                                <span class="fas fa-calendar"></span>
+                             </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="datetimepickerInputEndDate" class="form-label">End Date</label>
+                                <div class="input-group" id="datetimepickerEndDate" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                                    <input id="datetimepickerInputEndDate" type="text" class="form-control" data-td-target="#datetimepickerEndDate"/>
+                                    <span class="input-group-text" data-td-target="#datetimepickerEndDate" data-td-toggle="datetimepicker">
+                                <span class="fas fa-calendar"></span>
+                             </span>
+                                </div>
+                            </div>
+                        </form><br>
+
+                        <div class="form-group">
+                            <label for="min-price">Min Price:</label>
+                            <input type="number" class="form-control" id="min-price" placeholder="Min Price">
+                         </div>
 
                         <div class="form-group">
                             <label for="max-price">Max Price:</label>
@@ -113,9 +136,25 @@
 
                         </div>
 
+                    </div><br>
+
+                    <div class="form-group">
+                        <div class="form-switch">
+                            <input class="form-check-input" type="checkbox" id="switchUseSale">
+                            <label class="form-check-label" for="switchUseSale">Filter Sale</label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mx-3 mt-3 mb-3">Filter</button>
+                    <div class="form-group">
+                        <div class="form-switch">
+                            <input class="form-check-input" type="checkbox" id="switchUseItem">
+                            <label class="form-check-label" for="switchUseItem">Filter Item</label>
+                        </div>
+                    </div><br>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="filterButton()">Filter</button>
+                    </div><br>
 
                 </div>
             </div>

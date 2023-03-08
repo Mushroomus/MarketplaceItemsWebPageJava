@@ -64,11 +64,54 @@ public class SaleController {
 
     @GetMapping("/list-refresh")
     public ResponseEntity<PagedModel<Sale>> refreshList(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                        @RequestParam(value = "size", defaultValue = "10") int size,
+                                                        @RequestParam(defaultValue = "", required = false) String craftable,
+                                                        @RequestParam(defaultValue = "", required = false) List<String> classes,
+                                                        @RequestParam(defaultValue = "", required = false) List<String> qualities,
+                                                        @RequestParam(defaultValue = "", required = false) List<String> types,
+                                                        @RequestParam(defaultValue = "", required = false) String startDate,
+                                                        @RequestParam(defaultValue = "", required = false) String endDate,
+                                                        @RequestParam(defaultValue = "", required = false) String minPrice,
+                                                        @RequestParam(defaultValue = "", required = false) String maxPrice) {
         Page<Sale> sales;
         Pageable pageable = PageRequest.of(page, size);
 
-        sales = saleService.findAll(pageable);
+        System.out.println(minPrice + " " + maxPrice);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        LocalDateTime start = null;
+        if (startDate != null && !startDate.equals("")) {
+            long timestamp = Long.parseLong(startDate);
+            Date date = new Date(timestamp);
+            String dateStartString = formatter.format(date);
+            start = LocalDateTime.parse(dateStartString, formatterDate);
+        }
+
+        LocalDateTime end = null;
+        if (endDate != null && !endDate.equals("")) {
+            long timestamp = Long.parseLong(endDate);
+            Date date = new Date(timestamp);
+            String dateEndString = formatter.format(date);
+            end = LocalDateTime.parse(dateEndString, formatterDate);
+        }
+
+
+        System.out.println(minPrice);
+        Double minimumPriceValue = null;
+
+        if(minPrice != null && !minPrice.isEmpty())
+            minimumPriceValue = Double.parseDouble(minPrice);
+
+
+        Double maximumPriceValue = null;
+        if(maxPrice != null && !maxPrice.isEmpty())
+            maximumPriceValue = Double.parseDouble(maxPrice);
+
+
+        //sales = saleService.findAll(pageable);
+        sales = saleService.findAll(pageable, craftable, classes, qualities, types, start, end, minimumPriceValue, maximumPriceValue);
 
         PagedModel<Sale> pagedModel = PagedModel.of(sales.getContent(), new PagedModel.PageMetadata(sales.getSize(), sales.getNumber(), sales.getTotalElements()));
 
@@ -147,7 +190,7 @@ public class SaleController {
         try {
             saleService.saveAll(sales);
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{ \"error\": \"" + "Data saved" + "\" }");
 

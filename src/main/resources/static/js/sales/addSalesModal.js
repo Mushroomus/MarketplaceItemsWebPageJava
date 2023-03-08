@@ -36,7 +36,6 @@
                             $('table').show();
                             $('#spinnerPaginationHide').show();
                             $('#alertMessageSale').removeClass('alert alert-danger').addClass('alert alert-success').text('Records added');
-                            alert('CSV loaded successfully!');
 
                             setTimeout(function() {
                                 $("#alertMessageSale").fadeOut('slow');

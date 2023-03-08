@@ -1,6 +1,13 @@
 
 refreshTable(0);
 var currentPage = 0;
+var filter = false;
+
+function filterButton() {
+    filter = true;
+    console.log(createUrl(currentPage));
+    refreshTable(0);
+}
 
 function stringToCorrectDate(stringDate) {
         let dateString = stringDate;
@@ -13,6 +20,98 @@ function stringToCorrectDate(stringDate) {
 
         return new Date(year, month - 1, day, time.split(":")[0], time.split(":")[1]);
     }
+
+function createUrl(page) {
+
+    if(page == null || page == "") {
+        currentPage = 0;
+        page = 0;
+    }
+    currentPage = page;
+
+    let url = "list-refresh";
+    url += "?page=" + page;
+
+    /*
+    if(searchFilter == true) {
+        var search = $("#searchInput").val();
+
+        if(searchFilter != null)
+            url += "&search=" + search;
+    }
+     */
+
+    if(filter == true) {
+
+        if($('#switchUseSale').prop('checked')) {
+            var timestampStartDate = null;
+            var timestampEndDate = null;
+
+            if($("#datetimepickerInputStartDate").val() != "" && $("#datetimepickerInputStartDate").val() != null) {
+                var startDate = stringToCorrectDate( $("#datetimepickerInputStartDate").val() );
+                timestampStartDate = startDate.getTime();
+            }
+
+            if($("#datetimepickerInputEndDate").val() != "" && $("#datetimepickerInputStartDate").val() != null) {
+                var endDate = stringToCorrectDate( $("#datetimepickerInputEndDate").val() );
+                timestampEndDate = endDate.getTime();
+            }
+
+            if (startDate != null && startDate != "")
+                url += "&startDate=" + timestampStartDate;
+            if (endDate != null && endDate != "")
+                url += "&endDate=" + timestampEndDate;
+
+            var minPrice = $('#min-price').val();
+            var maxPrice = $('#max-price').val();
+
+            if(minPrice != null && minPrice !== 0 )
+                url += "&minPrice=" + minPrice;
+
+            if(maxPrice != null && maxPrice !== 0 )
+                url += "&maxPrice=" + maxPrice;
+        }
+
+        if($('#switchUseItem').prop('checked')) {
+            var craftable = $('#filterCraftableDropdown').val();
+
+            var selectedClasses = "";
+            $('input[name="classes"]:checked').each(function() {
+                selectedClasses += $(this).val() + ",";
+            });
+
+            selectedClasses = selectedClasses.slice(0, -1);
+
+
+            var selectedQualities = "";
+            $('input[name="qualities"]:checked').each(function() {
+                selectedQualities += $(this).val() + ",";
+            });
+
+            selectedQualities = selectedQualities.slice(0, -1);
+
+            var selectedTypes = "";
+            $('input[name="types"]:checked').each(function() {
+                selectedTypes += $(this).val() + ",";
+            });
+
+            selectedTypes = selectedTypes.slice(0, -1);
+
+            if(craftable != "Any")
+                url += "&craftable=" + craftable;
+
+            if(selectedClasses != "")
+                url += "&classes=" + selectedClasses;
+
+            if(selectedQualities != "")
+                url += "&qualities=" + selectedQualities;
+
+            if(selectedTypes != "")
+                url += "&types=" + selectedTypes;
+        }
+    }
+    return url;
+}
 
 function updatePagination(data) {
     var pagination = $(".pagination");
@@ -78,12 +177,10 @@ function updatePagination(data) {
     function refreshTable(page) {
 
                $.ajax({
-                 url: "list-refresh?page=" + page,
+                 url: createUrl(page),
                  type: "GET",
                  dataType: 'json',
                  success: function(data) {
-                 console.log(data);
-
 
                 if(data.page.totalPages == 0) {
                     $("table tbody").empty();
@@ -144,4 +241,11 @@ function updatePagination(data) {
              }
 
  $(document).ready(function() {
+
+     window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
+     });
+
+     window.datetimepickerEndDate = $('#datetimepickerEndDate').tempusDominus({
+     });
+
 });
