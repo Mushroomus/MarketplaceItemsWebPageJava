@@ -50,6 +50,15 @@ function initChart() {
             }
         }
     });
+
+    ctx.on('click', function(evt) {
+        var activePoints = chart.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, true);
+        if (activePoints.length > 0) {
+            var clickedElementIndex = activePoints[0].index;
+            var label = chart.data.labels[clickedElementIndex];
+            console.log("Clicked " + label);
+        }
+    });
 }
 
 
