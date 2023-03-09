@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import javax.sound.midi.SysexMessage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,5 +135,39 @@ public class SaleServiceImpl implements  SaleService {
 
         List<Sale> sales = typedQuery.getResultList();
         return new PageImpl<>(sales, pageable, countSalesByFilters(craftable, classes, qualities, types, startDate, endDate, minPrice, maxPrice));
-        };
+        }
+
+    @Override
+    public List<String> getYears() {
+        return saleDAO.getDistinctYears();
     }
+
+    @Override
+    public List<Object[]> getSalesCountByMonthInYear(int year) {
+        String hql = "SELECT MONTH(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year GROUP BY MONTH(s.date)";
+        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        query.setParameter("year", year);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> getBestSellingItems() {
+        String hql = "SELECT i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i GROUP BY i.name ORDER BY COUNT(s.id) DESC";
+        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        System.out.println(query.getResultList());
+        query.setMaxResults(5);
+        System.out.println(query.getResultList());
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> getWorstSellingItems() {
+        String hql = "SELECT i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i GROUP BY i.name ORDER BY COUNT(s.id) ASC";
+        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        System.out.println(query.getResultList());
+        query.setMaxResults(5);
+        System.out.println(query.getResultList());
+        return query.getResultList();
+    }
+
+}

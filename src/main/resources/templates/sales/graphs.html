@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+
+    <script type="text/javascript" th:src="@{/js/sales/graph.js}"></script>
+
+</head>
+<body>
+    <!--
+    <div class="container">
+        <select id="yearSelect"></select><br>
+        <canvas id="myChart"></canvas>
+    </div>
+    -->
+    <div th:insert="~{fragments/navbar.html :: navbar}"></div><br>
+
+    <div class="container-fluid">
+
+            <div class="d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Graphs
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="graphsDropdown">
+                    <li><a class="dropdown-item" onlick="fetchYears()">Graph 1</a></li>
+                    <li><a class="dropdown-item" href="#graph2">Graph 2</a></li>
+                    <li><a class="dropdown-item" href="#graph3">Graph 3</a></li>
+                </ul>
+
+                <div class="form-group">
+                    <select class="form-control" id="yearSelect"></select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+    </div>
+
+
+
+</body>
+</html>

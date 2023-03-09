@@ -41,6 +41,10 @@
           <a class="navbar-brand" href="#" th:href="@{/sales/list}">Sales</a>
         </li>
 
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+          <a class="navbar-brand" href="#" th:href="@{/sales/graphs/show}">Graphs</a>
+        </li>
+
       </ul>
 
       <ul class="navbar-nav ms-auto" style="margin-right: 10px;">

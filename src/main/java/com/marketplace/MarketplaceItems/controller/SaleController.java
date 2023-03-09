@@ -24,6 +24,7 @@ import org.springframework.ui.Model;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 
+import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -199,7 +200,61 @@ public class SaleController {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{ \"error\": \"" + "Error occured" + "\" }");
         }
+    }
 
+    @GetMapping("graphs/show")
+    public String openGraphs() {
+        return "sales/graphs";
+    }
+
+    @GetMapping("graphs/get-years")
+    public ResponseEntity<List<String>> getYears() {
+        try {
+            List<String> years = saleService.getYears();
+            return ResponseEntity.ok(years);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/sales-year")
+    public ResponseEntity<List<Map<String, Object>>> getSalesCountByMonthInYear(@RequestParam int year) {
+        System.out.println(year);
+        try {
+            List<Object[]> results = saleService.getSalesCountByMonthInYear(year);
+
+            // Convert the list of Object arrays to a list of maps
+            List<Map<String, Object>> salesByMonth = new ArrayList<>();
+            for (Object[] row : results) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("month", row[0]);
+                map.put("count", row[1]);
+                salesByMonth.add(map);
+            }
+
+            // Return the list of sales by month as a JSON response
+            return ResponseEntity.ok(salesByMonth);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/sales-best")
+    public ResponseEntity<List<String>> getBestSales() {
+        try {
+            List<Object[]> results = saleService.getBestSellingItems();
+
+            // Convert the list of Object arrays to a list of maps
+            List<String> bestSales = new ArrayList<>();
+
+            for(Object[] row : results)
+                bestSales.add((String) row[0]);
+
+            // Return the list of sales by month as a JSON response
+            return ResponseEntity.ok(bestSales);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
