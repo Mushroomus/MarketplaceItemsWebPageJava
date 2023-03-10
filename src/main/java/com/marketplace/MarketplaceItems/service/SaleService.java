@@ -19,7 +19,12 @@ public interface SaleService {
 
     List<String> getYears();
 
+
     List<Object[]> getSalesCountByMonthInYear(int year);
+
+    List<Object[]> getSalesCountByDayinMonth(int year, int month);
+
+    List<Object[]> getItemsDataFromMonth(int year, int month);
 
     List<Object[]> getBestSellingItems();
 

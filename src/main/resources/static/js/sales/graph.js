@@ -1,4 +1,3 @@
-
 function fetchYears() {
 
     $.ajax({
@@ -16,6 +15,7 @@ function fetchYears() {
         }
     });
 
+    /*
     $.ajax({
         url: 'sales-best', // Replace with your server endpoint URL
         success: function (items) {
@@ -24,6 +24,7 @@ function fetchYears() {
 
         }
     });
+    */
 }
 
 var chart;
@@ -55,26 +56,56 @@ function initChart() {
         var activePoints = chart.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, true);
         if (activePoints.length > 0) {
             var clickedElementIndex = activePoints[0].index;
-            var label = chart.data.labels[clickedElementIndex];
-            console.log("Clicked " + label);
+
+
+            let firstSpaceIndex = chart.data.labels[clickedElementIndex].indexOf(' ');
+            var month = chart.data.labels[clickedElementIndex].substring(0, firstSpaceIndex);
+            console.log(month);
+
+            var year = $('#yearSelect').val();
+
+            $('#showItemsYear').data('year', year);
+            $('#showItemsYear').data('monthText', month);
+            $('#showItemsYear').data('month', ($.inArray(month, monthNames) + 1));
+            $('#showItemsYear').modal('show');
+
         }
     });
 }
 
+var monthNames = [ "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+var monthsFetched = false;
 
 function updateSalesChart(year) {
+
+    currentYear = year;
     // Get the sales data for the selected year from the server using AJAX
     $.ajax({
         url: 'sales-year?year=' + year, // Replace with your server endpoint URL
         success: function(salesData) {
 
-            var monthNames = [  "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
+             var monthSelect = $('#monthSelect');
 
-            var labels = salesData.map(function(d) { return monthNames[d.month]; });
+            if(monthsFetched == false) {
+                 monthSelect.empty();
+                 monthSelect.append($('<option>', { value: "all", text: "All" }));
+
+                 $.each(salesData, function (index, sale) {
+                                var month = sale.month;
+                                monthSelect.append($('<option>', {
+                                    value: monthNames[month-1],
+                                    text: monthNames[month-1]
+                                }));
+                            });
+                 monthsFetched = true;
+            }
+
+            var labels = salesData.map(function(d) { return monthNames[d.month-1] + ' ' + year; });
             var values = salesData.map(function(d) { return d.count; });
 
-            //var chart = $('#myChart').get(0).getContext('2d');
+            chart.config.type = 'bar';
             chart.data.labels = labels;
             chart.data.datasets[0].data = values;
             chart.update();
@@ -85,4 +116,42 @@ function updateSalesChart(year) {
 $(document).ready(function() {
     initChart();
     fetchYears();
+
+    $('#monthSelect').change( function() {
+
+      var year = $('#yearSelect').val();
+      var month = $('#monthSelect').val();
+
+      if(month == "all") {
+        updateSalesChart(year);
+      } else {
+          $.ajax({
+            url: 'sales-month?year=' + year + '&month=' +  ($.inArray(month, monthNames) + 1),
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+
+              var monthYear =  '.' + (String($.inArray(month, monthNames) + 1).padStart(2, '0')) + '.' + year;
+
+              chart.config.type = 'line';
+              chart.data.labels = data.map(function(row) { return String(row.day).padStart(2, '0') + monthYear; });
+              chart.data.datasets[0].data = data.map(function(row) { return row.count; });
+              chart.update();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log('Error: ' + errorThrown);
+            }
+          });
+        }
+    });
+
+
+    $('#yearSelect').change( function() {
+      monthsFetched = false;
+      $('#monthSelect').val('all');
+      updateSalesChart($('#yearSelect').val());
+    });
+
+
+
 });

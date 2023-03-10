@@ -142,6 +142,7 @@ public class SaleServiceImpl implements  SaleService {
         return saleDAO.getDistinctYears();
     }
 
+
     @Override
     public List<Object[]> getSalesCountByMonthInYear(int year) {
         String hql = "SELECT MONTH(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year GROUP BY MONTH(s.date)";
@@ -151,12 +152,29 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
+    public List<Object[]> getSalesCountByDayinMonth(int year, int month) {
+        String hql = "SELECT DAY(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY DAY(s.date) ORDER BY DAY(s.date)";
+        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        query.setParameter("year", year);
+        query.setParameter("month", month);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Object[]> getItemsDataFromMonth(int year, int month) {
+        String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
+        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        query.setParameter("year", year);
+        query.setParameter("month", month);
+
+        return query.getResultList();
+    }
+
+    @Override
     public List<Object[]> getBestSellingItems() {
         String hql = "SELECT i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i GROUP BY i.name ORDER BY COUNT(s.id) DESC";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
-        System.out.println(query.getResultList());
         query.setMaxResults(5);
-        System.out.println(query.getResultList());
         return query.getResultList();
     }
 
