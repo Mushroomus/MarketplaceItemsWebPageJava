@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 import javax.persistence.EntityManager;
@@ -215,21 +216,38 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public List<Object[]> getBestSellingItems() {
-        String hql = "SELECT i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i GROUP BY i.name ORDER BY COUNT(s.id) DESC";
+    public List<Object[]> getBestOrWorstSellingItems(int year, Integer month, boolean best) {
+
+        String hql;
+
+        if(month == null)
+            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year GROUP BY i.sku, i.name";
+        else
+            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name";
+
+        if (best) {
+            hql += " ORDER BY COUNT(s.id) DESC";
+        } else {
+            hql += " ORDER BY COUNT(s.id) ASC";
+        }
+
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
+        query.setParameter("year", year);
+        if(month != null)
+            query.setParameter("month", month);
+
         query.setMaxResults(5);
         return query.getResultList();
     }
 
     @Override
-    public List<Object[]> getWorstSellingItems() {
-        String hql = "SELECT i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i GROUP BY i.name ORDER BY COUNT(s.id) ASC";
-        TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
-        System.out.println(query.getResultList());
-        query.setMaxResults(5);
-        System.out.println(query.getResultList());
+    public List<Integer> getMonthsByYear(@RequestParam int year) {
+        String hql = "SELECT DISTINCT MONTH(s.date) FROM Sale s WHERE YEAR(s.date) = :year ORDER BY MONTH(s.date) ASC";
+        TypedQuery<Integer> query = entityManager.createQuery(hql, Integer.class);
+        query.setParameter("year", year);
+
         return query.getResultList();
+
     }
 
 }

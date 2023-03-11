@@ -29,7 +29,7 @@
     -->
     <div th:insert="~{fragments/navbar.html :: navbar}"></div><br>
 
-    <div class="container-fluid">
+    <div class="container">
 
             <div class="d-flex gap-2 align-items-center">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -37,9 +37,8 @@
                 </button>
 
                 <ul class="dropdown-menu" aria-labelledby="graphsDropdown">
-                    <li><a class="dropdown-item" onlick="fetchYears()">Graph 1</a></li>
-                    <li><a class="dropdown-item" href="#graph2">Graph 2</a></li>
-                    <li><a class="dropdown-item" href="#graph3">Graph 3</a></li>
+                    <li id="firstGraphOption"><a class="dropdown-item" onlick="fetchStartData()">Graph 1</a></li>
+                    <li id="secondGraphOption"><a class="dropdown-item" onlick="fetchStartData()">Graph 2</a></li>
                 </ul>
 
                 <div class="form-group">
@@ -54,6 +53,17 @@
             <div class="row">
                 <div class="col-md-12">
                     <canvas id="myChart"></canvas>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="myChart2"></canvas>
+                    </div>
+
+                    <div class="col-md-6">
+                        <canvas id="myChart3"></canvas>
+                    </div>
+
                 </div>
             </div>
 

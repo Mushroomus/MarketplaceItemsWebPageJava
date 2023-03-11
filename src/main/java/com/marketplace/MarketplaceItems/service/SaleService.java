@@ -4,6 +4,7 @@ import com.marketplace.MarketplaceItems.entity.Sale;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +32,8 @@ public interface SaleService {
 
     int getItemsDataFromDayTotalPages(int year, int month, int day, int pageSize);
 
-    List<Object[]> getBestSellingItems();
+    List<Object[]> getBestOrWorstSellingItems(int year, Integer month, boolean best);
 
-    List<Object[]> getWorstSellingItems();
+
+    List<Integer> getMonthsByYear(@RequestParam int year);
 }

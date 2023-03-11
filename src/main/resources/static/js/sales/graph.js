@@ -1,5 +1,7 @@
-function fetchYears() {
+var firstGraph = true;
 
+
+function fetchStartData() {
     $.ajax({
         url: 'get-years', // Replace with your server endpoint URL
         success: function (years) {
@@ -11,23 +13,18 @@ function fetchYears() {
                     text: year
                 }));
             });
-            updateSalesChart(yearSelect.val());
+
+            if(firstGraph)
+                updateSalesChart(yearSelect.val());
+            else
+                updateBestWorstCharts(yearSelect.val());
         }
     });
-
-    /*
-    $.ajax({
-        url: 'sales-best', // Replace with your server endpoint URL
-        success: function (items) {
-
-            console.log(items);
-
-        }
-    });
-    */
 }
 
 var chart;
+var secondChart;
+var thirdChart;
 
 var monthNames = [ "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"];
@@ -55,6 +52,78 @@ function initChart() {
             }
         }
     });
+
+    var secondCtx = $('#myChart2');
+        secondChart = new Chart(secondCtx, {
+            type: 'pie',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Sales',
+                    data: [],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                     backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                      ],
+                      borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                      ],
+                      borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                  legend: {
+                    position: 'bottom'
+                  }
+                }
+              }
+        });
+
+      var thirdCtx = $('#myChart3');
+              thirdChart = new Chart(thirdCtx, {
+                  type: 'pie',
+                  data: {
+                      labels: [],
+                      datasets: [{
+                          label: 'Sales',
+                          data: [],
+                          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                          borderColor: 'rgba(255, 99, 132, 1)',
+                           backgroundColor: [
+                              'rgba(255, 99, 132, 0.2)',
+                              'rgba(54, 162, 235, 0.2)',
+                              'rgba(255, 206, 86, 0.2)',
+                              'rgba(75, 192, 192, 0.2)',
+                              'rgba(153, 102, 255, 0.2)'
+                            ],
+                            borderColor: [
+                              'rgba(255, 99, 132, 1)',
+                              'rgba(54, 162, 235, 1)',
+                              'rgba(255, 206, 86, 1)',
+                              'rgba(75, 192, 192, 1)',
+                              'rgba(153, 102, 255, 1)'
+                            ],
+                            borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      plugins: {
+                        legend: {
+                          position: 'bottom'
+                        }
+                      }
+                    }
+              });
 
     ctx.on('click', function(evt) {
         var activePoints = chart.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, true);
@@ -90,6 +159,30 @@ function initChart() {
 
 var monthsFetched = false;
 
+function fetchMonths(year) {
+
+     var monthSelect = $('#monthSelect');
+
+     $.ajax({
+            url: 'fetch-months?year=' + year, // Replace with your server endpoint URL
+            success: function(months) {
+                monthSelect.empty();
+                monthSelect.append($('<option>', { value: "all", text: "All" }));
+
+                 $.each(months, function (index, month) {
+                    monthSelect.append($('<option>', {
+                        value: monthNames[month-1],
+                        text: monthNames[month-1]
+                    }));
+                });
+
+                monthsFetched = true;
+            }
+        });
+
+   monthsFetched = true;
+}
+
 function updateSalesChart(year) {
 
     currentYear = year;
@@ -100,19 +193,8 @@ function updateSalesChart(year) {
 
              var monthSelect = $('#monthSelect');
 
-            if(monthsFetched == false) {
-                 monthSelect.empty();
-                 monthSelect.append($('<option>', { value: "all", text: "All" }));
-
-                 $.each(salesData, function (index, sale) {
-                                var month = sale.month;
-                                monthSelect.append($('<option>', {
-                                    value: monthNames[month-1],
-                                    text: monthNames[month-1]
-                                }));
-                            });
-                 monthsFetched = true;
-            }
+            if(monthsFetched == false)
+                 fetchMonths(year);
 
             var labels = salesData.map(function(d) { return monthNames[d.month-1] + ' ' + year; });
             var values = salesData.map(function(d) { return d.count; });
@@ -125,18 +207,58 @@ function updateSalesChart(year) {
     });
 }
 
+function updateBestWorstCharts(year, month) {
+
+    //currentYear = year;
+
+    let url;
+    if(month == null)
+        url = 'sales-best?year=' + year;
+    else
+      url = 'sales-best?year=' + year + '&month=' + month;
+
+     if(monthsFetched == false)
+        fetchMonths(year);
+
+    $.ajax({
+        url: url, // Replace with your server endpoint URL
+        success: function(salesBest) {
+
+            var labels = salesBest.map(function(d) { return d.sku + ' ' + d.name });
+            var values = salesBest.map(function(d) { return d.count; });
+
+            secondChart.data.labels = labels;
+            secondChart.data.datasets[0].data = values;
+            secondChart.update();
+        }
+      });
+
+       $.ajax({
+              url: url.replace('best', 'worst'), // Replace with your server endpoint URL
+              success: function(salesWorst) {
+
+                  var labels = salesWorst.map(function(d) { return d.sku + ' ' + d.name });
+                  var values = salesWorst.map(function(d) { return d.count; });
+
+                  thirdChart.data.labels = labels;
+                  thirdChart.data.datasets[0].data = values;
+                  thirdChart.update();
+              }
+            });
+};
+
 $(document).ready(function() {
     initChart();
-    fetchYears();
+    fetchStartData();
 
     $('#monthSelect').change( function() {
 
       var year = $('#yearSelect').val();
       var month = $('#monthSelect').val();
 
-      if(month == "all") {
-        updateSalesChart(year);
-      } else {
+      if(month == "all" && firstGraph) {
+            updateSalesChart(year);
+      } else if(firstGraph) {
           $.ajax({
             url: 'sales-month?year=' + year + '&month=' +  ($.inArray(month, monthNames) + 1),
             type: 'GET',
@@ -155,14 +277,44 @@ $(document).ready(function() {
             }
           });
         }
+        else if(firstGraph == false) {
+            if(month == "all")
+                updateBestWorstCharts($('#yearSelect').val(), null);
+            else
+                updateBestWorstCharts($('#yearSelect').val(), ($.inArray(month, monthNames) + 1));
+        }
     });
 
 
     $('#yearSelect').change( function() {
       monthsFetched = false;
       $('#monthSelect').val('all');
-      updateSalesChart($('#yearSelect').val());
+
+      if(firstGraph)
+        updateSalesChart($('#yearSelect').val());
+      else
+        updateBestWorstCharts($('#yearSelect').val(), null);
     });
+
+     $('#firstGraphOption').click(function() {
+            $('#myChart').show();
+            $('#myChart2').hide();
+            $('#myChart3').hide();
+            firstGraph = true;
+          });
+
+    $('#secondGraphOption').click(function() {
+
+        $('#myChart').hide();
+        $('#myChart2').show();
+        $('#myChart3').show();
+        firstGraph = false;
+        if($('#monthSelect').val() == 'all')
+            updateBestWorstCharts($('#yearSelect').val(), null);
+        else
+            updateBestWorstCharts($('#yearSelect').val(), ($.inArray($('#monthSelect').val(), monthNames) + 1));
+
+      });
 
 
 

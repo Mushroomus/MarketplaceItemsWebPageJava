@@ -350,19 +350,38 @@ public class SaleController {
     }
 
     @GetMapping("graphs/sales-best")
-    public ResponseEntity<List<String>> getBestSales() {
+    public ResponseEntity<List<SalesItemsDTO>> getBestSales(@RequestParam int year, @RequestParam(required = false) Integer month) {
         try {
-            List<Object[]> results = saleService.getBestSellingItems();
+            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, true);
+            List<SalesItemsDTO> bestSales = SalesItemsDTO.getList(results);
 
-            // Convert the list of Object arrays to a list of maps
-            List<String> bestSales = new ArrayList<>();
-
-            for(Object[] row : results)
-                bestSales.add((String) row[0]);
-
-            // Return the list of sales by month as a JSON response
             return ResponseEntity.ok(bestSales);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/sales-worst")
+    public ResponseEntity<List<SalesItemsDTO>> getWorstSales(@RequestParam int year, @RequestParam(required = false) Integer month) {
+        try {
+            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, false);
+            List<SalesItemsDTO> worstSales = SalesItemsDTO.getList(results);
+
+            return ResponseEntity.ok(worstSales);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/fetch-months")
+    public ResponseEntity<List<Integer>> getMonthsByYear(@RequestParam int year) {
+        try {
+            List<Integer> results = saleService.getMonthsByYear(year);
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
