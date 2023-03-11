@@ -9,9 +9,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-                <div class="modal-body">
+                <div class="modal-body" style="height: 300px; overflow-y: scroll;">
                     <ul class="list-group" id="items-list">
                     </ul>
+
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div id="spinner" class="spinner-border" role="status" hidden>
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">

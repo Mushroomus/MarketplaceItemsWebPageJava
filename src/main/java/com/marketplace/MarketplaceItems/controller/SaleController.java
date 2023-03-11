@@ -217,7 +217,7 @@ public class SaleController {
         }
     }
 
-    class SalesByMonthDTO {
+    static class SalesItemsDTO {
 
         String sku;
         String name;
@@ -246,6 +246,21 @@ public class SaleController {
         public void setCount(Long count) {
             this.count = count;
         }
+
+        public static List<SalesItemsDTO> getList(List<Object[]> results) {
+
+            List<SalesItemsDTO> itemsByMonth = new ArrayList<>();
+
+            for (Object[] row : results) {
+                SalesItemsDTO dto = new SalesItemsDTO();
+                dto.setSku((String) row[0]);
+                dto.setName((String) row[1]);
+                dto.setCount((Long) row[2]);
+                itemsByMonth.add(dto);
+            }
+
+            return itemsByMonth;
+        }
     }
     @GetMapping("graphs/sales-year")
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByMonthInYear(@RequestParam int year) {
@@ -267,24 +282,42 @@ public class SaleController {
     }
 
     @GetMapping("graphs/sales-items-month")
-    public ResponseEntity<List<SalesByMonthDTO>> getSalesCountByMonthInYear(@RequestParam int year, @RequestParam int month) {
+    public ResponseEntity<List<SalesItemsDTO>> getSalesCountByMonthInYear(@RequestParam int page, @RequestParam int year, @RequestParam int month) {
         try {
-            List<Object[]> results = saleService.getItemsDataFromMonth(year, month);
-
-            List<SalesByMonthDTO> itemsByMonth = new ArrayList<>();
-            for (Object[] row : results) {
-                SalesByMonthDTO dto = new SalesByMonthDTO();
-                dto.setSku((String) row[0]);
-                dto.setName((String) row[1]);
-                dto.setCount((Long) row[2]);
-                itemsByMonth.add(dto);
-            }
+            List<Object[]> results = saleService.getItemsDataFromMonth(year, month, page, 5);
+            List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("graphs/sales-items-month-total-pages")
+    public ResponseEntity<Integer> getItemsMonthTotalPages(@RequestParam int year, @RequestParam int month) {
+        try {
+            Integer pages = saleService.getItemsDataFromMonthTotalPages(year,month, 5);
+
+            return ResponseEntity.ok(pages);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/sales-items-day")
+    public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month, @RequestParam int day) {
+
+        try {
+            List<Object[]> results = saleService.getItemsDataFromDay(year,month,day);
+            List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
+
+            return ResponseEntity.ok(itemsByMonth);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 
     @GetMapping("graphs/sales-month")
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month) {

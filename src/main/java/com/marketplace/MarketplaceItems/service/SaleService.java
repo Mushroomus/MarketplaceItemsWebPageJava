@@ -24,7 +24,10 @@ public interface SaleService {
 
     List<Object[]> getSalesCountByDayinMonth(int year, int month);
 
-    List<Object[]> getItemsDataFromMonth(int year, int month);
+    List<Object[]> getItemsDataFromMonth(int year, int month, int page, int pageSize);
+    public int getItemsDataFromMonthTotalPages(int year, int month, int pageSize);
+
+    List<Object[]> getItemsDataFromDay(int year, int month, int day);
 
     List<Object[]> getBestSellingItems();
 

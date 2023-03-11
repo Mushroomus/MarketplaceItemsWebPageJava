@@ -57,18 +57,28 @@ function initChart() {
         if (activePoints.length > 0) {
             var clickedElementIndex = activePoints[0].index;
 
-
-            let firstSpaceIndex = chart.data.labels[clickedElementIndex].indexOf(' ');
-            var month = chart.data.labels[clickedElementIndex].substring(0, firstSpaceIndex);
-            console.log(month);
-
             var year = $('#yearSelect').val();
 
-            $('#showItemsYear').data('year', year);
-            $('#showItemsYear').data('monthText', month);
-            $('#showItemsYear').data('month', ($.inArray(month, monthNames) + 1));
-            $('#showItemsYear').modal('show');
+            if(chart.config.type == 'bar') {
+                let firstSpaceIndex = chart.data.labels[clickedElementIndex].indexOf(' ');
+                var month = chart.data.labels[clickedElementIndex].substring(0, firstSpaceIndex);
 
+                $('#showItemsYear').data('monthText', month);
+                $('#showItemsYear').data('month', ($.inArray(month, monthNames) + 1));
+            } else {
+                var parts = chart.data.labels[clickedElementIndex].split(".");
+                var day = parts[0];
+                var month = parts[1];
+                var monthWithoutLeadingZero = parseInt(month, 10).toString();
+                var monthText = monthNames[monthWithoutLeadingZero - 1];
+
+                $('#showItemsYear').data('month', month);
+                $('#showItemsYear').data('day', day);
+            }
+
+            $('#showItemsYear').data('type', chart.config.type);
+            $('#showItemsYear').data('year', year);
+            $('#showItemsYear').modal('show');
         }
     });
 }
