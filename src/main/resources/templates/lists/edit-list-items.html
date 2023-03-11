@@ -40,148 +40,37 @@
 
           <div class="form-group">
             <label for="filterCraftableDropdown">Craftable</label>
-            <select class="form-control" id="filterCraftableDropdown">
-              <option value="Any">Any</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+            <select class="form-control" id="filterCraftableDropdown" name="craftable">
+              <option th:each="craftableOption : ${craftableOptions}"
+                      th:value="${craftableOption}"
+                      th:selected="${selectedCraftable == craftableOption}"
+                      th:text="${craftableOption}">
+              </option>
             </select>
           </div>
 
-
           <div class="form-group mt-3"><label class="d-block font-weight-bold mb-2">Class</label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Multi-class" />
-              Multi-class
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Scout" />
-              Scout
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Soldier" />
-              Soldier
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Pyro" />
-              Pyro
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Demoman" />
-              Demoman
-            </label>
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Heavy" />
-              Heavy
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Engineer" />
-              Engineer
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Medic" />
-              Medic
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Sniper" />
-              Sniper
-            </label>
-
-            <label>
-              <input type="checkbox" class="form-check-input" name="classes" value="Spy" />
-              Spy
-            </label>
+            <div th:each="class : ${classesList}" class="form-check-label">
+              <label>
+                <input type="checkbox" class="form-check-input" name="classes" th:value="${class}" th:text="' ' +${class}"
+                       th:checked="${selectedClasses != null && selectedClasses.contains(class)}" />
+              </label>
+            </div>
 
             <label class="d-block font-weight-bold mb-2 mt-3">Quality</label>
-            <div class="form-check-label">
-
+            <div th:each="quality : ${qualityList}" class="form-check-label">
               <label>
-                <input type="checkbox" class="form-check-input" name="qualities" value="Genuine" />
-                Genuine
+                <input type="checkbox" class="form-check-input" name="qualities" th:value="${quality}" th:text="' ' + ${quality}"
+                       th:checked="${selectedQualities != null && selectedQualities.contains(quality)}" />
               </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="qualities" value="Unique" />
-                Unique
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="qualities" value="Vintage" />
-                Vintage
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="qualities" value="Strange" />
-                Strange
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="qualities" value="Haunted" />
-                Haunted
-              </label>
-
             </div>
 
             <label class="d-block font-weight-bold mb-2 mt-3">Type</label>
-            <div  class="form-check-label">
-
+            <div th:each="type : ${typeList}" class="form-check-label">
               <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Cosmetics" />
-                Cosmetics
+                <input type="checkbox" class="form-check-input" name="types" th:value="${type}" th:text="' ' +${type}"
+                       th:checked="${selectedTypes != null && selectedTypes.contains(type)}" />
               </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Currencies" />
-                Currencies
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Tools" />
-                Tools
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Paints" />
-                Paints
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Action" />
-                Action
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Weapons" />
-                Weapons
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Strange Parts" />
-                Strange Parts
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Botkillers" />
-                Botkillers
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Festive Weapons" />
-                Festive Weapons
-              </label>
-
-              <label>
-                <input type="checkbox" class="form-check-input" name="types" value="Halloween" />
-                Halloween
-              </label>
-
             </div>
             <button type="button" id="sideFilter" class="btn btn-primary mt-3">Filter</button>
           </div><br>

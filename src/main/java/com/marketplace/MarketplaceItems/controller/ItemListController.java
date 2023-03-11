@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -161,6 +162,15 @@ public class ItemListController {
 
         theModel.addAttribute("listNames", listNamesStr);
 
+        java.util.List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
+        java.util.List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
+        java.util.List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
+
+        theModel.addAttribute("craftableOptions", Arrays.asList("Any", "Yes", "No"));
+        theModel.addAttribute("classesList", classesList);
+        theModel.addAttribute("qualityList", qualityList);
+        theModel.addAttribute("typeList", typeList);
+
         return "lists/create-list-items";
     }
 
@@ -230,6 +240,15 @@ public class ItemListController {
     public String editList(@RequestParam(value="listName") String name, Model theModel)
     {
         theModel.addAttribute("listName", name);
+        java.util.List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
+        java.util.List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
+        java.util.List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
+
+        theModel.addAttribute("craftableOptions", Arrays.asList("Any", "Yes", "No"));
+        theModel.addAttribute("classesList", classesList);
+        theModel.addAttribute("qualityList", qualityList);
+        theModel.addAttribute("typeList", typeList);
+
         return "lists/edit-list-items";
     }
 
