@@ -11,33 +11,39 @@ function createLi(data) {
      $("#items-list").append(listItems);
 }
 
-var page;
-var totalPages = null;
+function getTotalPage(year, month, day, type) {
+  $('#spinner').prop('hidden', false);
+  let url;
+  let loadMoreFunction;
+  if (type === 'bar') {
+    url = `sales-items-month-total-pages?year=${year}&month=${month}`;
+    loadMoreFunction = () => loadMoreItemsMonth(year, month, page);
+  } else {
+    url = `sales-items-day-total-pages?year=${year}&month=${month}&day=${day}`;
+    loadMoreFunction = () => loadMoreItemsDay(year, month, day, page);
+  }
 
-function getTotalPageMonth(year,month) {
-
-    $('#spinner').prop('hidden', false);
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-          url: "sales-items-month-total-pages?year=" + year + "&month=" + month,
-          type: "GET",
-          success: function(data) {
-            resolve(data);
-          },
-          error: function() {
-            $('#spinner').prop('hidden', true);
-            reject("Failed to fetch items");
-          }
-        })
-      }).then(function(total) {
-          totalPages = total;
-          loadMoreItemsMonth(year, month);
-        }).catch(function(error) {
-          console.log(error);
-        });
- }
-
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url,
+      type: 'GET',
+      success: function (data) {
+        resolve(data);
+      },
+      error: function () {
+        $('#spinner').prop('hidden', true);
+        reject(new Error('Failed to fetch items'));
+      },
+    })
+      .then(function (total) {
+        totalPages = total;
+        loadMoreFunction();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  });
+}
 
 function loadMoreItemsMonth(year, month) {
     $('#spinner').prop('hidden', false);
@@ -60,8 +66,31 @@ function loadMoreItemsMonth(year, month) {
         }
       });
 }
-var year;
-var month;
+
+
+function loadMoreItemsDay(year, month, day) {
+    $('#spinner').prop('hidden', false);
+
+       $.ajax({
+           url: "sales-items-day?year=" + year + "&month=" + month + "&day=" + day + "&page=" + page,
+           type: "GET",
+           success: function(data) {
+                $('#spinner').prop('hidden', true);
+
+                if(data.length > 0) {
+                    createLi(data);
+                    page++;
+                }
+           },
+          error: function() {
+                $('#spinner').prop('hidden', true);
+                alert("Failed to fetch items");
+          }
+    });
+}
+
+var page;
+var totalPages = null;
 
 $(document).ready(function() {
 
@@ -69,47 +98,29 @@ $(document).ready(function() {
        page = 0;
        $('#items-list').empty();
 
-       year = $('#showItemsYear').data('year');
-       month = $('#showItemsYear').data('month');
+       var year = $('#showItemsYear').data('year');
+       var month = $('#showItemsYear').data('month');
+       var day = $('#showItemsYear').data('day');
 
        if($('#showItemsYear').data('type') == 'bar') {
            $('#showItemsYearHeader').text($('#showItemsYear').data('monthText') + ' ' + year);
-           getTotalPageMonth(year,month);
-           /*
-          $.ajax({
-            url: "sales-items-month?year=" + year + "&month=" + month,
-            type: "GET",
-            success: function(data) {
-                createLi(data);
-            },
-            error: function() {
-              alert("Failed to fetch items");
-            }
-          });
-          */
-      } else {
-            var day = $('#showItemsYear').data('day');
+           getTotalPage(year,month,null, 'bar');
+        } else {
+           day = $('#showItemsYear').data('day');
            $('#showItemsYearHeader').text($('#showItemsYear').data('day') + ' ' + $('#showItemsYear').data('monthText') + ' ' + year);
+           getTotalPage(year,month,day,'line');
+        }
 
-           $.ajax({
-               url: "sales-items-day?year=" + year + "&month=" + month + "&day=" + day,
-               type: "GET",
-               success: function(data) {
-                    createLi(data);
-               },
-              error: function() {
-                alert("Failed to fetch items");
-              }
-        });
-     }
+       var modalBody = document.querySelector('#showItemsYear .modal-body');
 
-     var modalBody = document.querySelector('#showItemsYear .modal-body');
-
-     modalBody.addEventListener('scroll', function() {
+       modalBody.addEventListener('scroll', function() {
        if (modalBody.scrollTop + modalBody.clientHeight == modalBody.scrollHeight) {
-       console.log(totalPages + ' ' + page)
+
          if (totalPages != null && page < totalPages) {
-               loadMoreItemsMonth(year, month, page + 1);
+               if($('#showItemsYear').data('type') == 'bar')
+                    loadMoreItemsMonth(year, month, page + 1);
+               else
+                    loadMoreItemsDay(year, month, day, page + 1);
          }
        }
      });

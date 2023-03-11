@@ -187,14 +187,31 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public List<Object[]> getItemsDataFromDay(int year, int month, int day) {
+    public List<Object[]> getItemsDataFromDay(int year, int month, int day, int page, int pageSize) {
         String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
         query.setParameter("month", month);
         query.setParameter("day", day);
 
+        query.setFirstResult(page * pageSize);
+        query.setMaxResults(pageSize);
+
         return query.getResultList();
+    }
+
+    @Override
+    public int getItemsDataFromDayTotalPages(int year, int month, int day, int pageSize) {
+        String countHql = "SELECT COUNT(DISTINCT i.sku) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day";
+        TypedQuery<Long> countQuery = entityManager.createQuery(countHql, Long.class);
+        countQuery.setParameter("year", year);
+        countQuery.setParameter("month", month);
+        countQuery.setParameter("day", day);
+
+        Long totalItems = countQuery.getSingleResult();
+        int totalPages = (int) Math.ceil(totalItems / (double) pageSize);
+
+        return totalPages;
     }
 
     @Override

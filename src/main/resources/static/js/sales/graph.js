@@ -29,6 +29,10 @@ function fetchYears() {
 
 var chart;
 
+var monthNames = [ "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+
 function initChart() {
     var ctx = $('#myChart');
     chart = new Chart(ctx, {
@@ -73,6 +77,7 @@ function initChart() {
                 var monthText = monthNames[monthWithoutLeadingZero - 1];
 
                 $('#showItemsYear').data('month', month);
+                $('#showItemsYear').data('monthText', monthText);
                 $('#showItemsYear').data('day', day);
             }
 
@@ -82,9 +87,6 @@ function initChart() {
         }
     });
 }
-
-var monthNames = [ "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
 
 var monthsFetched = false;
 

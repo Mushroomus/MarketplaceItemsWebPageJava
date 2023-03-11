@@ -305,13 +305,24 @@ public class SaleController {
     }
 
     @GetMapping("graphs/sales-items-day")
-    public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month, @RequestParam int day) {
+    public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month, @RequestParam int day, @RequestParam int page) {
 
         try {
-            List<Object[]> results = saleService.getItemsDataFromDay(year,month,day);
+            List<Object[]> results = saleService.getItemsDataFromDay(year,month,day,page, 5);
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("graphs/sales-items-day-total-pages")
+    public ResponseEntity<Integer> getItemsDayTotalPages(@RequestParam int year, @RequestParam int month, @RequestParam int day) {
+        try {
+            Integer pages = saleService.getItemsDataFromDayTotalPages(year, month, day, 5);
+
+            return ResponseEntity.ok(pages);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
