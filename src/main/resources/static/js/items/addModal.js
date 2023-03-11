@@ -5,7 +5,6 @@ function setStartValues() {
     $("#itemClass").val('Multi-class');
     $("#itemQuality").val('Genuine');
     $("#itemType").val('Cosmetics');
-    $("#itemImage").val('');
     $("#itemMarketplacePrice").val('0.00');
 }
 
@@ -32,7 +31,6 @@ $(document).ready(function() {
             var itemClass = $("#itemClass").val();
             var quality = $("#itemQuality").val();
             var type = $("#itemType").val();
-            var image = $("#itemImage").val();
             var marketplacePrice = $("#itemMarketplacePrice").val();
 
             $.ajax({
@@ -47,7 +45,7 @@ $(document).ready(function() {
                     classItem: itemClass,
                     quality: quality,
                     type: type,
-                    image: image
+                    image: ""
                 }),
                 dataType: 'json',
                 success: function(response, status, xhr) {

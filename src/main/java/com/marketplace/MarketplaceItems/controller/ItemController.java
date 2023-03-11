@@ -1,7 +1,9 @@
 package com.marketplace.MarketplaceItems.controller;
 
 import com.marketplace.MarketplaceItems.entity.Item;
+import com.marketplace.MarketplaceItems.entity.ItemImage;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.service.ItemImageService;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.MessageService;
@@ -39,11 +41,14 @@ public class ItemController {
 
     private MessageService messageService;
 
+    private ItemImageService itemImageService;
+
     public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService, @Qualifier("itemListServiceImpl") ItemListService theItemListService,
-                          @Qualifier("messageServiceImpl") MessageService theMessageService) {
+                          @Qualifier("messageServiceImpl") MessageService theMessageService, ItemImageService theItemImageService) {
         itemService = theItemService;
         itemListService = theItemListService;
         messageService = theMessageService;
+        itemImageService = theItemImageService;
     }
 
 
@@ -101,10 +106,18 @@ public class ItemController {
     @PostMapping("/add")
     public ResponseEntity<UserController.ResponseMessage> addItem(@RequestBody Item item) {
         try {
-            System.out.println(item);
+            Integer shortenSku = Integer.parseInt(item.getSku().split(";")[0]);
+            String image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
+
+            if(image_url != null)
+                item.setImage(image_url);
+            else
+                item.setImage("");
+
             itemService.saveItem(item);
             return new ResponseEntity<>(new UserController.ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(new UserController.ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

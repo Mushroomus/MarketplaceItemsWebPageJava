@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
-import com.marketplace.MarketplaceItems.service.ItemListService;
-import com.marketplace.MarketplaceItems.service.ItemService;
-import com.marketplace.MarketplaceItems.service.MessageService;
-import com.marketplace.MarketplaceItems.service.UserService;
+import com.marketplace.MarketplaceItems.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +35,7 @@ public class MessageController {
     private MessageService messageService;
     private ItemService itemService;
     private UserService userService;
+    private ItemImageService itemImageService;
 
     private ItemListService itemListService;
 
@@ -45,7 +43,7 @@ public class MessageController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService, ItemListService theItemListService){
+    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService, ItemListService theItemListService, ItemImageService theItemImageService){
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -53,6 +51,8 @@ public class MessageController {
         itemService = theItemService;
         userService = theUserService;
         itemListService = theItemListService;
+        itemImageService = theItemImageService;
+
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -83,8 +83,15 @@ public class MessageController {
         try {
             switch (theMessage.getMessageType()) {
                 case "add":
+                    Integer shortenSku = Integer.parseInt(theMessage.getSku().split(";")[0]);
+                    String image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
+                    String imageNotNull = "";
+
+                    if(image_url != null)
+                        imageNotNull = image_url;
+
                     Item theAddItem = new Item(theMessage.getSku(), theMessage.getName(), theMessage.getMarketplacePrice(),
-                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), "");
+                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), imageNotNull);
 
                     itemService.saveItem(theAddItem);
                     messageService.deleteById(theMessage.getId());

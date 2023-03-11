@@ -8,7 +8,6 @@ $(document).ready(function() {
                 var itemClass = button.data('itemclass');
                 var itemQuality = button.data('itemquality');
                 var itemType = button.data('itemtype');
-                var itemImage = button.data('itemimage');
 
                 var modal = $(this);
 
@@ -18,7 +17,6 @@ $(document).ready(function() {
                 modal.find('.modal-body #modalItemClass').val(itemClass);
                 modal.find('.modal-body #modalItemQuality').val(itemQuality);
                 modal.find('.modal-body #modalItemType').val(itemType);
-                modal.find('.modal-body #modalItemImage').val(itemImage);
           });
 
 
@@ -35,7 +33,6 @@ $(document).ready(function() {
                  var itemClass = $("#modalItemClass").val();
                  var quality = $("#modalItemQuality").val();
                  var type = $("#modalItemType").val();
-                 var image = $("#modalItemImage").val();
 
                 if (editForm[0].checkValidity()) {
                      $.ajax({
@@ -47,8 +44,7 @@ $(document).ready(function() {
                               craftable: craftable,
                               classItem: itemClass,
                               quality: quality,
-                              type: type,
-                              image: image
+                              type: type
                            }),
                            contentType: "application/json",
                            success: function(response) {
