@@ -83,15 +83,16 @@ public class MessageController {
         try {
             switch (theMessage.getMessageType()) {
                 case "add":
-                    Integer shortenSku = Integer.parseInt(theMessage.getSku().split(";")[0]);
-                    String image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
-                    String imageNotNull = "";
+                    String skuPrefix = theMessage.getSku().split(";")[0];
+                    String image_url = "";
 
-                    if(image_url != null)
-                        imageNotNull = image_url;
+                    if (skuPrefix.matches("\\d+")) {
+                        Integer shortenSku = Integer.parseInt(theMessage.getSku().split(";")[0]);
+                        image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
+                    }
 
                     Item theAddItem = new Item(theMessage.getSku(), theMessage.getName(), theMessage.getMarketplacePrice(),
-                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), imageNotNull);
+                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), image_url);
 
                     itemService.saveItem(theAddItem);
                     messageService.deleteById(theMessage.getId());

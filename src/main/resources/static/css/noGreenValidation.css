@@ -6,6 +6,10 @@
 #requestAddModal #itemImage:valid,
 #requestAddModal #itemMarketplacePrice:valid,
 
+#requestEditModal .form-group select:valid,
+#requestEditModal #itemImage:valid,
+#requestEditModal #itemMarketplacePrice:valid,
+
 #editModal .form-group select:valid,
 #editModal #modalItemImage:valid{
   border-color: #ced4da;

@@ -106,14 +106,17 @@ public class ItemController {
     @PostMapping("/add")
     public ResponseEntity<UserController.ResponseMessage> addItem(@RequestBody Item item) {
         try {
-            Integer shortenSku = Integer.parseInt(item.getSku().split(";")[0]);
-            String image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
 
-            if(image_url != null)
-                item.setImage(image_url);
-            else
-                item.setImage("");
+            String skuPrefix = item.getSku().split(";")[0];
+            String image_url = "";
 
+            if (skuPrefix.matches("\\d+")) {
+                Integer shortenSku = Integer.parseInt(item.getSku().split(";")[0]);
+                image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
+            }
+
+            item.setImage(image_url);
+            
             itemService.saveItem(item);
             return new ResponseEntity<>(new UserController.ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {

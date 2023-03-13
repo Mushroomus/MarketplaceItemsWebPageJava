@@ -219,7 +219,7 @@ function updatePagination(data) {
                        "<td>" + sale.fee + "</td>";
 
                        if (sale.item != null) {
-                         newRow += "<td><button class='btn btn-primary' " +
+                         newRow += "<td><button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#itemInformationsModal'" +
                                   "data-sku='" + sale.item.sku + "' " +
                                   "data-name='" + sale.item.name + "' " +
                                   "data-marketplacePrice='" + sale.item.marketplacePrice + "' " +

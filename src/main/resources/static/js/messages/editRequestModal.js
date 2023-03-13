@@ -37,7 +37,7 @@ $(document).ready(function() {
                  var type = $("#modalItemType").val();
                  var image = $("#modalItemImage").val();
 
-                 var alertMessage = parent.$('#alertMessage');
+                 var alertMessage = parent.$('#alertMessageUser');
 
                 if (editForm[0].checkValidity()) {
                      $.ajax({
@@ -68,6 +68,10 @@ $(document).ready(function() {
                            error: function(error) {
                                $('#requestEditModal').modal('hide');
                                alertMessage.text('Something went wrong').addClass('alert alert-danger').show();
+
+                               setTimeout(function() {
+                                   alertMessage.fadeOut('slow');
+                               }, 2000);
                            }
                          });
                 }

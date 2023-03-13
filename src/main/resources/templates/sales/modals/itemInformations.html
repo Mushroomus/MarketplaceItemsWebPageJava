@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="itemInformationsModal" class="modal fade" id="itemInformationsModal" tabindex="-1" role="dialog" aria-labelledby="itemInformationsLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Item Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+                <div class="modal-body">
+                    <ul>
+                        <li><strong>Sku:</strong> <span id="itemInformationsSku"></span></li>
+                        <li><strong>Name:</strong> <span id="itemInformationsName"></span></li>
+                        <li><strong>MP Price:</strong> <span id="itemInformationsPrice"></span></li>
+                        <li><strong>Type:</strong> <span id="itemInformationsType"></span></li>
+                        <li><strong>Quality:</strong> <span id="itemInformationsQuality"></span></li>
+                        <li><strong>Class:</strong> <span id="itemInformationsClass"></span></li>
+                        <li><strong>Craftable:</strong> <span id="itemInformationsCraftable"></span></li>
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+
+        </div>
+    </div>
+
+</div>

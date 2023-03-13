@@ -142,7 +142,7 @@
                 "<td>" + item.sku + "</td>" +
                 "<td>" + item.name + "</td>" +
                 "<td>"  + item.marketplacePrice + "</td>" +
-                "<td>" + item.craftable + "</td>" +
+                "<td>" + (item.craftable ? 'Yes' : 'No') + "</td>" +
                 "<td>" + item.classItem + "</td>" +
                 "<td>" + item.quality + "</td>" +
                 "<td>" + item.type + "</td>" +
@@ -183,7 +183,7 @@
                     "<td>" + item.sku + "</td>" +
                     "<td>" + item.name + "</td>" +
                     "<td>"  + item.marketplacePrice + "</td>" +
-                    "<td>" + item.craftable + "</td>" +
+                    "<td>" + (item.craftable ? 'Yes' : 'No') + "</td>" +
                     "<td>" + item.classItem + "</td>" +
                     "<td>" + item.quality + "</td>" +
                     "<td>" + item.type + "</td>" +
