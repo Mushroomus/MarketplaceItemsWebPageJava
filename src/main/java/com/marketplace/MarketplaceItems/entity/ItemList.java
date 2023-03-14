@@ -1,9 +1,18 @@
 package com.marketplace.MarketplaceItems.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="list_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ItemList {
 
     @Id
@@ -21,47 +30,4 @@ public class ItemList {
     @ManyToOne
     @JoinColumn(name = "id_list")
     private List list;
-
-
-    public ItemList() {
-
-    }
-
-    public ItemList(Item item, User user, List list) {
-        this.item = item;
-        this.user = user;
-        this.list = list;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public List getList() {
-        return list;
-    }
-
-    public void setList(List itemList) {
-        this.list = itemList;
-    }
 }

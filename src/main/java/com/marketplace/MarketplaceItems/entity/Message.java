@@ -1,11 +1,17 @@
 package com.marketplace.MarketplaceItems.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +26,8 @@ public class Message implements Cloneable{
     @Column(name = "name")
     private String name;
 
+    @Getter(AccessLevel.NONE)
+    @Setter
     @Column(name = "mp_price")
     private String marketplacePrice;
 
@@ -49,113 +57,12 @@ public class Message implements Cloneable{
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMessageType() {
-        return messageType;
-    }
-
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Double getMarketplacePrice() {
-
         if(marketplacePrice != null)
             return Double.parseDouble(marketplacePrice);
         else
             return null;
-    }
-
-
-    public void setMarketplacePrice(String marketplacePrice) {
-        this.marketplacePrice = marketplacePrice;
-    }
-
-    public Boolean getCraftable() {
-        return craftable;
-    }
-
-    public void setCraftable(Boolean craftable) {
-        this.craftable = craftable;
-    }
-
-    public String getItemClass() {
-        return itemClass;
-    }
-
-    public void setItemClass(String itemClass) {
-        this.itemClass = itemClass;
-    }
-
-    public String getQuality() {
-        return quality;
-    }
-
-    public void setQuality(String quality) {
-        this.quality = quality;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
     }
 
     @AssertTrue(message = "Delete - lack of informations")

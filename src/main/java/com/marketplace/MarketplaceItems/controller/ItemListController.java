@@ -203,7 +203,11 @@ public class ItemListController {
                 return new ResponseEntity<>(new UserController.ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
             }
 
-            ItemList itemList = new ItemList(item,user,list);
+            ItemList itemList = ItemList.builder()
+                            .item(item)
+                            .user(user)
+                            .list(list)
+                            .build();
             itemListService.saveItemList(itemList);
         }
 
@@ -293,7 +297,11 @@ public class ItemListController {
             for(String itemSku : request.getItemSku()) {
 
                 itemToAdd = itemService.findItemBySku(itemSku);
-                itemList = new ItemList(itemToAdd, user,list);
+                itemList = ItemList.builder()
+                        .item(itemToAdd)
+                        .user(user)
+                        .list(list)
+                        .build();
                 itemListService.saveItemList(itemList);
             }
         } catch(Exception e) {

@@ -1,9 +1,14 @@
 package com.marketplace.MarketplaceItems.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="items_image")
+@Getter
+@Setter
 public class ItemImage {
 
     @Id
@@ -14,19 +19,4 @@ public class ItemImage {
     @Column(name="image_url")
     public String image_url;
 
-    public int getDefindex() {
-        return defindex;
-    }
-
-    public void setDefindex(int defindex) {
-        this.defindex = defindex;
-    }
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
-    }
 }

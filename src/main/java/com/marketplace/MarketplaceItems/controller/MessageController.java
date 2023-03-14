@@ -91,8 +91,16 @@ public class MessageController {
                         image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
                     }
 
-                    Item theAddItem = new Item(theMessage.getSku(), theMessage.getName(), theMessage.getMarketplacePrice(),
-                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), image_url);
+                    Item theAddItem = Item.builder()
+                            .sku(theMessage.getSku())
+                            .name(theMessage.getName())
+                            .marketplacePrice(theMessage.getMarketplacePrice())
+                            .craftable(theMessage.getCraftable())
+                            .classItem(theMessage.getItemClass())
+                            .quality(theMessage.getQuality())
+                            .type(theMessage.getType())
+                            .image(image_url)
+                            .build();
 
                     itemService.saveItem(theAddItem);
                     messageService.deleteById(theMessage.getId());
@@ -101,8 +109,16 @@ public class MessageController {
                             .body("{ \"error\": \"" + "Request was accepted" + "\" }");
 
                 case "update":
-                    Item theUpdateItem = new Item(theMessage.getItem().getSku(), theMessage.getName(), theMessage.getItem().getMarketplacePrice(),
-                            theMessage.getCraftable(), theMessage.getItemClass(), theMessage.getQuality(), theMessage.getType(), theMessage.getItem().getImage());
+                    Item theUpdateItem = Item.builder()
+                            .sku(theMessage.getSku())
+                            .name(theMessage.getName())
+                            .marketplacePrice(theMessage.getMarketplacePrice())
+                            .craftable(theMessage.getCraftable())
+                            .classItem(theMessage.getItemClass())
+                            .quality(theMessage.getQuality())
+                            .type(theMessage.getType())
+                            .image(theMessage.getItem().getImage())
+                            .build();
 
                     itemService.saveItem(theUpdateItem);
                     messageService.deleteById(theMessage.getId());
@@ -222,7 +238,7 @@ public class MessageController {
 
         } catch (JsonProcessingException e) {
             String errorMessage = "An error occurred while processing the JSON response";
-
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body("{ \"error\": \"" + errorMessage + "\" }");

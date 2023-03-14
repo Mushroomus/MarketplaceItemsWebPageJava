@@ -3,13 +3,22 @@ package com.marketplace.MarketplaceItems.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.annotation.sql.DataSourceDefinition;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Item {
 
     @Id
@@ -38,95 +47,6 @@ public class Item {
     private String image;
 
     @OneToMany(mappedBy = "item")
+    @JsonIgnore
     private List<ItemList> itemList = new ArrayList<>();
-
-
-    @JsonIgnore
-    public List<ItemList> getUserItemList() {
-        return itemList;
-    }
-
-    @JsonIgnore
-    public void setUserItemList(List<ItemList> itemList) {
-        this.itemList = itemList;
-    }
-
-    public Item(String sku, String name, Double marketplacePrice, boolean craftable, String classItem, String quality, String type, String image) {
-        this.sku = sku;
-        this.name = name;
-        this.marketplacePrice = marketplacePrice;
-        this.craftable = craftable;
-        this.classItem = classItem;
-        this.quality = quality;
-        this.type = type;
-        this.image = image;
-    }
-
-    public Item() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getMarketplacePrice() {
-        return marketplacePrice;
-    }
-
-    public void setMarketplacePrice(Double marketplacePrice) {
-        this.marketplacePrice = marketplacePrice;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isCraftable() {
-        return craftable;
-    }
-
-    public void setCraftable(boolean craftable) {
-        this.craftable = craftable;
-    }
-
-    public String getClassItem() {
-        return classItem;
-    }
-
-    public void setClassItem(String classItem) {
-        this.classItem = classItem;
-    }
-
-    public String getQuality() {
-        return quality;
-    }
-
-    public void setQuality(String quality) {
-        this.quality = quality;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
 }

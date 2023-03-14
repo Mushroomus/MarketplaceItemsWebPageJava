@@ -1,6 +1,7 @@
 package com.marketplace.MarketplaceItems.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name="users")
+@Data
 public class User {
 
     @Id
@@ -28,10 +30,9 @@ public class User {
     @Column(name="date")
     private LocalDateTime date;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<ItemList> itemList;
-
-
 
     public class ListInfoModel {
         private String name;
@@ -95,55 +96,5 @@ public class User {
         }
 
         return result;
-    }
-
-    @JsonIgnore
-    public List<ItemList> getUserItemList() {
-        return itemList;
-    }
-
-    @JsonIgnore
-    public void setUserItemList(List<ItemList> itemList) {
-        this.itemList = itemList;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRole() {
-        return role;
     }
 }
