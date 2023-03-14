@@ -2,7 +2,6 @@
 $(document).ready(function() {
 
     var listNamesArray = $("#list-names").text().split(",");
-    console.log(listNamesArray);
 
     $('#inputName').trigger('input');
 

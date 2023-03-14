@@ -16,6 +16,7 @@
      $("#deleteModalSubmit").click(function () {
 
          var itemSku = $("#modalDeleteItemSku").val();
+         var alertMessage = parent.$('#alertMessage');
 
          $.ajax({
              url: "delete?sku=" + itemSku,
@@ -24,32 +25,20 @@
              dataType: 'json',
              success: function (response, status, xhr) {
 
-                var alertMessage = parent.$('#alertMessage');
-
                  if (xhr.status == 200) {
 
                      $('#deleteModal').modal('hide');
                      refreshTable(currentPage);
-                     alertMessage.text('Item was deleted').addClass('alert alert-success').show();
+                     setAlert(alertMessage, "Item deleted", true);
                  } else
-                     alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                  setTimeout(function() {
-                       alertMessage.fadeOut('slow');
-                    }, 2000);
+                     setAlert(alertMessage, "Something went wrong", false);
              },
              error: function (xhr, status, error) {
-                 alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                 setTimeout(function() {
-                      alertMessage.fadeOut('slow');
-                   }, 2000);
+                 setAlert(alertMessage, "Something went wrong", false);
              }
          });
 
-         setTimeout(function () {
-             $("#modalDeleteMessage").fadeOut('slow');
-         }, 2000);
+            timeout(alertMessage);
 
      });
  });

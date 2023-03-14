@@ -78,7 +78,6 @@ $(document).ready(function() {
                 var repeatPassword = $("#userPasswordRepeat").val();
 
                 var isValid = checkAllInputsValid();
-                console.log(isValid);
 
                 if(!isValid)
                     return;
@@ -87,6 +86,8 @@ $(document).ready(function() {
                 var password = $("#userPassword").val();
                 var repeatPassword = $("#userPasswordRepeat").val();
                 var role = $("#userRole").val();
+
+                var modalEditMessage = $("#modalEditMessage");
 
                 $.ajax({
                     url: "add",
@@ -100,8 +101,7 @@ $(document).ready(function() {
                     dataType: 'json',
                     success: function(response, status, xhr) {
                         if (xhr.status == 200) {
-
-                             $("#modalEditMessage").text("Item successfully added").removeClass("alert alert-danger").addClass("alert alert-success").show();
+                             setAlert(modalEditMessage, "User added", true);
                              refreshTable(currentPage);
 
                               var username = $("#userUsername").val('');
@@ -112,19 +112,14 @@ $(document).ready(function() {
                               $('#userUsername').trigger('input');
                               $('#userPassword').trigger('input');
                         }
-                        else if (xhr.status == 400)
-                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
                         else
-                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                            setAlert(modalEditMessage, "Something went wrong", false);
                         },
                          error: function(xhr, status, error) {
-                            $("#modalEditMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                            setAlert(modalEditMessage, "Something went wrong", false);
                          }
                     });
 
-                     setTimeout(function() {
-                        $("#modalEditMessage").fadeOut('slow');
-                     }, 5000);
-
+                    timeout(modalEditMessage);
              });
 });

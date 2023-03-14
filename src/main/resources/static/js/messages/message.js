@@ -1,9 +1,8 @@
-
-refreshTable(0);
+var firstFetch = true;
 var filter = false;
 var searchFilter = false;
 var currentPage = 0;
-
+refreshTable(0);
 
 function addMessageToList(message) {
 
@@ -145,6 +144,11 @@ function createUrl(page) {
         let url = "fetch";
         url += "?page=" + page;
 
+        if(firstFetch == true) {
+            firstFetch = false;
+            return url += "&types=add,delete,update,updatePrice"
+        }
+
         if(searchFilter == true) {
             var search = $("#searchInput").val();
 
@@ -185,6 +189,9 @@ function createUrl(page) {
                 url += "&startDate=" + timestampStartDate;
             if (endDate != null && endDate != "")
                 url += "&endDate=" + timestampEndDate;
+
+            console.log(url);
+            firstFetch = false;
         }
 
         return url;
@@ -225,52 +232,6 @@ function refreshTable(page) {
                       console.log(error);
                   }
          });
-}
-
-function updatePagination(data) {
-     var pagination = $(".pagination");
-     pagination.empty();
-
-    if(data.totalPages != 0) {
-
-         var firstButton = "<li class='page-item " + (data.number === 0 ? "disabled" : "") + "'>" +
-            "<a class='page-link' href='#' onclick='refreshTable(0)'>" +
-            "<span aria-hidden='true'>&laquo;</span>" +
-            "<span class='sr-only'>First</span>" +
-            "</a>" +
-            "</li>";
-          pagination.append(firstButton);
-
-         var previousButton = "<li class='page-item " + (data.number === 0 ? "disabled" : "") + "'>" +
-         "<a class='page-link' href='#' " + (data.number === 0 ? "" : "onclick='refreshTable(" + (data.number - 1) + ")'") + ">" +
-         "<span aria-hidden='true'>&lsaquo;</span>" +
-         "<span class='sr-only'>Previous</span>" +
-         "</a>" +
-         "</li>";
-     pagination.append(previousButton);
-
-     for (var i = 0; i < data.totalPages; i++) {
-         var className = i === data.number ? "page-item active" : "page-item";
-         var pageLink = "<li class='" + className + "'><a class='page-link' href='#' onclick='refreshTable(" + i + ")'>" + (i + 1) + "</a></li>";
-         pagination.append(pageLink);
-     }
-
-     var nextButton = "<li class='page-item " + (data.number === data.totalPages - 1 ? "disabled" : "") + "'>" +
-         "<a class='page-link' href='#' " + (data.number === data.totalPages - 1 ? "" : "onclick='refreshTable(" + (data.number + 1) + ")'") + ">" +
-         "<span aria-hidden='true'>&rsaquo;</span>" +
-         "<span class='sr-only'>Next</span>" +
-         "</a>" +
-         "</li>";
-     pagination.append(nextButton);
-
-      var lastButton = "<li class='page-item " + (data.number === data.totalPages - 1 ? "disabled" : "") + "'>" +
-         "<a class='page-link' href='#' onclick='refreshTable(" + (data.totalPages - 1) + ")'>" +
-         "<span aria-hidden='true'>&raquo;</span>" +
-         "<span class='sr-only'>Last</span>" +
-         "</a>" +
-         "</li>";
-       pagination.append(lastButton);
-    }
 }
 
 $(document).ready(function() {

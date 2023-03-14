@@ -33,28 +33,15 @@ $(document).ready(function() {
                  $('#requestDeleteModal').modal('hide');
 
                  if (xhr.status == 200)
-                     alertMessage.text('Request was sent').addClass('alert alert-success').show();
+                     setAlert(alertMessage, "Request sent", true);
                  else
-                     alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                 setTimeout(function() {
-                     alertMessage.fadeOut('slow');
-                 }, 2000);
+                    setAlert(alertMessage, "Something went wrong", false);
              },
              error: function (xhr, status, error) {
-
-                 alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
                  $('#requestDeleteModal').modal('hide');
-
-                 setTimeout(function() {
-                      alertMessage.fadeOut('slow');
-                   }, 2000);
+                 setAlert(alertMessage, "Something went wrong", false);
              }
          });
-
-         setTimeout(function () {
-             $("#modalDeleteMessage").fadeOut('slow');
-         }, 2000);
-
+         timeout(alertMessage);
      });
  });

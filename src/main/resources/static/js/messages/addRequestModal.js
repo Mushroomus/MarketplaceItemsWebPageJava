@@ -54,25 +54,17 @@ $(document).ready(function() {
                     $('#requestAddModal').modal('hide');
 
                     if (xhr.status == 200)
-                        alertMessage.text('Request was sent').addClass('alert alert-success').show();
+                        setAlert(alertMessage, "Request sent", true);
                     else
-                        alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-
-                    setTimeout(function() {
-                        alertMessage.fadeOut('slow');
-                    }, 2000);
+                        setAlert(alertMessage, "Something went wrong", false);
                 },
                 error: function (xhr, status, error) {
 
                     $('#requestAddModal').modal('hide');
-                    alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                    setTimeout(function() {
-                        alertMessage.fadeOut('slow');
-                    }, 2000);
+                    setAlert(alertMessage, "Something went wrong", false);
                 }
             });
+            timeout(alertMessage);
         }
     });
 

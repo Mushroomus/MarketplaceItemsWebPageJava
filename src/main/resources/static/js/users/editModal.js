@@ -84,8 +84,6 @@
       $('#modalSubmit').prop('disabled', !checkEditInputsValid());
     });
 
-
-
              $('#modalUsername').trigger('input');
              $("#passwordField").hide();
              $("#repeatPasswordField").hide();
@@ -146,38 +144,34 @@
                              var repeatPassword = $("#modalPasswordRepeat").val();
                              var passwordChecked = $("#changePasswordCheckbox").is(":checked");
 
+                             var modalMessage = $("#modalMessage");
+
                              if (username == "" || ( passwordChecked && ( changePassword == "" || changePassword != repeatPassword)) ){
 
                                  if(username == "")
-                                     $("#modalMessage").text("Username is empty").addClass("alert alert-danger").show();
+                                    setAlert(modalMessage, "Username is empty", false);
                                  else if(changePassword == "")
-                                     $("#modalMessage").text("Password is empty").addClass("alert alert-danger").show();
+                                    setAlert(modalMessage, "Password is empty", false);
                                  else
-                                     $("#modalMessage").text("Passwords do not match").addClass("alert alert-danger").show();
+                                    setAlert(modalMessage, "Passwords do not match", false);
 
-                                 setTimeout(function() {
-                                         $("#modalMessage").fadeOut('slow');
-                                      }, 2000);
-
+                                 timeout(modalMessage);
                                  return;
                              }
 
                              if(passwordChecked && (changePassword.length < 6 || ( !changePassword.match(/\d/) || !changePassword.match(/[!@#$%^&*]/) ))) {
 
                                 if(changePassword.length < 6)
-                                    $("#modalMessage").text("Password must be at least 6 characters long").addClass("alert alert-danger").show();
-                                 else if(!changePassword.match(/\d/) || !changePassword.match(/[!@#$%^&*]/))
-                                    $("#modalMessage").text("Password must contain at least one number and one special character").addClass("alert alert-danger").show();
+                                    setAlert(modalMessage, "Password must be at least 6 characters long", false);
+                                else if(!changePassword.match(/\d/) || !changePassword.match(/[!@#$%^&*]/))
+                                    setAlert(modalMessage, "Password must contain at least one number and one special character", false);
 
-                                 setTimeout(function() {
-                                      $("#modalMessage").fadeOut('slow');
-                                 }, 2000);
-
+                                 timeout(modalMessage);
                                  return;
-
                              }
 
-                             // ajax
+                             var alertMessage = parent.$('#alertMessage');
+
                              $.ajax({
                                url: "update",
                                type: "PUT",
@@ -194,18 +188,13 @@
                                success: function(response) {
                                     $('#editModal').modal('hide');
                                     refreshTable(currentPage);
-
-                                   var alertMessage = parent.$('#alertMessage');
-                                   alertMessage.text('User was edited').addClass('alert alert-success').show();
-
-                                   setTimeout(function() {
-                                       alertMessage.fadeOut('slow');
-                                   }, 2000);
+                                    setAlert(alertMessage, "User edited", true)
                                },
                                error: function(error) {
-                                 console.log(error);
+                                    setAlert(alertMessage, "Something went wrong", false);
                                }
                              });
+                             timeout(alertMessage);
 
                           });
 });

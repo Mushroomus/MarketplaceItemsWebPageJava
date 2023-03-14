@@ -17,6 +17,7 @@ $('#deleteModal').on('show.bs.modal', function (event) {
  $("#deleteModalSubmit").click(function() {
 
                 var userId = $("#modalDeleteUserId").val();
+                var alertMessage = parent.$('#alertMessage');
 
                 $.ajax({
                         url: "delete?id=" + userId,
@@ -24,35 +25,20 @@ $('#deleteModal').on('show.bs.modal', function (event) {
                         contentType: "application/json",
                         dataType: 'json',
                         success: function(response, status, xhr) {
+                            if (xhr.status == 200) {
 
-                                var alertMessage = parent.$('#alertMessage');
-
-                                if (xhr.status == 200) {
-
-                                     $('#deleteModal').modal('hide');
-                                     refreshTable(currentPage);
-                                     alertMessage.text('User was deleted').addClass('alert alert-success').show();
-                                }
-                                else
-                                    alertMessage.text('Something went wrong').addClass('alert alert-danger').show();
-
-
-                                 setTimeout(function() {
-                                    alertMessage.fadeOut('slow');
-                                 }, 2000);
+                                 $('#deleteModal').modal('hide');
+                                 refreshTable(currentPage);
+                                 alertMessage.text('User was deleted').addClass('alert alert-success').show();
+                            }
+                            else
+                                alertMessage.text('Something went wrong').addClass('alert alert-danger').show();
                             },
                              error: function(xhr, status, error) {
                                  alertMessage.text('Something went wrong').addClass('alert alert-danger').show();
-
-
-                                 setTimeout(function() {
-                                    alertMessage.fadeOut('slow');
-                                 }, 2000);
-
                              }
-
                         });
-
                  });
 
-                });
+                 timeout(alertMessage);
+});

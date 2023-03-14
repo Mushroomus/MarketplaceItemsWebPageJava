@@ -18,7 +18,6 @@ $(document).ready(function() {
                     modal.find('.modal-body #deleteModalQuality').text(itemQuality);
                     modal.find('.modal-body #deleteModalType').text(itemType);
                     modal.find('.modal-body #deleteModalCraftable').text(itemCraftable ? 'Yes' : 'No');
-
     });
 
 });

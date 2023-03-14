@@ -120,16 +120,12 @@ function fetchRightList() {
                   type: "GET",
                   url: "fetch-right-list?listName=" + $("#listName").val(),
                   success: function(response) {
-                    // Clear current items in the list
                     $('#list2').empty();
 
                     if(response != null) {
                         $('#empty-message').hide();
 
                         $.each(response, function(i, item) {
-
-                            console.log(item.name);
-
                           var listItem = $('<li class="list-group-item">' +
                                           '<div class="row">' +
                                               '<div class="col-9">' +
@@ -162,21 +158,21 @@ function fetchRightList() {
 
 $(document).ready(function() {
 
+    if($('#alertDelete') != null)
+        timeout($('#alertDelete'));
+
     $('#alertMessageList').hide();
 
     var alertList = localStorage.getItem('alertList');
-    console.log(alertList);
+    var alertMessageList = $("#alertMessageList");
 
     if(alertList && window.location.href.indexOf('/lists/show') !== -1) {
         if(alertList == "create")
-            $('#alertMessageList').text("List was created").show();
+            setAlert(alertMessageList, "List created", true);
         else
-            $('#alertMessageList').text("List was edited").show();
+            setAlert(alertMessageList, "List edited", true);
 
-        setTimeout(function() {
-            $("#alertMessageList").fadeOut('slow');
-        }, 5000)
-
+        timeout(alertMessageList);
         localStorage.removeItem('alertList');
     }
 
@@ -244,21 +240,14 @@ $(document).ready(function() {
                             window.location.href = "show";
                         }
                         else {
-                            $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
-
-                            setTimeout(function() {
-                                $("#alertMessageList").fadeOut('slow');
-                            }, 5000)
+                            setAlert(alertMessageList, "Something went wrong", false);
                         }
                     },
                     error: function(xhr, status, error) {
-                        $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
-
-                        setTimeout(function() {
-                            $("#alertMessageList").fadeOut('slow');
-                        }, 5000);
+                        setAlert(alertMessageList, "Something went wrong", false);
                     }
                 });
+                timeout(alertMessageList);
         })
 
         $("#saveList").click(function() {
@@ -290,22 +279,14 @@ $(document).ready(function() {
                             window.location.href = "show";
                         }
                         else {
-                            $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
-
-                            setTimeout(function() {
-                                $("#alertMessageList").fadeOut('slow');
-                            }, 5000)
+                            setAlert(alertMessageList, "Something went wrong", false);
                         }
                     },
                     error: function(xhr, status, error) {
-
-                        $('#alertMessageList').text("Something went wrong").removeClass("alert alert-success").addClass("alert alert-danger").show();
-
-                        setTimeout(function() {
-                            $("#alertMessageList").fadeOut('slow');
-                        }, 5000);
+                        setAlert(alertMessageList, "Something went wrong", false);
                     }
                 });
+                timeout(alertMessageList);
         });
 
           $(".list-group").sortable({
@@ -343,13 +324,9 @@ $(document).ready(function() {
 
               var dataPage = $(this).data('page');
 
-             // if(dataPage == currentPage) {
-                    item.appendTo("#list1");
-                    $(this).removeClass("btn-danger").addClass("btn-success");
-                    $(this).html("<i class='fas fa-arrow-right'></i>");
-              //} else {
-                // item.remove();
-              //}
+              item.appendTo("#list1");
+              $(this).removeClass("btn-danger").addClass("btn-success");
+              $(this).html("<i class='fas fa-arrow-right'></i>");
             }
           });
 
@@ -382,4 +359,28 @@ $(document).ready(function() {
                     placement: 'right'
                   }).popover('show');
          });
+
+         $('#priceItems').submit(function(e) {
+                // Add the additional input to the form's data
+                var formData = $(this).serialize();
+                formData += '&marketplaceKeyPrice=' + $('#marketplaceKeyPrice').val();
+
+                // Send the form data to the server
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    success: function(response) {
+                            $('.container').html(response);
+                            $('#spinnerHide').prop('hidden', false);
+                            $('#spinner').prop('hidden', true);
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error
+                            console.log('Error: ' + error);
+                        }
+                });
+                e.preventDefault();
+            });
+
 });

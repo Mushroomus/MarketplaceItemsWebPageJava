@@ -33,6 +33,8 @@ $(document).ready(function() {
             var type = $("#itemType").val();
             var marketplacePrice = $("#itemMarketplacePrice").val();
 
+            var modalAddItemMessage = $("#modalAddItemMessage");
+
             $.ajax({
                 url: "add",
                 type: "POST",
@@ -50,24 +52,19 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(response, status, xhr) {
                     if (xhr.status == 200) {
-                        $("#modalAddItemMessage").text("Item was added").removeClass("alert alert-danger").addClass("alert alert-success").show();
+                        setAlert(modalAddItemMessage, "Item added", true);
                         refreshTable(currentPage);
                         setStartValues();
                     }
-                    else if (xhr.status == 400)
-                        $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
                     else
-                        $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                        setAlert(modalAddItemMessage, "Something went wrong", false);
                 },
                 error: function(xhr, status, error) {
-                    $("#modalAddItemMessage").text("Something went wrong").removeClass("alert alert-danger").addClass("alert alert-danger").show();
+                    setAlert(modalAddItemMessage, "Something went wrong", false);
                 }
             });
 
-            setTimeout(function() {
-                $("#modalAddItemMessage").fadeOut('slow');
-            }, 5000);
-
+            timeout(modalAddItemMessage);
         }
     });
 

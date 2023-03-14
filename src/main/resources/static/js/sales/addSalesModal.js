@@ -25,6 +25,8 @@
             $('#spinnerPaginationHide').hide();
             $('#spinner').prop('hidden', false);
 
+            var alertMessageSale = $("#alertMessageSale");
+
             $.ajax({
                       type: "POST",
                       url: "fetchCSV",
@@ -35,25 +37,16 @@
                             $('#spinner').prop('hidden', true);
                             $('table').show();
                             $('#spinnerPaginationHide').show();
-                            $('#alertMessageSale').removeClass('alert alert-danger').addClass('alert alert-success').text('Records added');
-
-                            setTimeout(function() {
-                                $("#alertMessageSale").fadeOut('slow');
-                             }, 5000);
+                            setAlert(alertMessageSale, "Records added", true);
                       },
                       error: function(xhr, status, error) {
                             $('#spinner').prop('hidden', true);
                             $('table').show();
                             $('#spinnerPaginationHide').show();
-                            $('#alertMessageSale').removeClass('alert alert-success').addClass('alert alert-danger').text('Something went wrong');
-
-                            setTimeout(function() {
-                                $("#alertMessageSale").fadeOut('slow');
-                             }, 5000);
+                            setAlert(alertMessageSale, "Something went wrong", false);
                       }
                     });
-
-
+                    timeout(alertMessage);
              }
       });
 

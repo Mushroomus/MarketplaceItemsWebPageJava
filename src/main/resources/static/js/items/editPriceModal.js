@@ -19,7 +19,6 @@ $(document).ready(function() {
         var itemPrice = $('#modalMarketplacePrice').val();
 
         let alertMessage = parent.$('#alertMessage');
-        console.log(itemSku + itemPrice);
 
         $.ajax({
             url: "updatePrice",
@@ -32,25 +31,17 @@ $(document).ready(function() {
             success: function (response, status, xhr) {
 
                 if (xhr.status == 200) {
-
                     $('#editPriceModal').modal('hide');
                     refreshTable(currentPage);
-                    alertMessage.text('Price was updated').addClass('alert alert-success').show();
-                } else
-                    alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                setTimeout(function() {
-                    alertMessage.fadeOut('slow');
-                }, 2000);
+                    setAlert(alertMessage, "Price updated", true);
+                }
+                else
+                    setAlert(alertMessage, "Something went wrong", false);
             },
             error: function (xhr, status, error) {
-                alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                setTimeout(function() {
-                    alertMessage.fadeOut('slow');
-                }, 2000);
+                setAlert(alertMessage, "Something went wrong", false);
             }
         });
-
+        timeout(alertMessage);
     });
 });

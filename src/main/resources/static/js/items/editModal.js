@@ -34,6 +34,8 @@ $(document).ready(function() {
                  var quality = $("#modalItemQuality").val();
                  var type = $("#modalItemType").val();
 
+                 var alertMessage = parent.$('#alertMessage');
+
                 if (editForm[0].checkValidity()) {
                      $.ajax({
                            url: "update",
@@ -50,20 +52,14 @@ $(document).ready(function() {
                            success: function(response) {
                                 $('#editModal').modal('hide');
                                 refreshTable(currentPage);
-
-                               var alertMessage = parent.$('#alertMessage');
-                               alertMessage.text('Item was edited').addClass('alert alert-success').show();
-
-                               setTimeout(function() {
-                                   alertMessage.fadeOut('slow');
-                               }, 2000);
+                                setAlert(alertMessage, "Item edited", true);
                            },
                            error: function(error) {
-                             console.log(error);
+                             setAlert(alertMessage, "Something went wrong", false);
                            }
                          });
+                         timeout(alertMessage);
                 }
-
             });
 
            editForm.on('input', function(event) {

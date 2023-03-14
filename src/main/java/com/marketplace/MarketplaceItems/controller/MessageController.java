@@ -205,6 +205,8 @@ public class MessageController {
 
         if(types != null && !types.equals(""))
             typeList = Arrays.asList(types.split(","));
+        else
+            typeList = Collections.singletonList("");
 
         Page<Message> messagesPage = messageService.findAll(paging, search, typeList, start, end);
 

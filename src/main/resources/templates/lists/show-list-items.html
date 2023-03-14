@@ -37,10 +37,19 @@
 
     <div id="alertMessageList" role="alert" class="alert alert-success"></div>
 
+    <div class="row align-items-center">
 
-    <div th:text="${deleteAlert}" id="alertDelete" role="alert" th:if="${deleteAlert != null}"
-         th:classappend="${deleteAlert eq 'List was deleted'} ? 'alert alert-success' : 'alert alert-danger'">
+        <div class="col-sm-6" th:text="${deleteAlert}" id="alertDelete" role="alert" th:if="${deleteAlert != null}"
+             th:classappend="${deleteAlert eq 'List deleted'} ? 'alert alert-success' : 'alert alert-danger'">
+        </div>
+
+      <div class="col-sm-3 d-flex align-items-center">
+        <input type="number" id="marketplaceKeyPrice" class="form-control me-2" />
+        <span class = "form-text">Marketplace Key Price</span>
+      </div>
+
     </div>
+
 
     <div class="list-group">
 
@@ -58,7 +67,7 @@
             <span th:text="${#temporals.format(list.date, 'dd.MM.YYYY HH:MM')}"></span>
           </div>
 
-          <form method="POST" th:action="@{price-items}" class="mx-1">
+          <form id="priceItems" method="POST" th:action="@{price-items}" class="mx-1">
             <input type="hidden" th:value="${list.name}" name="listName" />
             <button type="submit" class="btn btn-primary price-items-button"><i class="fas fa-play"></i></button>
           </form>

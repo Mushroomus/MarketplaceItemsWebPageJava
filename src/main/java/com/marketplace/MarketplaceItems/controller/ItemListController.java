@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequestMapping("/lists")
@@ -49,12 +52,12 @@ public class ItemListController {
     //@Autowired
    // private PagedResourcesAssembler<Item> assembler;
 
-    private ItemService itemService;
-    private UserService userService;
+    private final ItemService itemService;
+    private final UserService userService;
 
-    private ListService listService;
+    private final ListService listService;
 
-    private ItemListService itemListService;
+    private final ItemListService itemListService;
     private final ItemListDAO itemListDAO;
 
     public ItemListController(ItemService theItemService, UserService theUserService, ListService theListService, ItemListService theItemListService,
@@ -73,7 +76,7 @@ public class ItemListController {
         private java.util.List<String> itemSku;
         private String listName;
 
-        public CreateListRequest() { };
+        public CreateListRequest() { }
 
         public String getUsername() {
             return username;
@@ -143,7 +146,7 @@ public class ItemListController {
             itemListDAO.deleteAll(itemsList);
             listService.deleteList(foundList);
 
-            redirectAttributes.addFlashAttribute("deleteAlert", "List was deleted");
+            redirectAttributes.addFlashAttribute("deleteAlert", "List deleted");
         } else {
             redirectAttributes.addFlashAttribute("deleteAlert", "Something went wrong");
         }
@@ -261,7 +264,7 @@ public class ItemListController {
         private java.util.List<String> itemSku;
         private String listName;
 
-        public EditListRequest() { };
+        public EditListRequest() { }
 
 
         public java.util.List<String> getItemSku() {
@@ -334,7 +337,7 @@ public class ItemListController {
     }
 
     @PostMapping(value="/price-items")
-    public String priceItems(@RequestParam(value="listName") String name, Model theModel) {
+    public String priceItems(@RequestParam(value="listName") String name, @RequestParam(value="marketplaceKeyPrice") String marketplaceKeyPrice, Model theModel) {
 
         User user = userService.getCurrentUser();
         List list = listService.findListByName(name);
@@ -356,8 +359,22 @@ public class ItemListController {
                 .block()
                 .getAccessToken();
 
-        // Use the access token to authenticate subsequent requests
-        java.util.List<ItemRequest> itemRequests = Flux
+        Mono<ItemRequest>  keyPriceMono = client.get()
+                        .uri("https://api2.prices.tf/prices/5021;6")
+                        .headers(headers -> headers.setBearerAuth(accessToken))
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .retryBackoff(3, Duration.ofSeconds(1))
+                        .map(response -> {
+                            try {
+                                ObjectMapper mapper = new ObjectMapper();
+                                return mapper.readValue(response, ItemRequest.class);
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException("Failed to deserialize response into ItemRequest", e);
+                            }
+                        });
+
+        Mono<java.util.List<ItemRequest>> itemRequestsMono = Flux
                 .fromArray(apiRequestsArray)
                 .flatMap(path -> client.get()
                         .uri(path)
@@ -374,12 +391,16 @@ public class ItemListController {
                         throw new RuntimeException("Failed to deserialize response into ItemRequest", e);
                     }
                 })
-                .collect(Collectors.toList())
-                .block();
+                .collect(Collectors.toList());
+
+        ItemRequest keyPrice = keyPriceMono.block();
+        java.util.List<ItemRequest> itemRequests = itemRequestsMono.block();
+
+        Double keyPriceFormatted = (double) keyPrice.sellHalfScrap / 18;
 
         java.util.List<ItemRequestResult > resultList = new ArrayList<>();
         Item item;
-        Double backpackPrice;
+        Double metal;
 
         for(ItemRequest req : itemRequests) {
             ItemList itemSearch = results.stream()
@@ -388,8 +409,35 @@ public class ItemListController {
                     .orElse(null);
             item = itemSearch.getItem();
 
-            backpackPrice =  Double.valueOf(req.sellHalfScrap) / 16;
-            resultList.add( new ItemRequestResult(item.getSku(), item.getName(), "0.3", backpackPrice.toString(), "2"));
+            metal =  Double.valueOf(req.sellHalfScrap) / 18;
+            Double calculatedProfit;
+
+            Double marketplacePrice = item.getMarketplacePrice();
+
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            String formattedMetal = decimalFormat.format(metal);
+
+            String backpackPrice = formattedMetal + " refs";
+
+            Integer amountKey = req.sellKeys;
+            if(amountKey == 0) {
+                calculatedProfit = keyPriceFormatted / metal;
+
+                calculatedProfit = calculatedProfit * marketplacePrice;
+                calculatedProfit = calculatedProfit - (calculatedProfit * 0.1);
+                calculatedProfit = calculatedProfit - Double.parseDouble(marketplaceKeyPrice);
+            } else {
+                calculatedProfit = amountKey + (metal / keyPriceFormatted);
+
+                if(amountKey == 1)
+                    backpackPrice = amountKey + " key " + backpackPrice;
+                else
+                    backpackPrice = amountKey + " keys " + backpackPrice;
+
+                calculatedProfit = Double.parseDouble(marketplaceKeyPrice) * calculatedProfit;
+                calculatedProfit = (marketplacePrice - marketplacePrice * 0.1) - calculatedProfit;
+            }
+            resultList.add( new ItemRequestResult(item.getSku(), item.getName(), Double.toString(item.getMarketplacePrice()) + '$', backpackPrice, decimalFormat.format(calculatedProfit)));
         }
 
         resultList.stream().forEach(x-> System.out.println(x.getSku() + " " + x.getBackpackPrice()));
@@ -576,7 +624,7 @@ public class ItemListController {
     public static class AccessTokenResponse {
         private String accessToken;
 
-        AccessTokenResponse() { };
+        AccessTokenResponse() { }
 
         public String getAccessToken() {
             return accessToken;

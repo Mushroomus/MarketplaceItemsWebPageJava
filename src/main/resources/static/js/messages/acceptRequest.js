@@ -24,23 +24,16 @@
                       console.log(xhr.status);
                       if (xhr.status == 200) {
                           refreshTable(currentPage);
-                          alertMessage.text('Request was accepted').addClass('alert alert-success').show();
+                          setAlert(alertMessage, "Request accepted", true);
                       } else
-                          alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                       setTimeout(function() {
-                            alertMessage.fadeOut('slow');
-                         }, 2000);
+                            setAlert(alertMessage, "Something went wrong", false);
                   },
                   error: function (xhr, status, error) {
                       $('#acceptRequest').modal('hide');
-                      alertMessage.text('Something went wrong').addClass("alert alert-danger").show();
-
-                      setTimeout(function() {
-                           alertMessage.fadeOut('slow');
-                        }, 2000);
+                      setAlert(alertMessage, "Something went wrong", false);
                   }
               });
+              timeout(alertMessage);
       });
 
 
