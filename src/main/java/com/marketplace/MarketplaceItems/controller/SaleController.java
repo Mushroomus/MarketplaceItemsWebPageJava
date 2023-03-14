@@ -77,8 +77,6 @@ public class SaleController {
         Page<Sale> sales;
         Pageable pageable = PageRequest.of(page, size);
 
-        System.out.println(minPrice + " " + maxPrice);
-
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
@@ -98,8 +96,6 @@ public class SaleController {
             end = LocalDateTime.parse(dateEndString, formatterDate);
         }
 
-
-        System.out.println(minPrice);
         Double minimumPriceValue = null;
 
         if(minPrice != null && !minPrice.isEmpty())
@@ -111,8 +107,12 @@ public class SaleController {
             maximumPriceValue = Double.parseDouble(maxPrice);
 
 
-        //sales = saleService.findAll(pageable);
-        sales = saleService.findAll(pageable, craftable, classes, qualities, types, start, end, minimumPriceValue, maximumPriceValue);
+        User user = userService.getCurrentUser();
+
+        if(types.contains("none"))
+            types = Arrays.asList("");
+
+        sales = saleService.findAll(pageable, user, craftable, classes, qualities, types, start, end, minimumPriceValue, maximumPriceValue);
 
         PagedModel<Sale> pagedModel = PagedModel.of(sales.getContent(), new PagedModel.PageMetadata(sales.getSize(), sales.getNumber(), sales.getTotalElements()));
 
@@ -158,13 +158,13 @@ public class SaleController {
 
             Sale sale = new Sale();
 
+            sale.setAssignSku(record[1]);
             sale.setOrderId(record[2]);
             sale.setDate( LocalDateTime.parse(record[3], formatter) );
             sale.setPrice(Double.parseDouble(record[5]));
             sale.setNet(Double.parseDouble(record[6]));
             sale.setFee(Double.parseDouble(record[7]));
             sale.setUser(userService.getCurrentUser());
-
 
             Item theItem = itemService.findItemBySku(record[1]);
 
@@ -173,11 +173,11 @@ public class SaleController {
             else
                 sale.setItem(theItem);
 
-            // Validate the order
+            System.out.println(sale.getAssignSku());
+
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
             Set<ConstraintViolation<Sale>> violations = validator.validate(sale);
             if (!violations.isEmpty()) {
-                // Handle validation error
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body("{ \"error\": \"" + "Wrong file format data" + "\" }");
@@ -185,8 +185,6 @@ public class SaleController {
 
             sales.add(sale);
         }
-
-        //sales.stream().forEach(x-> System.out.println(x));
 
         try {
             saleService.saveAll(sales);
@@ -210,7 +208,7 @@ public class SaleController {
     @GetMapping("graphs/get-years")
     public ResponseEntity<List<String>> getYears() {
         try {
-            List<String> years = saleService.getYears();
+            List<String> years = saleService.getYears(userService.getCurrentUser());
             return ResponseEntity.ok(years);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -265,7 +263,7 @@ public class SaleController {
     @GetMapping("graphs/sales-year")
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByMonthInYear(@RequestParam int year) {
         try {
-            List<Object[]> results = saleService.getSalesCountByMonthInYear(year);
+            List<Object[]> results = saleService.getSalesCountByMonthInYear(year, userService.getCurrentUser());
 
             List<Map<String, Object>> salesByMonth = new ArrayList<>();
             for (Object[] row : results) {
@@ -284,7 +282,7 @@ public class SaleController {
     @GetMapping("graphs/sales-items-month")
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByMonthInYear(@RequestParam int page, @RequestParam int year, @RequestParam int month) {
         try {
-            List<Object[]> results = saleService.getItemsDataFromMonth(year, month, page, 5);
+            List<Object[]> results = saleService.getItemsDataFromMonth(year, month, page, 5, userService.getCurrentUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
@@ -296,7 +294,7 @@ public class SaleController {
     @GetMapping("graphs/sales-items-month-total-pages")
     public ResponseEntity<Integer> getItemsMonthTotalPages(@RequestParam int year, @RequestParam int month) {
         try {
-            Integer pages = saleService.getItemsDataFromMonthTotalPages(year,month, 5);
+            Integer pages = saleService.getItemsDataFromMonthTotalPages(year,month, 5, userService.getCurrentUser());
 
             return ResponseEntity.ok(pages);
         } catch (Exception e) {
@@ -308,7 +306,7 @@ public class SaleController {
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month, @RequestParam int day, @RequestParam int page) {
 
         try {
-            List<Object[]> results = saleService.getItemsDataFromDay(year,month,day,page, 5);
+            List<Object[]> results = saleService.getItemsDataFromDay(year,month,day,page, 5, userService.getCurrentUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
@@ -320,7 +318,7 @@ public class SaleController {
     @GetMapping("graphs/sales-items-day-total-pages")
     public ResponseEntity<Integer> getItemsDayTotalPages(@RequestParam int year, @RequestParam int month, @RequestParam int day) {
         try {
-            Integer pages = saleService.getItemsDataFromDayTotalPages(year, month, day, 5);
+            Integer pages = saleService.getItemsDataFromDayTotalPages(year, month, day, 5, userService.getCurrentUser());
 
             return ResponseEntity.ok(pages);
         } catch (Exception e) {
@@ -333,7 +331,7 @@ public class SaleController {
     @GetMapping("graphs/sales-month")
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByDayInMonth(@RequestParam int year, @RequestParam int month) {
         try {
-            List<Object[]> results = saleService.getSalesCountByDayinMonth(year, month);
+            List<Object[]> results = saleService.getSalesCountByDayinMonth(year, month, userService.getCurrentUser());
 
             List<Map<String, Object>> salesByDay = new ArrayList<>();
             for (Object[] row : results) {
@@ -352,7 +350,7 @@ public class SaleController {
     @GetMapping("graphs/sales-best")
     public ResponseEntity<List<SalesItemsDTO>> getBestSales(@RequestParam int year, @RequestParam(required = false) Integer month) {
         try {
-            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, true);
+            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, true, userService.getCurrentUser());
             List<SalesItemsDTO> bestSales = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(bestSales);
@@ -365,7 +363,7 @@ public class SaleController {
     @GetMapping("graphs/sales-worst")
     public ResponseEntity<List<SalesItemsDTO>> getWorstSales(@RequestParam int year, @RequestParam(required = false) Integer month) {
         try {
-            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, false);
+            List<Object[]> results = saleService.getBestOrWorstSellingItems(year, month, false, userService.getCurrentUser());
             List<SalesItemsDTO> worstSales = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(worstSales);
@@ -378,7 +376,7 @@ public class SaleController {
     @GetMapping("graphs/fetch-months")
     public ResponseEntity<List<Integer>> getMonthsByYear(@RequestParam int year) {
         try {
-            List<Integer> results = saleService.getMonthsByYear(year);
+            List<Integer> results = saleService.getMonthsByYear(year, userService.getCurrentUser());
             return ResponseEntity.ok(results);
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -38,7 +38,6 @@ $('#deleteModal').on('show.bs.modal', function (event) {
                                  alertMessage.text('Something went wrong').addClass('alert alert-danger').show();
                              }
                         });
+                        timeout(alertMessage);
                  });
-
-                 timeout(alertMessage);
 });

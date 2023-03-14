@@ -45,8 +45,4 @@ public class Item {
 
     @Column(name="image")
     private String image;
-
-    @OneToMany(mappedBy = "item")
-    @JsonIgnore
-    private List<ItemList> itemList = new ArrayList<>();
 }

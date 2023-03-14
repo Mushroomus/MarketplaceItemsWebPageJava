@@ -68,6 +68,8 @@ public class UserServiceImpl implements UserService{
             if (endDate != null) {
                 predicates.add(builder.lessThanOrEqualTo(root.get("date"), endDate));
             }
+            predicates.add(builder.notEqual(root.get("id"), getCurrentUser().getId()));
+            
             return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
         };
 

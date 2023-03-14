@@ -1,5 +1,7 @@
 function createLi(data) {
-     var listItems = "";
+
+    console.log(data);
+    var listItems = "";
       $.each(data, function(index, item) {
         listItems += '<li class="list-group-item">';
           listItems += '<h6>' + item.sku + '</h4>';
@@ -10,6 +12,8 @@ function createLi(data) {
 
      $("#items-list").append(listItems);
 }
+
+let fetchFirst = true;
 
 function getTotalPage(year, month, day, type) {
   $('#spinner').prop('hidden', false);
@@ -37,6 +41,15 @@ function getTotalPage(year, month, day, type) {
     })
       .then(function (total) {
         totalPages = total;
+
+        console.log(fetchFirst + ' ' + totalPages);
+        if(fetchFirst == true) {
+            if(totalPages == 0)
+                $('#noItems').prop('hidden',false);
+            else
+                fetchFirst = false;
+        }
+
         loadMoreFunction();
       })
       .catch(function (error) {
@@ -97,6 +110,7 @@ $(document).ready(function() {
     $('#showItemsYear').on('show.bs.modal', function (event) {
        page = 0;
        $('#items-list').empty();
+       $('#noItems').prop('hidden', true);
 
        var year = $('#showItemsYear').data('year');
        var month = $('#showItemsYear').data('month');
@@ -124,6 +138,9 @@ $(document).ready(function() {
          }
        }
      });
-
   });
+
+    $('#showItemsYear').on('hidden.bs.modal', function (e) {
+        fetchFirst = true;
+    })
 });

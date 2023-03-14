@@ -30,6 +30,9 @@ public class Sale {
     @Column(name="fee")
     private Double fee;
 
+    @Column(name="assign_sku")
+    private String assignSku;
+
     @ManyToOne
     @JoinColumn(name = "item_sku", referencedColumnName = "sku")
     private Item item;

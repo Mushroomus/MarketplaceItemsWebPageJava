@@ -136,13 +136,13 @@
                        "<td>" + user.role + "</td>" +
                        "<td>" + first_date + "</td>" +
                        "<td>" +
-                       "<button type='submit' class='btn btn-danger mx-2' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
-                       "data-userId='" + user.id + "' data-username='" + user.username + "'>" +
-                       "<i class='fas fa-trash'></i>" +
-                       "</button>" +
                        "<button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#editModal'" +
                        "data-userId='" + user.id + "' data-username='" + user.username + "' data-role='" + user.role + "' data-password='" + user.password + "'>" +
-                       "<i class='fas fa-pencil-alt'></i>" +
+                         "<i class='fas fa-pencil-alt'></i>" +
+                       "</button>" +
+                         "<button type='submit' class='btn btn-danger mx-2' data-bs-toggle='modal' data-bs-target='#deleteModal'" +
+                         "data-userId='" + user.id + "' data-username='" + user.username + "'>" +
+                         "<i class='fas fa-trash'></i>" +
                        "</button>" +
                        "</td>" +
                        "</tr>";

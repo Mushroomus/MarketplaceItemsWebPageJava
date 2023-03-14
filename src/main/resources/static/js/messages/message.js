@@ -1,4 +1,3 @@
-var firstFetch = true;
 var filter = false;
 var searchFilter = false;
 var currentPage = 0;
@@ -144,11 +143,6 @@ function createUrl(page) {
         let url = "fetch";
         url += "?page=" + page;
 
-        if(firstFetch == true) {
-            firstFetch = false;
-            return url += "&types=add,delete,update,updatePrice"
-        }
-
         if(searchFilter == true) {
             var search = $("#searchInput").val();
 
@@ -183,15 +177,15 @@ function createUrl(page) {
                 timestampEndDate = endDate.getTime();
             }
 
-            if (selectedTypes != null && selectedTypes != "")
+            if (selectedTypes != "")
                 url += "&types=" + selectedTypes;
+            else
+                url += "&types=" + "none";
+
             if (startDate != null && startDate != "")
                 url += "&startDate=" + timestampStartDate;
             if (endDate != null && endDate != "")
                 url += "&endDate=" + timestampEndDate;
-
-            console.log(url);
-            firstFetch = false;
         }
 
         return url;

@@ -39,11 +39,14 @@ public class MessageController {
 
     private ItemListService itemListService;
 
+    private SaleService saleService;
+
     private Validator validator;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService, ItemListService theItemListService, ItemImageService theItemImageService){
+    public MessageController(MessageService theMessageService, ItemService theItemService, UserService theUserService,
+                             ItemListService theItemListService, ItemImageService theItemImageService, SaleService theSaleService){
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -52,6 +55,7 @@ public class MessageController {
         userService = theUserService;
         itemListService = theItemListService;
         itemImageService = theItemImageService;
+        saleService = theSaleService;
 
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -103,6 +107,7 @@ public class MessageController {
                             .build();
 
                     itemService.saveItem(theAddItem);
+                    saleService.setAddItem(theAddItem, theAddItem.getSku());
                     messageService.deleteById(theMessage.getId());
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -140,6 +145,7 @@ public class MessageController {
                     messageService.deleteById(theMessage.getId());
                     itemListService.deleteAllByItemSku(skuToDelete);
                     messageService.deleteAllByItemSku(skuToDelete);
+                    saleService.setItemNull(theMessage.getItem());
                     itemService.deleteBySku(skuToDelete);
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -205,8 +211,6 @@ public class MessageController {
 
         if(types != null && !types.equals(""))
             typeList = Arrays.asList(types.split(","));
-        else
-            typeList = Collections.singletonList("");
 
         Page<Message> messagesPage = messageService.findAll(paging, search, typeList, start, end);
 

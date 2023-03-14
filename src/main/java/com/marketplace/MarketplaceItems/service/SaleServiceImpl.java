@@ -3,6 +3,7 @@ package com.marketplace.MarketplaceItems.service;
 import com.marketplace.MarketplaceItems.dao.SaleDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Sale;
+import com.marketplace.MarketplaceItems.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,10 +40,23 @@ public class SaleServiceImpl implements  SaleService {
         saleDAO.saveAll(sales);
     }
 
+    @Override
+    public void setItemNull(Item item) {
+        saleDAO.setItemNull(item);
+    }
+
+    @Override
+    public void setAddItem(Item item, String sku) { saleDAO.setAddItem(item, sku); }
+
+    @Override
+    public void deleteAllByUserId(int user_id) {
+        saleDAO.deleteAllByUserId(user_id);
+    }
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    public long countSalesByFilters(String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate,
+    public long countSalesByFilters(String craftable, User user, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate,
                                     LocalDateTime endDate, Double minPrice, Double maxPrice) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -83,13 +97,15 @@ public class SaleServiceImpl implements  SaleService {
             predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
         }
 
+        predicates.add(builder.equal(root.get("user"), user));
+
         query.select(builder.count(root)).where(predicates.toArray(new Predicate[predicates.size()]));
 
         return entityManager.createQuery(query).getSingleResult();
     }
 
     @Override
-    public Page<Sale> findAll(Pageable pageable, String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice) {
+    public Page<Sale> findAll(Pageable pageable, User user, String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Sale> query = builder.createQuery(Sale.class);
         Root<Sale> root = query.from(Sale.class);
@@ -128,6 +144,8 @@ public class SaleServiceImpl implements  SaleService {
             predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
         }
 
+        predicates.add(builder.equal(root.get("user"), user));
+
         query.where(predicates.toArray(new Predicate[0]));
 
         TypedQuery<Sale> typedQuery = entityManager.createQuery(query);
@@ -135,38 +153,41 @@ public class SaleServiceImpl implements  SaleService {
         typedQuery.setMaxResults(pageable.getPageSize());
 
         List<Sale> sales = typedQuery.getResultList();
-        return new PageImpl<>(sales, pageable, countSalesByFilters(craftable, classes, qualities, types, startDate, endDate, minPrice, maxPrice));
+        return new PageImpl<>(sales, pageable, countSalesByFilters(craftable, user, classes, qualities, types, startDate, endDate, minPrice, maxPrice));
         }
 
     @Override
-    public List<String> getYears() {
-        return saleDAO.getDistinctYears();
+    public List<String> getYears(User user) {
+        return saleDAO.getDistinctYears(user);
     }
 
 
     @Override
-    public List<Object[]> getSalesCountByMonthInYear(int year) {
-        String hql = "SELECT MONTH(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year GROUP BY MONTH(s.date)";
+    public List<Object[]> getSalesCountByMonthInYear(int year, User user) {
+        String hql = "SELECT MONTH(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year AND s.user = :user GROUP BY MONTH(s.date)";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
+        query.setParameter("user", user);
         return query.getResultList();
     }
 
     @Override
-    public List<Object[]> getSalesCountByDayinMonth(int year, int month) {
-        String hql = "SELECT DAY(s.date), COUNT(s.id) FROM Sale s WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY DAY(s.date) ORDER BY DAY(s.date)";
+    public List<Object[]> getSalesCountByDayinMonth(int year, int month, User user) {
+        String hql = "SELECT DAY(s.date), COUNT(s.id) FROM Sale s WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY DAY(s.date) ORDER BY DAY(s.date)";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
         query.setParameter("month", month);
+        query.setParameter("user", user);
         return query.getResultList();
     }
 
     @Override
-    public List<Object[]> getItemsDataFromMonth(int year, int month, int page, int pageSize) {
-        String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
+    public List<Object[]> getItemsDataFromMonth(int year, int month, int page, int pageSize, User user) {
+        String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
         query.setParameter("month", month);
+        query.setParameter("user", user);
 
         query.setFirstResult(page * pageSize);
         query.setMaxResults(pageSize);
@@ -175,11 +196,12 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public int getItemsDataFromMonthTotalPages(int year, int month, int pageSize) {
-        String countHql = "SELECT COUNT(DISTINCT i.sku) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month";
+    public int getItemsDataFromMonthTotalPages(int year, int month, int pageSize, User user) {
+        String countHql = "SELECT COUNT(DISTINCT i.sku) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month";
         TypedQuery<Long> countQuery = entityManager.createQuery(countHql, Long.class);
         countQuery.setParameter("year", year);
         countQuery.setParameter("month", month);
+        countQuery.setParameter("user", user);
 
         Long totalItems = countQuery.getSingleResult();
         int totalPages = (int) Math.ceil(totalItems / (double) pageSize);
@@ -188,12 +210,13 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public List<Object[]> getItemsDataFromDay(int year, int month, int day, int page, int pageSize) {
-        String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
+    public List<Object[]> getItemsDataFromDay(int year, int month, int day, int page, int pageSize, User user) {
+        String hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day GROUP BY i.sku, i.name ORDER BY COUNT(s.id) DESC";
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
         query.setParameter("month", month);
         query.setParameter("day", day);
+        query.setParameter("user", user);
 
         query.setFirstResult(page * pageSize);
         query.setMaxResults(pageSize);
@@ -202,12 +225,13 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public int getItemsDataFromDayTotalPages(int year, int month, int day, int pageSize) {
-        String countHql = "SELECT COUNT(DISTINCT i.sku) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day";
+    public int getItemsDataFromDayTotalPages(int year, int month, int day, int pageSize, User user) {
+        String countHql = "SELECT COUNT(DISTINCT i.sku) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month AND DAY(s.date) = :day";
         TypedQuery<Long> countQuery = entityManager.createQuery(countHql, Long.class);
         countQuery.setParameter("year", year);
         countQuery.setParameter("month", month);
         countQuery.setParameter("day", day);
+        countQuery.setParameter("user", user);
 
         Long totalItems = countQuery.getSingleResult();
         int totalPages = (int) Math.ceil(totalItems / (double) pageSize);
@@ -216,14 +240,14 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public List<Object[]> getBestOrWorstSellingItems(int year, Integer month, boolean best) {
+    public List<Object[]> getBestOrWorstSellingItems(int year, Integer month, boolean best, User user) {
 
         String hql;
 
         if(month == null)
-            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year GROUP BY i.sku, i.name";
+            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year GROUP BY i.sku, i.name";
         else
-            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name";
+            hql = "SELECT i.sku, i.name, COUNT(s.id) FROM Sale s INNER JOIN s.item i WHERE s.user = :user AND YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY i.sku, i.name";
 
         if (best) {
             hql += " ORDER BY COUNT(s.id) DESC";
@@ -233,6 +257,8 @@ public class SaleServiceImpl implements  SaleService {
 
         TypedQuery<Object[]> query = entityManager.createQuery(hql, Object[].class);
         query.setParameter("year", year);
+        query.setParameter("user", user);
+
         if(month != null)
             query.setParameter("month", month);
 
@@ -241,10 +267,11 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public List<Integer> getMonthsByYear(@RequestParam int year) {
-        String hql = "SELECT DISTINCT MONTH(s.date) FROM Sale s WHERE YEAR(s.date) = :year ORDER BY MONTH(s.date) ASC";
+    public List<Integer> getMonthsByYear(int year, User user) {
+        String hql = "SELECT DISTINCT MONTH(s.date) FROM Sale s WHERE s.user = :user AND YEAR(s.date) = :year ORDER BY MONTH(s.date) ASC";
         TypedQuery<Integer> query = entityManager.createQuery(hql, Integer.class);
         query.setParameter("year", year);
+        query.setParameter("user", user);
 
         return query.getResultList();
 

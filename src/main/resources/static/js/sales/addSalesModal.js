@@ -21,7 +21,7 @@
 
             $('#addSales').modal('hide');
 
-            $('table').hide();
+            $('.table').hide();
             $('#spinnerPaginationHide').hide();
             $('#spinner').prop('hidden', false);
 
@@ -35,18 +35,19 @@
                       processData: false,
                       success: function(data) {
                             $('#spinner').prop('hidden', true);
-                            $('table').show();
+                            $('.table').show();
                             $('#spinnerPaginationHide').show();
+                            refreshTable(0);
                             setAlert(alertMessageSale, "Records added", true);
                       },
                       error: function(xhr, status, error) {
                             $('#spinner').prop('hidden', true);
-                            $('table').show();
+                            $('.table').show();
                             $('#spinnerPaginationHide').show();
                             setAlert(alertMessageSale, "Something went wrong", false);
                       }
                     });
-                    timeout(alertMessage);
+                    timeout(alertMessageSale);
              }
       });
 

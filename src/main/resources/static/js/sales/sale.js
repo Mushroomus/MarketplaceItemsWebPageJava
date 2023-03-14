@@ -32,15 +32,6 @@ function createUrl(page) {
     let url = "list-refresh";
     url += "?page=" + page;
 
-    /*
-    if(searchFilter == true) {
-        var search = $("#searchInput").val();
-
-        if(searchFilter != null)
-            url += "&search=" + search;
-    }
-     */
-
     if(filter == true) {
 
         if($('#switchUseSale').prop('checked')) {

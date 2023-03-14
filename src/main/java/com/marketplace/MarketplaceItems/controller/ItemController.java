@@ -3,10 +3,7 @@ package com.marketplace.MarketplaceItems.controller;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.ItemImage;
 import com.marketplace.MarketplaceItems.entity.User;
-import com.marketplace.MarketplaceItems.service.ItemImageService;
-import com.marketplace.MarketplaceItems.service.ItemListService;
-import com.marketplace.MarketplaceItems.service.ItemService;
-import com.marketplace.MarketplaceItems.service.MessageService;
+import com.marketplace.MarketplaceItems.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,12 +40,16 @@ public class ItemController {
 
     private ItemImageService itemImageService;
 
+    private SaleService saleService;
+
     public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService, @Qualifier("itemListServiceImpl") ItemListService theItemListService,
-                          @Qualifier("messageServiceImpl") MessageService theMessageService, ItemImageService theItemImageService) {
+                          @Qualifier("messageServiceImpl") MessageService theMessageService,
+                          @Qualifier("itemImageServiceImpl") ItemImageService theItemImageService, @Qualifier("saleServiceImpl") SaleService theSaleService) {
         itemService = theItemService;
         itemListService = theItemListService;
         messageService = theMessageService;
         itemImageService = theItemImageService;
+        saleService = theSaleService;
     }
 
 
@@ -104,6 +105,7 @@ public class ItemController {
 
 
     @PostMapping("/add")
+    @Transactional
     public ResponseEntity<UserController.ResponseMessage> addItem(@RequestBody Item item) {
         try {
 
@@ -118,6 +120,8 @@ public class ItemController {
             item.setImage(image_url);
             
             itemService.saveItem(item);
+            saleService.setAddItem(item, item.getSku());
+
             return new ResponseEntity<>(new UserController.ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -132,7 +136,12 @@ public class ItemController {
         try {
             itemListService.deleteAllByItemSku(itemSku);
             messageService.deleteAllByItemSku(itemSku);
+
+            Item item = itemService.findItemBySku(itemSku);
+            saleService.setItemNull(item);
+
             itemService.deleteBySku(itemSku);
+
             return new ResponseEntity<>(new UserController.ResponseMessage("Item was deleted"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new UserController.ResponseMessage("Failed to delete Item"), HttpStatus.valueOf(400));

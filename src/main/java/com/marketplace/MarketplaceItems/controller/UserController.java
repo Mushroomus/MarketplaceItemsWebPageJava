@@ -5,6 +5,7 @@ import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.MessageService;
+import com.marketplace.MarketplaceItems.service.SaleService;
 import com.marketplace.MarketplaceItems.service.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -32,14 +33,16 @@ public class UserController {
 
     private UserService userService;
     private ItemListService itemListService;
-
     private MessageService messageService;
 
+    private SaleService saleService;
+
     public UserController(@Qualifier("userServiceImpl") UserService theUserService, @Qualifier("itemListServiceImpl") ItemListService theItemListService,
-                          @Qualifier("messageServiceImpl") MessageService theMessageService) {
+                          @Qualifier("messageServiceImpl") MessageService theMessageService, SaleService theSaleService) {
         userService = theUserService;
         itemListService = theItemListService;
         messageService = theMessageService;
+        saleService = theSaleService;
     }
 
     @GetMapping("/list")
@@ -189,6 +192,8 @@ public class UserController {
         try {
             itemListService.deleteAllByUserId(id);
             messageService.deleteAllByUserId(id);
+            saleService.deleteAllByUserId(id);
+
             userService.deleteUserById(id);
             return new ResponseEntity<>(new ResponseMessage("User was deleted"), HttpStatus.OK);
         } catch (Exception e) {
