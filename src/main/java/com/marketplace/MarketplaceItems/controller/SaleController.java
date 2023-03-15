@@ -6,6 +6,8 @@ import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.service.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,18 +23,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.ui.Model;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 
-import javax.persistence.Query;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import org.apache.poi.ss.usermodel.*;
 
 @Controller
 @RequestMapping("/sales")
@@ -384,5 +388,32 @@ public class SaleController {
         }
     }
 
+    @GetMapping("excelSummary")
+    public void downloadExcel(HttpServletResponse response) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
 
+        Sheet sheet = workbook.createSheet("Sheet 1");
+
+        /*
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Column 1");
+        headerRow.createCell(1).setCellValue("Column 2");
+        headerRow.createCell(2).setCellValue("Column 3");
+        */
+        Row headerRow = sheet.createRow(0);
+        Cell headerCell1 = headerRow.createCell(0);
+        headerCell1.setCellValue("Column 1");
+        Cell headerCell2 = headerRow.createCell(1);
+        headerCell2.setCellValue("Column 2");
+        Cell headerCell3 = headerRow.createCell(2);
+        headerCell3.setCellValue("Column 3");
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+
+        outputStream.close();
+        workbook.close();
+    }
 }

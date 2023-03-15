@@ -171,6 +171,28 @@ function createUrl(page) {
              }
 
  $(document).ready(function() {
+     $('#excelSummary').on('click', function() {
+         $.ajax({
+             url: 'excelSummary',
+             type: 'GET',
+             xhrFields: {
+                 responseType: 'blob'
+             },
+             success: function(data) {
+                 var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(data);
+                link.download = 'data.xlsx';
+
+                // Trigger the download
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up the link element
+                document.body.removeChild(link);
+             }
+         });
+     });
+
 
      window.datetimepickerStartDate = $('#datetimepickerStartDate').tempusDominus({
      });
