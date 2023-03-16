@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 import javax.persistence.EntityManager;
@@ -157,6 +156,56 @@ public class SaleServiceImpl implements  SaleService {
         }
 
     @Override
+    public List<Sale> findAll(User user, String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Sale> query = builder.createQuery(Sale.class);
+        Root<Sale> root = query.from(Sale.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Filter by Item properties
+        Join<Sale, Item> itemJoin = root.join("item", JoinType.LEFT);
+
+        if (itemJoin != null) {
+            if (craftable != null && !craftable.isEmpty()) {
+                boolean craftableValue = craftable.equals("Yes") ? true : false;
+                predicates.add(builder.in(itemJoin.get("craftable")).value(craftableValue));
+            }
+            if (classes != null && !classes.isEmpty()) {
+                predicates.add(builder.in(itemJoin.get("classItem")).value(classes));
+            }
+            if (qualities != null && !qualities.isEmpty()) {
+                predicates.add(builder.in(itemJoin.get("quality")).value(qualities));
+            }
+            if (types != null && !types.isEmpty()) {
+                predicates.add(builder.in(itemJoin.get("type")).value(types));
+            }
+        }
+
+        // Filter by Sale properties
+        if (startDate != null) {
+            predicates.add(builder.greaterThanOrEqualTo(root.get("date"), startDate));
+        }
+        if (endDate != null) {
+            predicates.add(builder.lessThanOrEqualTo(root.get("date"), endDate));
+        }
+        if (minPrice != null) {
+            predicates.add(builder.greaterThanOrEqualTo(root.get("price"), minPrice));
+        }
+        if (maxPrice != null) {
+            predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+
+        predicates.add(builder.equal(root.get("user"), user));
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<Sale> typedQuery = entityManager.createQuery(query);
+        List<Sale> sales = typedQuery.getResultList();
+
+        return sales;
+    }
+
+    @Override
     public List<String> getYears(User user) {
         return saleDAO.getDistinctYears(user);
     }
@@ -274,7 +323,6 @@ public class SaleServiceImpl implements  SaleService {
         query.setParameter("user", user);
 
         return query.getResultList();
-
     }
 
 }

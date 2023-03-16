@@ -26,6 +26,8 @@ public interface SaleService {
     Page<Sale> findAll(Pageable pageable, User user, String craftable, List<String> classes, List<String> qualities, List<String> types,
                        LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice);
 
+    List<Sale> findAll(User user, String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice);
+
     List<String> getYears(User user);
 
 

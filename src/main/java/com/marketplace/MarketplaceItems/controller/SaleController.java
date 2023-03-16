@@ -1,5 +1,6 @@
 package com.marketplace.MarketplaceItems.controller;
 
+import com.marketplace.MarketplaceItems.components.ExcelGenerator;
 import com.marketplace.MarketplaceItems.entity.Sale;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.User;
@@ -8,6 +9,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +49,9 @@ public class SaleController {
     private UserService userService;
 
     private ItemService itemService;
+
+    @Autowired
+    private ExcelGenerator excelGenerator;
 
     public SaleController(SaleService theSaleService, UserService theUserService, ItemService theItemService) {
         saleService = theSaleService;
@@ -389,31 +394,50 @@ public class SaleController {
     }
 
     @GetMapping("excelSummary")
-    public void downloadExcel(HttpServletResponse response) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
+    public void downloadExcel(HttpServletResponse response, @RequestParam(defaultValue = "", required = false) String craftable,
+                              @RequestParam(defaultValue = "", required = false) List<String> classes,
+                              @RequestParam(defaultValue = "", required = false) List<String> qualities,
+                              @RequestParam(defaultValue = "", required = false) List<String> types,
+                              @RequestParam(defaultValue = "", required = false) String startDate,
+                              @RequestParam(defaultValue = "", required = false) String endDate,
+                              @RequestParam(defaultValue = "", required = false) String minPrice,
+                              @RequestParam(defaultValue = "", required = false) String maxPrice) throws IOException {
 
-        Sheet sheet = workbook.createSheet("Sheet 1");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-        /*
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Column 1");
-        headerRow.createCell(1).setCellValue("Column 2");
-        headerRow.createCell(2).setCellValue("Column 3");
-        */
-        Row headerRow = sheet.createRow(0);
-        Cell headerCell1 = headerRow.createCell(0);
-        headerCell1.setCellValue("Column 1");
-        Cell headerCell2 = headerRow.createCell(1);
-        headerCell2.setCellValue("Column 2");
-        Cell headerCell3 = headerRow.createCell(2);
-        headerCell3.setCellValue("Column 3");
+        LocalDateTime start = null;
+        if (startDate != null && !startDate.equals("")) {
+            long timestamp = Long.parseLong(startDate);
+            Date date = new Date(timestamp);
+            String dateStartString = formatter.format(date);
+            start = LocalDateTime.parse(dateStartString, formatterDate);
+        }
 
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=data.xlsx");
-        ServletOutputStream outputStream = response.getOutputStream();
-        workbook.write(outputStream);
+        LocalDateTime end = null;
+        if (endDate != null && !endDate.equals("")) {
+            long timestamp = Long.parseLong(endDate);
+            Date date = new Date(timestamp);
+            String dateEndString = formatter.format(date);
+            end = LocalDateTime.parse(dateEndString, formatterDate);
+        }
 
-        outputStream.close();
-        workbook.close();
+        Double minimumPriceValue = null;
+
+        if(minPrice != null && !minPrice.isEmpty())
+            minimumPriceValue = Double.parseDouble(minPrice);
+
+        Double maximumPriceValue = null;
+        if(maxPrice != null && !maxPrice.isEmpty())
+            maximumPriceValue = Double.parseDouble(maxPrice);
+
+        if(types.contains("none"))
+            types = Arrays.asList("");
+
+        List<Sale> sales = saleService.findAll(userService.getCurrentUser(),craftable,classes,qualities,types,start,end,minimumPriceValue, maximumPriceValue);
+        for(Sale sale: sales)
+            System.out.println(sale.getDate());
+
+        excelGenerator.generateExcelFile(sales, response);
     }
 }
