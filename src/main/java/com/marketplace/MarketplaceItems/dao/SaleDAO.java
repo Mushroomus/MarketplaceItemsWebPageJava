@@ -26,4 +26,6 @@ public interface SaleDAO extends JpaRepository<Sale, Integer>, JpaSpecificationE
     void setAddItem(@Param("item") Item item, @Param("sku") String sku);
 
     void deleteAllByUserId(int user_id);
+
+    List<Sale> findByUser(User user);
 }

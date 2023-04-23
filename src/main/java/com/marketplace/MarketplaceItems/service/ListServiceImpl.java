@@ -2,6 +2,7 @@ package com.marketplace.MarketplaceItems.service;
 
 import com.marketplace.MarketplaceItems.dao.ListDAO;
 import com.marketplace.MarketplaceItems.entity.List;
+import com.marketplace.MarketplaceItems.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,12 @@ public class ListServiceImpl implements ListService {
 
 
     @Override
-    public void saveList(List theList) { listDAO.save(theList); };
+    public void saveList(List theList) { listDAO.save(theList); }
+
+    @Override
+    public List findListByNameAndUser(String name, User user) {
+        return listDAO.findListByNameAndUser(name, user);
+    }
+
+    ;
 }

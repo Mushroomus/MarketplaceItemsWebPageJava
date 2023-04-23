@@ -24,6 +24,10 @@ public class List {
     @OneToMany(mappedBy = "list")
     private java.util.List<ItemList> itemList;
 
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
     public int getItemCount() {
         return itemList.size();
     }

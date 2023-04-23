@@ -18,14 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.ui.Model;
 
 import java.io.*;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 
@@ -57,6 +55,17 @@ public class SaleController {
         saleService = theSaleService;
         userService = theUserService;
         itemService = theItemService;
+    }
+
+    @GetMapping("/graphs/check-sales")
+    @ResponseBody
+    public Map<String, Boolean> checkSales() {
+        User user = userService.getCurrentUser();
+        boolean salesEmpty = saleService.userHasSales(user);
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("salesEmpty", salesEmpty);
+        System.out.println("Sales empty: " + salesEmpty);
+        return result;
     }
 
     @GetMapping("/list")

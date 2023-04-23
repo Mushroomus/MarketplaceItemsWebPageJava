@@ -86,7 +86,7 @@ public class ItemController {
 
     @GetMapping("/list-refresh")
     public ResponseEntity<PagedModel<Item>> refreshList(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                        @RequestParam(value = "size", defaultValue = "1") int size,
+                                                        @RequestParam(value = "size", defaultValue = "10") int size,
                                                         @RequestParam(defaultValue = "", required = false) String search,
                                                         @RequestParam(defaultValue = "", required = false) String craftable,
                                                         @RequestParam(defaultValue = "", required = false) List<String> classes,

@@ -13,6 +13,8 @@ import java.util.List;
 
 @Service
 public interface SaleService {
+    boolean userHasSales(User user);
+
     Page<Sale> findAll(Pageable pageable);
 
     void saveAll(List<Sale> sales);
@@ -30,7 +32,6 @@ public interface SaleService {
 
     List<String> getYears(User user);
 
-
     List<Object[]> getSalesCountByMonthInYear(int year, User user);
 
     List<Object[]> getSalesCountByDayinMonth(int year, int month, User user);
@@ -43,7 +44,6 @@ public interface SaleService {
     int getItemsDataFromDayTotalPages(int year, int month, int day, int pageSize, User user);
 
     List<Object[]> getBestOrWorstSellingItems(int year, Integer month, boolean best, User user);
-
 
     List<Integer> getMonthsByYear(int year, User user);
 }

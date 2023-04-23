@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface ListDAO extends JpaRepository<List, Long>, JpaSpecificationExecutor<List> {
 
     List findListByName(String name);
+
+    List findListByNameAndUser(String name, User user);
 }

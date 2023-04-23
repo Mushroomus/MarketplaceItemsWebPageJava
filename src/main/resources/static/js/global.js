@@ -12,6 +12,24 @@ function setAlert(alert, text, success) {
 }
 
  $(document).ready(function() {
+             $.ajax({
+                 type: "GET",
+                 url: "/sales/graphs/check-sales",
+                 success: function(response) {
+                     if(response.salesEmpty == true) {
+                         console.log("true");
+                         $('#graphsLink').fadeIn();
+                     }
+                     else {
+                         console.log("false");
+                         $('#graphsLink').fadeOut();
+                     }
+                 },
+                 error: function(xhr) {
+                     console.log(xhr);
+                 }
+             });
+
            $("#toggleButton").click(function() {
             $('.sidebar-container').toggleClass("d-md-block");
             if ($('.sidebar-container').hasClass("d-md-block")) {

@@ -106,7 +106,10 @@ public class ItemServiceImpl implements ItemService {
             updateItem.setClassItem(item.getClassItem());
             updateItem.setQuality(item.getQuality());
             updateItem.setType(item.getType());
-            updateItem.setImage(item.getImage());
+
+            if(!(item.getImage() == null || item.getImage().isEmpty()))
+                updateItem.setImage(item.getImage());
+
             itemDAO.save(updateItem);
         } else {
             System.out.println("Not Found");

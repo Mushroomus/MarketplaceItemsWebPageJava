@@ -107,6 +107,7 @@ public class ItemListController {
     @GetMapping("/show")
     public String showLists(Model theModel) {
         User user = userService.getCurrentUser();
+
         java.util.List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
 
         java.util.List<ItemList> lists = itemListService.findByUserId(user.getId());
@@ -195,6 +196,7 @@ public class ItemListController {
         List list = new List();
         list.setName(listName);
         list.setDate(LocalDateTime.now());
+        list.setUser(user);
         listService.saveList(list);
 
 
@@ -340,7 +342,7 @@ public class ItemListController {
     public String priceItems(@RequestParam(value="listName") String name, @RequestParam(value="marketplaceKeyPrice") String marketplaceKeyPrice, Model theModel) {
 
         User user = userService.getCurrentUser();
-        List list = listService.findListByName(name);
+        List list = listService.findListByNameAndUser(name, user);
 
         java.util.List<ItemList> results = itemListService.findByUsernameAndListId(user.getId(), list.getId());
 

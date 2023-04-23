@@ -115,12 +115,12 @@ public class MessageController {
 
                 case "update":
                     Item theUpdateItem = Item.builder()
-                            .sku(theMessage.getSku())
+                            .sku(theMessage.getItem().getSku())
                             .name(theMessage.getName())
-                            .marketplacePrice(theMessage.getMarketplacePrice())
                             .craftable(theMessage.getCraftable())
                             .classItem(theMessage.getItemClass())
                             .quality(theMessage.getQuality())
+                            .marketplacePrice(theMessage.getItem().getMarketplacePrice())
                             .type(theMessage.getType())
                             .image(theMessage.getItem().getImage())
                             .build();

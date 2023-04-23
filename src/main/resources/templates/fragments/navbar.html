@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-
 <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
 
   <div class="container-fluid">
@@ -25,11 +24,11 @@
           <a class="navbar-brand" href="#" th:href="@{/items/list-admin}">Items</a>
         </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
           <a class="navbar-brand" href="#" th:href="@{/lists/show}">Lists</a>
         </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
           <a class="navbar-brand" href="#" th:href="@{/items/list-user}">Items</a>
         </li>
 
@@ -37,12 +36,12 @@
           <a class="navbar-brand" href="#" th:href="@{/messages/list}">Messages</a>
         </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
           <a class="navbar-brand" href="#" th:href="@{/sales/list}">Sales</a>
         </li>
 
-        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
-          <a class="navbar-brand" href="#" th:href="@{/sales/graphs/show}">Graphs</a>
+        <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
+          <a class="navbar-brand" id="graphsLink" href="#" th:href="@{/sales/graphs/show}">Graphs</a>
         </li>
 
       </ul>

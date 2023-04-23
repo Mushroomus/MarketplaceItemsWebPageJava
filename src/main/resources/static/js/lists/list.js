@@ -360,27 +360,36 @@ $(document).ready(function() {
                   }).popover('show');
          });
 
-         $('#priceItems').submit(function(e) {
-                // Add the additional input to the form's data
-                var formData = $(this).serialize();
-                formData += '&marketplaceKeyPrice=' + $('#marketplaceKeyPrice').val();
+        $('[id^=priceItems]').submit(function(e) {
+            var marketplaceKeyPrice = $('#marketplaceKeyPrice').val();
 
-                // Send the form data to the server
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: formData,
-                    success: function(response) {
-                            $('.container').html(response);
-                            $('#spinnerHide').prop('hidden', false);
-                            $('#spinner').prop('hidden', true);
-                        },
-                        error: function(xhr, status, error) {
-                            // Handle the error
-                            console.log('Error: ' + error);
-                        }
-                });
-                e.preventDefault();
+            var formData = $(this).serialize();
+            formData += '&marketplaceKeyPrice=' + marketplaceKeyPrice;
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                success: function(response) {
+                    $('.container').html(response);
+                    $('#spinnerHide').prop('hidden', false);
+                    $('#spinner').prop('hidden', true);
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error: ' + error);
+                }
             });
+            e.preventDefault();
+        });
 
+        $('#marketplaceKeyPrice').on('input', function() {
+            var price = $('#marketplaceKeyPrice').val();
+            var priceButtons = $('.price-items-button');
+
+            if (price.trim() === '' || price.trim() === '0') {
+                priceButtons.prop('disabled', true);
+            } else {
+                priceButtons.prop('disabled', false);
+            }
+        });
 });

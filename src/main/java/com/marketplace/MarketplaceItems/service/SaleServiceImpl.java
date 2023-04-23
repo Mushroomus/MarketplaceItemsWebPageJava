@@ -30,6 +30,15 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
+    public boolean userHasSales(User user) {
+        List<Sale> sales = saleDAO.findByUser(user);
+
+        if(sales.isEmpty())
+            return false;
+        return true;
+    }
+
+    @Override
     public Page<Sale> findAll(Pageable pageable) {
         return saleDAO.findAll(pageable);
     }
