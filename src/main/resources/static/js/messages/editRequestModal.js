@@ -41,7 +41,7 @@ $(document).ready(function() {
 
                 if (editForm[0].checkValidity()) {
                      $.ajax({
-                           url: "/messages/create?sku=" + sku,
+                           url: "/messages?sku=" + sku,
                            type: "POST",
                            data: JSON.stringify({
                               messageType: "update",

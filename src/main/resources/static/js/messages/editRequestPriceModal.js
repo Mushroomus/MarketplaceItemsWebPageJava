@@ -22,7 +22,7 @@ $(document).ready(function() {
         console.log("run");
 
         $.ajax({
-            url: "/messages/create?sku=" + itemSku,
+            url: "/messages?sku=" + itemSku,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({

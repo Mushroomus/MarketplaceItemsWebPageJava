@@ -2,6 +2,7 @@ package com.marketplace.MarketplaceItems.service;
 
 import com.marketplace.MarketplaceItems.dao.ItemDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
+import com.marketplace.MarketplaceItems.service.Manager.MessageItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ import java.util.function.Predicate;
 import javax.persistence.criteria.Expression;
 
 @Service
-public class ItemServiceImpl implements ItemService {
+public class ItemServiceImpl implements ItemService, MessageItem {
 
     private ItemDAO itemDAO;
 

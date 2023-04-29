@@ -19,11 +19,11 @@ public interface SaleDAO extends JpaRepository<Sale, Integer>, JpaSpecificationE
 
     @Modifying
     @Query("UPDATE Sale SET item = null WHERE item = :item")
-    void setItemNull(@Param("item") Item item);
+    void updateItemDeletedNull(@Param("item") Item item);
 
     @Modifying
     @Query("UPDATE Sale SET item = :item WHERE assignSku = :sku")
-    void setAddItem(@Param("item") Item item, @Param("sku") String sku);
+    void updateSkuNewAddedItem(@Param("item") Item item, @Param("sku") String sku);
 
     void deleteAllByUserId(int user_id);
 

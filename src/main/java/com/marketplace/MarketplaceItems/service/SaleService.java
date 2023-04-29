@@ -19,9 +19,9 @@ public interface SaleService {
 
     void saveAll(List<Sale> sales);
 
-    void setItemNull(Item item);
+    void updateItemDeletedNull(Item item);
 
-    void setAddItem(Item item, String sku);
+    void updateSkuNewAddedItem(Item item, String sku);
 
     void deleteAllByUserId(int user_id);
 

@@ -4,6 +4,7 @@ import com.marketplace.MarketplaceItems.dao.SaleDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Sale;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.service.Manager.MessageSale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SaleServiceImpl implements  SaleService {
+public class SaleServiceImpl implements SaleService, MessageSale {
 
     private SaleDAO saleDAO;
 
@@ -49,12 +50,12 @@ public class SaleServiceImpl implements  SaleService {
     }
 
     @Override
-    public void setItemNull(Item item) {
-        saleDAO.setItemNull(item);
+    public void updateItemDeletedNull(Item item) {
+        saleDAO.updateItemDeletedNull(item);
     }
 
     @Override
-    public void setAddItem(Item item, String sku) { saleDAO.setAddItem(item, sku); }
+    public void updateSkuNewAddedItem(Item item, String sku) { saleDAO.updateSkuNewAddedItem(item, sku); }
 
     @Override
     public void deleteAllByUserId(int user_id) {

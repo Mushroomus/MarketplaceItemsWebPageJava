@@ -13,7 +13,7 @@
               var alertMessage = parent.$('#alertMessageAdmin');
 
               $.ajax({
-                  url: "accept?messageId=" + messageId,
+                  url: "/messages/" + messageId + "/accept",
                   type: "GET",
                   contentType: "application/json",
                   dataType: 'json',

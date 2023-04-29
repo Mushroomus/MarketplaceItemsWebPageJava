@@ -45,4 +45,12 @@ public class Item {
 
     @Column(name="image")
     private String image;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<ItemList> itemLists;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<Message> messages;
 }

@@ -35,7 +35,7 @@ $(document).ready(function() {
             var alertMessage = parent.$('#alertMessageUser');
 
             $.ajax({
-                url: "/messages/create",
+                url: "/messages",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({

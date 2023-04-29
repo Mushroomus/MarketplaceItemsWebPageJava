@@ -121,7 +121,7 @@ public class ItemController {
             item.setImage(image_url);
             
             itemService.saveItem(item);
-            saleService.setAddItem(item, item.getSku());
+            saleService.updateSkuNewAddedItem(item, item.getSku());
 
             return new ResponseEntity<>(new ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {
@@ -139,8 +139,7 @@ public class ItemController {
             messageService.deleteAllByItemSku(itemSku);
 
             Item item = itemService.findItemBySku(itemSku);
-            saleService.setItemNull(item);
-
+            saleService.updateItemDeletedNull(item);
             itemService.deleteBySku(itemSku);
 
             return new ResponseEntity<>(new ResponseMessage("Item was deleted"), HttpStatus.OK);

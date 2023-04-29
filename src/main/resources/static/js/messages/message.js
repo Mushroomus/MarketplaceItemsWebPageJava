@@ -140,7 +140,7 @@ function createUrl(page) {
         }
         currentPage = page;
 
-        let url = "fetch";
+        let url = "/messages";
         url += "?page=" + page;
 
         if(searchFilter == true) {
@@ -198,8 +198,6 @@ function refreshTable(page) {
            type: "GET",
            dataType: 'json',
             success: function(response, status, xhr) {
-                      console.log(response);
-
                       $('#message-list').empty();
 
                        if(response.totalPages == 0) {
