@@ -90,7 +90,7 @@ $(document).ready(function() {
                 var modalEditMessage = $("#modalEditMessage");
 
                 $.ajax({
-                    url: "add",
+                    url: "/users",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify({

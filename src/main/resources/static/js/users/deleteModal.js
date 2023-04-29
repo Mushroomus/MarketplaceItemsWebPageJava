@@ -20,8 +20,8 @@ $('#deleteModal').on('show.bs.modal', function (event) {
                 var alertMessage = parent.$('#alertMessage');
 
                 $.ajax({
-                        url: "delete?id=" + userId,
-                        type: "GET",
+                        url: "/users?id=" + userId,
+                        type: "DELETE",
                         contentType: "application/json",
                         dataType: 'json',
                         success: function(response, status, xhr) {

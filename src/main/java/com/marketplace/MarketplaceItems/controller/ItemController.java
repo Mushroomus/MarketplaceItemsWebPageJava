@@ -3,6 +3,7 @@ package com.marketplace.MarketplaceItems.controller;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.ItemImage;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -106,7 +107,7 @@ public class ItemController {
 
     @PostMapping("/add")
     @Transactional
-    public ResponseEntity<UserController.ResponseMessage> addItem(@RequestBody Item item) {
+    public ResponseEntity<ResponseMessage> addItem(@RequestBody Item item) {
         try {
 
             String skuPrefix = item.getSku().split(";")[0];
@@ -122,17 +123,17 @@ public class ItemController {
             itemService.saveItem(item);
             saleService.setAddItem(item, item.getSku());
 
-            return new ResponseEntity<>(new UserController.ResponseMessage("Item was added"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(new UserController.ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @GetMapping("/delete")
     @Transactional
-    public ResponseEntity<UserController.ResponseMessage> delete(@RequestParam(value = "sku") String itemSku) {
+    public ResponseEntity<ResponseMessage> delete(@RequestParam(value = "sku") String itemSku) {
         try {
             itemListService.deleteAllByItemSku(itemSku);
             messageService.deleteAllByItemSku(itemSku);
@@ -142,9 +143,9 @@ public class ItemController {
 
             itemService.deleteBySku(itemSku);
 
-            return new ResponseEntity<>(new UserController.ResponseMessage("Item was deleted"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage("Item was deleted"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(new UserController.ResponseMessage("Failed to delete Item"), HttpStatus.valueOf(400));
+            return new ResponseEntity<>(new ResponseMessage("Failed to delete Item"), HttpStatus.valueOf(400));
         }
     }
 

@@ -7,6 +7,7 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.entity.List;
+import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.UserService;
@@ -180,7 +181,7 @@ public class ItemListController {
 
     @PostMapping("/create")
     @Transactional
-    public ResponseEntity<UserController.ResponseMessage>
+    public ResponseEntity<ResponseMessage>
     createList(@RequestBody CreateListRequest request) {
 
         String username = request.getUsername();
@@ -190,7 +191,7 @@ public class ItemListController {
         User user = userService.findByUsername(username);
 
         if (user == null) {
-            return new ResponseEntity<>(new UserController.ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
         }
 
         List list = new List();
@@ -205,7 +206,7 @@ public class ItemListController {
             Item item = itemService.findItemBySku(theItemSku);
 
             if (item == null) {
-                return new ResponseEntity<>(new UserController.ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
             }
 
             ItemList itemList = ItemList.builder()
@@ -216,7 +217,7 @@ public class ItemListController {
             itemListService.saveItemList(itemList);
         }
 
-        return new ResponseEntity<>(new UserController.ResponseMessage("List was created"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseMessage("List was created"), HttpStatus.CREATED);
     }
 
 
@@ -287,7 +288,7 @@ public class ItemListController {
     }
 
     @PostMapping(value="/saveEdit")
-    public ResponseEntity<UserController.ResponseMessage> saveEditList(@RequestBody EditListRequest request)
+    public ResponseEntity<ResponseMessage> saveEditList(@RequestBody EditListRequest request)
     {
         try {
             User user = userService.getCurrentUser();
@@ -310,10 +311,10 @@ public class ItemListController {
                 itemListService.saveItemList(itemList);
             }
         } catch(Exception e) {
-            return new ResponseEntity<>(new UserController.ResponseMessage("Something went wrong"), HttpStatus.valueOf(404));
+            return new ResponseEntity<>(new ResponseMessage("Something went wrong"), HttpStatus.valueOf(404));
         }
 
-        return new ResponseEntity<>(new UserController.ResponseMessage("List was edited"), HttpStatus.valueOf(200));
+        return new ResponseEntity<>(new ResponseMessage("List was edited"), HttpStatus.valueOf(200));
     }
 
 

@@ -41,7 +41,7 @@
         }
         currentPage = page;
 
-        let url = "list-refresh";
+        let url = "/users";
         url += "?page=" + page;
 
         if(searchFilter == true) {

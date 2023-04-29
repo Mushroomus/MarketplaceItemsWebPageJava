@@ -173,7 +173,7 @@
                              var alertMessage = parent.$('#alertMessage');
 
                              $.ajax({
-                               url: "update",
+                               url: "/users",
                                type: "PUT",
                                data: JSON.stringify({
                                  user: {
