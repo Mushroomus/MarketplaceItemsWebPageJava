@@ -1,6 +1,7 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.ItemImageDAO;
+import com.marketplace.MarketplaceItems.service.ItemImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

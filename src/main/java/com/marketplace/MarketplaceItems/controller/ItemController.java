@@ -1,33 +1,19 @@
 package com.marketplace.MarketplaceItems.controller;
 
 import com.marketplace.MarketplaceItems.entity.Item;
-import com.marketplace.MarketplaceItems.entity.ItemImage;
-import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/items")

@@ -1,14 +1,14 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.ListDAO;
 import com.marketplace.MarketplaceItems.entity.ListDetails;
 import com.marketplace.MarketplaceItems.entity.User;
-import com.marketplace.MarketplaceItems.service.Manager.ItemListListDetails;
+import com.marketplace.MarketplaceItems.service.operation.ItemListAndListDetailsOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ListServiceImpl implements ItemListListDetails {
+public class ListServiceImpl implements ItemListAndListDetailsOperations {
     private ListDAO listDAO;
 
     @Autowired

@@ -1,13 +1,13 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.UserDAO;
-import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.model.UpdateUserRequest;
-import com.marketplace.MarketplaceItems.service.Manager.ItemListUser;
-import com.marketplace.MarketplaceItems.service.Manager.MessageUser;
-import com.marketplace.MarketplaceItems.service.Manager.SaleUser;
+import com.marketplace.MarketplaceItems.service.UserService;
+import com.marketplace.MarketplaceItems.service.operation.ItemListUserOperations;
+import com.marketplace.MarketplaceItems.service.operation.MessageUserOperations;
+import com.marketplace.MarketplaceItems.service.operation.SaleUserOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.Predicate;
-import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService, MessageUser, ItemListUser, SaleUser {
+public class UserServiceImpl implements UserService, MessageUserOperations, ItemListUserOperations, SaleUserOperations {
 
     private UserDAO userDAO;
 

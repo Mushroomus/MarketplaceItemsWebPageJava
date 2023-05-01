@@ -1,9 +1,9 @@
-package com.marketplace.MarketplaceItems.service.Manager;
+package com.marketplace.MarketplaceItems.service.operation;
 
 import com.marketplace.MarketplaceItems.entity.User;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface SaleUser {
+public interface SaleUserOperations {
     User getCurrentUser();
 }

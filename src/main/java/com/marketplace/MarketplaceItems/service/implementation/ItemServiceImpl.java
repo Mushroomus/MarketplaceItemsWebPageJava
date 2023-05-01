@@ -1,9 +1,11 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.ItemDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
-import com.marketplace.MarketplaceItems.service.Manager.*;
+import com.marketplace.MarketplaceItems.service.ItemImageService;
+import com.marketplace.MarketplaceItems.service.ItemService;
+import com.marketplace.MarketplaceItems.service.operation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,22 +15,17 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
-
-import javax.persistence.criteria.Expression;
-import javax.transaction.Transactional;
 
 @Service
-public class ItemServiceImpl implements ItemService, MessageItem, ItemListItem, SaleItem {
+public class ItemServiceImpl implements ItemService, MessageItemOperations, ItemListAndItemOperations, SaleItemOperations {
 
     private ItemDAO itemDAO;
-    private ItemSale itemSale;
+    private ItemSaleOperations itemSaleOperations;
     private ItemImageService itemImageService;
 
     @Autowired
@@ -37,8 +34,8 @@ public class ItemServiceImpl implements ItemService, MessageItem, ItemListItem, 
     }
 
     @Autowired
-    public void setItemSale(ItemSale theItemSale) {
-        itemSale = theItemSale;
+    public void setItemSale(ItemSaleOperations theItemSaleOperations) {
+        itemSaleOperations = theItemSaleOperations;
     }
 
     @Autowired
@@ -71,7 +68,7 @@ public class ItemServiceImpl implements ItemService, MessageItem, ItemListItem, 
             item.setImage(image_url);
 
             itemDAO.save(item);
-            itemSale.updateSkuNewAddedItem(item, item.getSku());
+            itemSaleOperations.updateSkuNewAddedItem(item, item.getSku());
 
             return new ResponseEntity<>(new ResponseMessage("Item was added"), HttpStatus.OK);
         } catch (Exception e) {
@@ -88,7 +85,7 @@ public class ItemServiceImpl implements ItemService, MessageItem, ItemListItem, 
              */
 
             Item item = itemDAO.findItemBySku(itemSku);
-            itemSale.updateItemDeletedNull(item);
+            itemSaleOperations.updateItemDeletedNull(item);
             itemDAO.deleteById(itemSku);
 
             return new ResponseEntity<>(new ResponseMessage("Item was deleted"), HttpStatus.OK);

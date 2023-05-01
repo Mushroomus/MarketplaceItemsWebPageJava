@@ -1,4 +1,4 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.components.CustomUserDetails;
 import com.marketplace.MarketplaceItems.dao.UserDAO;
@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserDAO userDAO;

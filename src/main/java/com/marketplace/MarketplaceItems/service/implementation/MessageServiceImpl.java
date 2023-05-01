@@ -1,4 +1,4 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,9 +8,11 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.MessagesResponse;
-import com.marketplace.MarketplaceItems.service.Manager.MessageItem;
-import com.marketplace.MarketplaceItems.service.Manager.MessageSale;
-import com.marketplace.MarketplaceItems.service.Manager.MessageUser;
+import com.marketplace.MarketplaceItems.service.ItemImageService;
+import com.marketplace.MarketplaceItems.service.MessageService;
+import com.marketplace.MarketplaceItems.service.operation.MessageItemOperations;
+import com.marketplace.MarketplaceItems.service.operation.MessageSaleOperations;
+import com.marketplace.MarketplaceItems.service.operation.MessageUserOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,23 +35,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class MessageServiceImpl implements MessageService{
+public class MessageServiceImpl implements MessageService {
 
     private MessageDAO messageDAO;
     private ItemImageService itemImageService;
-    private MessageItem messageItem;
-    private MessageSale messageSale;
-    private MessageUser messageUser;
+    private MessageItemOperations messageItemOperations;
+    private MessageSaleOperations messageSaleOperations;
+    private MessageUserOperations messageUserOperations;
     private Validator validator;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public  MessageServiceImpl(MessageDAO theMessageDAO, ItemImageService theItemImageService, MessageItem theMessageItem, MessageSale theMessageSale, MessageUser theMessageUser) {
+    public  MessageServiceImpl(MessageDAO theMessageDAO, ItemImageService theItemImageService, MessageItemOperations theMessageItemOperations, MessageSaleOperations theMessageSaleOperations, MessageUserOperations theMessageUserOperations) {
         messageDAO = theMessageDAO;
         itemImageService = theItemImageService;
-        messageItem = theMessageItem;
-        messageSale = theMessageSale;
-        messageUser = theMessageUser;
+        messageItemOperations = theMessageItemOperations;
+        messageSaleOperations = theMessageSaleOperations;
+        messageUserOperations = theMessageUserOperations;
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -93,8 +95,8 @@ public class MessageServiceImpl implements MessageService{
                             .image(image_url)
                             .build();
 
-                    messageItem.saveItem(theAddItem);
-                    messageSale.updateSkuNewAddedItem(theAddItem, theAddItem.getSku());
+                    messageItemOperations.saveItem(theAddItem);
+                    messageSaleOperations.updateSkuNewAddedItem(theAddItem, theAddItem.getSku());
                     messageDAO.deleteById(theMessage.getId());
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +114,7 @@ public class MessageServiceImpl implements MessageService{
                             .image(theMessage.getItem().getImage())
                             .build();
 
-                    messageItem.saveItem(theUpdateItem);
+                    messageItemOperations.saveItem(theUpdateItem);
                     messageDAO.deleteById(theMessage.getId());
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +123,7 @@ public class MessageServiceImpl implements MessageService{
                 case "updatePrice":
                     String sku = theMessage.getItem().getSku();
                     Double price = theMessage.getMarketplacePrice();
-                    messageItem.updateMarketplacePriceBySku(sku, price);
+                    messageItemOperations.updateMarketplacePriceBySku(sku, price);
                     messageDAO.deleteById(theMessage.getId());
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -136,8 +138,8 @@ public class MessageServiceImpl implements MessageService{
                     messageService.deleteAllByItemSku(skuToDelete);
                      */
 
-                    messageSale.updateItemDeletedNull(theMessage.getItem());
-                    messageItem.deleteBySku(skuToDelete);
+                    messageSaleOperations.updateItemDeletedNull(theMessage.getItem());
+                    messageItemOperations.deleteBySku(skuToDelete);
                     return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
                             .body("{ \"error\": \"" + "Request was accepted" + "\" }");
@@ -270,7 +272,7 @@ public class MessageServiceImpl implements MessageService{
     public ResponseEntity<String> createMessage(Message request, String itemSku) {
 
         try{
-            User user = messageUser.getCurrentUser();
+            User user = messageUserOperations.getCurrentUser();
             request.setUser(user);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
@@ -278,7 +280,7 @@ public class MessageServiceImpl implements MessageService{
 
         if(itemSku != null) {
             try {
-                request.setItem(messageItem.findItemBySku(itemSku));
+                request.setItem(messageItemOperations.findItemBySku(itemSku));
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
             }

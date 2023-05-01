@@ -1,4 +1,4 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.components.ExcelGenerator;
 import com.marketplace.MarketplaceItems.dao.SaleDAO;
@@ -6,10 +6,11 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Sale;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.SalesItemsDTO;
-import com.marketplace.MarketplaceItems.service.Manager.ItemSale;
-import com.marketplace.MarketplaceItems.service.Manager.MessageSale;
-import com.marketplace.MarketplaceItems.service.Manager.SaleItem;
-import com.marketplace.MarketplaceItems.service.Manager.SaleUser;
+import com.marketplace.MarketplaceItems.service.SaleService;
+import com.marketplace.MarketplaceItems.service.operation.ItemSaleOperations;
+import com.marketplace.MarketplaceItems.service.operation.MessageSaleOperations;
+import com.marketplace.MarketplaceItems.service.operation.SaleItemOperations;
+import com.marketplace.MarketplaceItems.service.operation.SaleUserOperations;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -46,13 +44,13 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 @Service
-public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
+public class SaleServiceImpl implements SaleService, MessageSaleOperations, ItemSaleOperations {
 
     private SaleDAO saleDAO;
 
-    private SaleUser saleUser;
+    private SaleUserOperations saleUserOperations;
 
-    private SaleItem saleItem;
+    private SaleItemOperations saleItemOperations;
 
     private ExcelGenerator excelGenerator;
 
@@ -62,13 +60,13 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     }
 
     @Autowired
-    public void setSaleUser(SaleUser theSaleUser) {
-        saleUser = theSaleUser;
+    public void setSaleUser(SaleUserOperations theSaleUserOperations) {
+        saleUserOperations = theSaleUserOperations;
     }
 
     @Autowired
-    public void setSaleItem(SaleItem theSaleItem) {
-        saleItem = theSaleItem;
+    public void setSaleItem(SaleItemOperations theSaleItemOperations) {
+        saleItemOperations = theSaleItemOperations;
     }
 
     @Autowired
@@ -78,7 +76,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
 
     @Override
     public Map<String, Boolean> checkSales() {
-        User user = saleUser.getCurrentUser();
+        User user = saleUserOperations.getCurrentUser();
         List<Sale> sales = saleDAO.findByUser(user);
 
         boolean salesEmpty = true;
@@ -127,7 +125,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
             maximumPriceValue = Double.parseDouble(maxPrice);
 
 
-        User user = saleUser.getCurrentUser();
+        User user = saleUserOperations.getCurrentUser();
 
         if(types.contains("none"))
             types = Arrays.asList("");
@@ -184,9 +182,9 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
             sale.setPrice(Double.parseDouble(record[5]));
             sale.setNet(Double.parseDouble(record[6]));
             sale.setFee(Double.parseDouble(record[7]));
-            sale.setUser(saleUser.getCurrentUser());
+            sale.setUser(saleUserOperations.getCurrentUser());
 
-            Item theItem = saleItem.findItemBySku(record[1]);
+            Item theItem = saleItemOperations.findItemBySku(record[1]);
 
             if(theItem == null)
                 sale.setItem(null);
@@ -223,7 +221,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<String>> getYears() {
         try {
-            List<String> years = getYears(saleUser.getCurrentUser());
+            List<String> years = getYears(saleUserOperations.getCurrentUser());
             return ResponseEntity.ok(years);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -233,7 +231,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByMonthInYear(int year) {
         try {
-            List<Object[]> results = getSalesCountByMonthInYear(year, saleUser.getCurrentUser());
+            List<Object[]> results = getSalesCountByMonthInYear(year, saleUserOperations.getCurrentUser());
 
             List<Map<String, Object>> salesByMonth = new ArrayList<>();
             for (Object[] row : results) {
@@ -252,7 +250,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByMonthInYear(int page, int year, int month) {
         try {
-            List<Object[]> results = getItemsDataFromMonth(year, month, page, 5, saleUser.getCurrentUser());
+            List<Object[]> results = getItemsDataFromMonth(year, month, page, 5, saleUserOperations.getCurrentUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
@@ -264,7 +262,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<Integer> getItemsMonthTotalPages(@RequestParam int year, @RequestParam int month) {
         try {
-            Integer pages = getItemsDataFromMonthTotalPages(year,month, 5, saleUser.getCurrentUser());
+            Integer pages = getItemsDataFromMonthTotalPages(year,month, 5, saleUserOperations.getCurrentUser());
             return ResponseEntity.ok(pages);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -274,7 +272,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(int year, int month, int day, int page) {
         try {
-            List<Object[]> results = getItemsDataFromDay(year,month,day,page, 5, saleUser.getCurrentUser());
+            List<Object[]> results = getItemsDataFromDay(year,month,day,page, 5, saleUserOperations.getCurrentUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(itemsByMonth);
@@ -286,7 +284,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<Integer> getItemsDayTotalPages(int year, int month, int day) {
         try {
-            Integer pages = getItemsDataFromDayTotalPages(year, month, day, 5, saleUser.getCurrentUser());
+            Integer pages = getItemsDataFromDayTotalPages(year, month, day, 5, saleUserOperations.getCurrentUser());
 
             return ResponseEntity.ok(pages);
         } catch (Exception e) {
@@ -297,7 +295,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByDayInMonth(int year, int month) {
         try {
-            List<Object[]> results = getSalesCountByDayinMonth(year, month, saleUser.getCurrentUser());
+            List<Object[]> results = getSalesCountByDayinMonth(year, month, saleUserOperations.getCurrentUser());
 
             List<Map<String, Object>> salesByDay = new ArrayList<>();
             for (Object[] row : results) {
@@ -317,7 +315,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getBestSales(int year, Integer month) {
         try {
-            List<Object[]> results = getBestOrWorstSellingItems(year, month, true, saleUser.getCurrentUser());
+            List<Object[]> results = getBestOrWorstSellingItems(year, month, true, saleUserOperations.getCurrentUser());
             List<SalesItemsDTO> bestSales = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(bestSales);
@@ -330,7 +328,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getWorstSales(int year, Integer month) {
         try {
-            List<Object[]> results = getBestOrWorstSellingItems(year, month, false, saleUser.getCurrentUser());
+            List<Object[]> results = getBestOrWorstSellingItems(year, month, false, saleUserOperations.getCurrentUser());
             List<SalesItemsDTO> worstSales = SalesItemsDTO.getList(results);
 
             return ResponseEntity.ok(worstSales);
@@ -343,7 +341,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
     @Override
     public ResponseEntity<List<Integer>> getMonthsByYear(int year) {
         try {
-            List<Integer> results = getMonthsByYear(year, saleUser.getCurrentUser());
+            List<Integer> results = getMonthsByYear(year, saleUserOperations.getCurrentUser());
             return ResponseEntity.ok(results);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -386,7 +384,7 @@ public class SaleServiceImpl implements SaleService, MessageSale, ItemSale {
         if(types.contains("none"))
             types = Arrays.asList("");
 
-        List<Sale> sales = findAll(saleUser.getCurrentUser(),craftable,classes,qualities,types,start,end,minimumPriceValue, maximumPriceValue);
+        List<Sale> sales = findAll(saleUserOperations.getCurrentUser(),craftable,classes,qualities,types,start,end,minimumPriceValue, maximumPriceValue);
         try {
             excelGenerator.generateExcelFile(sales, response);
         } catch (IOException e) {

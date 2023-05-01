@@ -1,4 +1,4 @@
-package com.marketplace.MarketplaceItems.service;
+package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,10 +8,10 @@ import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.ListDetails;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.*;
-import com.marketplace.MarketplaceItems.service.Manager.ItemItemList;
-import com.marketplace.MarketplaceItems.service.Manager.ItemListItem;
-import com.marketplace.MarketplaceItems.service.Manager.ItemListListDetails;
-import com.marketplace.MarketplaceItems.service.Manager.ItemListUser;
+import com.marketplace.MarketplaceItems.service.ItemListService;
+import com.marketplace.MarketplaceItems.service.operation.ItemListAndItemOperations;
+import com.marketplace.MarketplaceItems.service.operation.ItemListAndListDetailsOperations;
+import com.marketplace.MarketplaceItems.service.operation.ItemListUserOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,10 +20,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -38,22 +34,22 @@ import java.util.stream.Collectors;
 @Service
 public class ItemListServiceImpl implements ItemListService {
     private ItemListDAO itemListDAO;
-    private ItemListItem itemListItem;
-    private ItemListUser itemListUser;
-    private ItemListListDetails itemListListDetails;
+    private ItemListAndItemOperations itemListAndItemOperations;
+    private ItemListUserOperations itemListUserOperations;
+    private ItemListAndListDetailsOperations itemListAndListDetailsOperations;
 
     @Autowired
-    public ItemListServiceImpl(ItemListDAO theItemListDAO, ItemListItem theItemListItem, ItemListUser theItemListUser, ItemListListDetails theItemListListDetails) {
+    public ItemListServiceImpl(ItemListDAO theItemListDAO, ItemListAndItemOperations theItemListAndItemOperations, ItemListUserOperations theItemListUserOperations, ItemListAndListDetailsOperations theItemListAndListDetailsOperations) {
         itemListDAO = theItemListDAO;
-        itemListItem = theItemListItem;
-        itemListUser = theItemListUser;
-        itemListListDetails = theItemListListDetails;
+        itemListAndItemOperations = theItemListAndItemOperations;
+        itemListUserOperations = theItemListUserOperations;
+        itemListAndListDetailsOperations = theItemListAndListDetailsOperations;
     }
 
 
     @Override
     public Map<String, Object> getListInfoAndButtonStatus() {
-        User user = itemListUser.getCurrentUser();
+        User user = itemListUserOperations.getCurrentUser();
         List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
         List<ItemList> lists = itemListDAO.findByUserId(user.getId());
         int uniqueListNames = lists.stream()
@@ -74,11 +70,11 @@ public class ItemListServiceImpl implements ItemListService {
 
     @Override
     public void deleteItemList(String name) {
-        ListDetails foundList = itemListListDetails.findListByName(name);
+        ListDetails foundList = itemListAndListDetailsOperations.findListByName(name);
         if (foundList != null) {
             List<ItemList> itemsList = itemListDAO.findByListId(foundList.getId());
             itemListDAO.deleteAll(itemsList);
-            itemListListDetails.deleteList(foundList);
+            itemListAndListDetailsOperations.deleteList(foundList);
         } else {
             throw new IllegalArgumentException("List not found");
         }
@@ -88,7 +84,7 @@ public class ItemListServiceImpl implements ItemListService {
     public Map<String, Object> getCreateListTableData() {
         Map<String, Object> model = new HashMap<>();
 
-        User user = itemListUser.getCurrentUser();
+        User user = itemListUserOperations.getCurrentUser();
         List<ItemList> lists = itemListDAO.findByUserId(user.getId());
 
         List<String> listNames = lists.stream()
@@ -115,7 +111,7 @@ public class ItemListServiceImpl implements ItemListService {
         List<String> itemSku = request.getItemSku();
         String listName = request.getListName();
 
-        User user = itemListUser.findByUsername(username);
+        User user = itemListUserOperations.findByUsername(username);
 
         if (user == null) {
             return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
@@ -125,12 +121,12 @@ public class ItemListServiceImpl implements ItemListService {
         listDetails.setName(listName);
         listDetails.setDate(LocalDateTime.now());
         listDetails.setUser(user);
-        itemListListDetails.saveList(listDetails);
+        itemListAndListDetailsOperations.saveList(listDetails);
 
 
         for (String theItemSku : itemSku) {
 
-            Item item = itemListItem.findItemBySku(theItemSku);
+            Item item = itemListAndItemOperations.findItemBySku(theItemSku);
 
             if (item == null) {
                 return new ResponseEntity<>(new ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
@@ -150,8 +146,8 @@ public class ItemListServiceImpl implements ItemListService {
     @Override
     public ResponseEntity<ResponseMessage> saveEditedList(EditListRequest request) {
         try {
-            User user = itemListUser.getCurrentUser();
-            ListDetails listDetails = itemListListDetails.findListByName(request.getListName());
+            User user = itemListUserOperations.getCurrentUser();
+            ListDetails listDetails = itemListAndListDetailsOperations.findListByName(request.getListName());
             List<ItemList> items = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
             itemListDAO.deleteAll(items);
@@ -161,7 +157,7 @@ public class ItemListServiceImpl implements ItemListService {
 
             for(String itemSku : request.getItemSku()) {
 
-                itemToAdd = itemListItem.findItemBySku(itemSku);
+                itemToAdd = itemListAndItemOperations.findItemBySku(itemSku);
                 itemList = ItemList.builder()
                         .item(itemToAdd)
                         .user(user)
@@ -178,9 +174,9 @@ public class ItemListServiceImpl implements ItemListService {
     @Override
     public ResponseEntity<List<Item>> fetchRightList(@RequestParam(value="listName") String name)
     {
-        User user = itemListUser.getCurrentUser();
+        User user = itemListUserOperations.getCurrentUser();
 
-        ListDetails listDetails = itemListListDetails.findListByName(name);
+        ListDetails listDetails = itemListAndListDetailsOperations.findListByName(name);
 
         java.util.List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
@@ -196,8 +192,8 @@ public class ItemListServiceImpl implements ItemListService {
     @Override
     public List<ItemRequestResult> priceItems(String name, String marketplaceKeyPrice) {
 
-        User user = itemListUser.getCurrentUser();
-        ListDetails listDetails = itemListListDetails.findListByNameAndUser(name, user);
+        User user = itemListUserOperations.getCurrentUser();
+        ListDetails listDetails = itemListAndListDetailsOperations.findListByNameAndUser(name, user);
 
         java.util.List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
@@ -305,7 +301,7 @@ public class ItemListServiceImpl implements ItemListService {
         Page<Item> items;
         Pageable pageable = PageRequest.of(page, 5);
 
-        items = itemListItem.findAllFilters(pageable, search, craftable, classes, qualities, types);
+        items = itemListAndItemOperations.findAllFilters(pageable, search, craftable, classes, qualities, types);
         PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
 
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
