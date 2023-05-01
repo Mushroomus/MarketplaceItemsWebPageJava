@@ -36,7 +36,7 @@ $(document).ready(function() {
             var modalAddItemMessage = $("#modalAddItemMessage");
 
             $.ajax({
-                url: "add",
+                url: "/items",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({

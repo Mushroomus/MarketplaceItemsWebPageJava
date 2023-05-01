@@ -21,7 +21,7 @@ $(document).ready(function() {
         let alertMessage = parent.$('#alertMessage');
 
         $.ajax({
-            url: "updatePrice",
+            url: "/items",
             type: "PUT",
             contentType: "application/json",
             data: JSON.stringify({

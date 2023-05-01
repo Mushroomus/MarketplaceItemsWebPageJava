@@ -38,7 +38,7 @@ $(document).ready(function() {
 
                 if (editForm[0].checkValidity()) {
                      $.ajax({
-                           url: "update",
+                           url: "/items",
                            type: "PUT",
                            data: JSON.stringify({
                               sku: sku,

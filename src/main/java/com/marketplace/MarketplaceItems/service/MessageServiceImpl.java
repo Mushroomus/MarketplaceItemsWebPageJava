@@ -9,7 +9,6 @@ import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.MessagesResponse;
 import com.marketplace.MarketplaceItems.service.Manager.MessageItem;
-import com.marketplace.MarketplaceItems.service.Manager.MessageItemImage;
 import com.marketplace.MarketplaceItems.service.Manager.MessageSale;
 import com.marketplace.MarketplaceItems.service.Manager.MessageUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.Predicate;
-import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -39,7 +36,7 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService{
 
     private MessageDAO messageDAO;
-    private MessageItemImage messageItemImage;
+    private ItemImageService itemImageService;
     private MessageItem messageItem;
     private MessageSale messageSale;
     private MessageUser messageUser;
@@ -47,9 +44,9 @@ public class MessageServiceImpl implements MessageService{
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public  MessageServiceImpl(MessageDAO theMessageDAO, MessageItemImage theMessageItemImage, MessageItem theMessageItem, MessageSale theMessageSale, MessageUser theMessageUser) {
+    public  MessageServiceImpl(MessageDAO theMessageDAO, ItemImageService theItemImageService, MessageItem theMessageItem, MessageSale theMessageSale, MessageUser theMessageUser) {
         messageDAO = theMessageDAO;
-        messageItemImage = theMessageItemImage;
+        itemImageService = theItemImageService;
         messageItem = theMessageItem;
         messageSale = theMessageSale;
         messageUser = theMessageUser;
@@ -82,7 +79,7 @@ public class MessageServiceImpl implements MessageService{
 
                     if (skuPrefix.matches("\\d+")) {
                         Integer shortenSku = Integer.parseInt(theMessage.getSku().split(";")[0]);
-                        image_url = messageItemImage.findByDefindexReturnUrl(shortenSku);
+                        image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
                     }
 
                     Item theAddItem = Item.builder()
@@ -304,31 +301,4 @@ public class MessageServiceImpl implements MessageService{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
         }
     }
-
-
-    @Override
-    public void saveMessage(Message theMessage) {
-        messageDAO.save(theMessage);
-    }
-
-    @Override
-    public void deleteAllByItemSku(String itemSku) {
-        messageDAO.deleteAllByItemSku(itemSku);
-    }
-
-    @Override
-    public void deleteAllByUserId(int id_user) {
-        messageDAO.deleteAllByUserId(id_user);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        messageDAO.deleteById(id);
-    }
-
-    @Override
-    public Optional<Message> findById(Long id) {
-        return messageDAO.findById(id);
-    }
-
 }

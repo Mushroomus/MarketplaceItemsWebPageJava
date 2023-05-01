@@ -17,11 +17,11 @@
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
-          <a class="navbar-brand" href="#" th:href="@{/users/list}">Users</a>
+          <a class="navbar-brand" href="#" th:href="@{/users/listDetails}">Users</a>
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
-          <a class="navbar-brand" href="#" th:href="@{/items/list-admin}">Items</a>
+          <a class="navbar-brand" href="#" th:href="@{/items/listDetails-admin}">Items</a>
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
@@ -29,15 +29,15 @@
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
-          <a class="navbar-brand" href="#" th:href="@{/items/list-user}">Items</a>
+          <a class="navbar-brand" href="#" th:href="@{/items/listDetails-user}">Items</a>
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('ADMIN')">
-          <a class="navbar-brand" href="#" th:href="@{/messages/list}">Messages</a>
+          <a class="navbar-brand" href="#" th:href="@{/messages/listDetails}">Messages</a>
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">
-          <a class="navbar-brand" href="#" th:href="@{/sales/list}">Sales</a>
+          <a class="navbar-brand" href="#" th:href="@{/sales/listDetails}">Sales</a>
         </li>
 
         <li class="nav-item" sec:authorize="isAuthenticated() && hasAuthority('USER')">

@@ -4,11 +4,12 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="lists")
 @Data
-public class List {
+public class ListDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class List {
     private LocalDateTime date;
 
     @OneToMany(mappedBy = "list")
-    private java.util.List<ItemList> itemList;
+    private List<ItemList> itemList;
 
     @ManyToOne
     @JoinColumn(name="user_id")

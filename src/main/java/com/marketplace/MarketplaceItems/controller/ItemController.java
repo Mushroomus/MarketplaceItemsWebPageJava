@@ -32,27 +32,11 @@ import java.util.stream.IntStream;
 @Controller
 @RequestMapping("/items")
 public class ItemController {
-
     private ItemService itemService;
 
-    private ItemListService itemListService;
-
-    private MessageService messageService;
-
-    private ItemImageService itemImageService;
-
-    private SaleService saleService;
-
-    public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService, @Qualifier("itemListServiceImpl") ItemListService theItemListService,
-                          @Qualifier("messageServiceImpl") MessageService theMessageService,
-                          @Qualifier("itemImageServiceImpl") ItemImageService theItemImageService, @Qualifier("saleServiceImpl") SaleService theSaleService) {
+    public ItemController(@Qualifier("itemServiceImpl") ItemService theItemService) {
         itemService = theItemService;
-        itemListService = theItemListService;
-        messageService = theMessageService;
-        itemImageService = theItemImageService;
-        saleService = theSaleService;
     }
-
 
     @GetMapping("/list-admin")
     public String listItemsAdmin(Model theModel) {
@@ -85,92 +69,37 @@ public class ItemController {
     }
 
 
-    @GetMapping("/list-refresh")
-    public ResponseEntity<PagedModel<Item>> refreshList(@RequestParam(value = "page", defaultValue = "0") int page,
+    @GetMapping
+    public ResponseEntity<PagedModel<Item>> getItems(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "10") int size,
                                                         @RequestParam(defaultValue = "", required = false) String search,
                                                         @RequestParam(defaultValue = "", required = false) String craftable,
                                                         @RequestParam(defaultValue = "", required = false) List<String> classes,
                                                         @RequestParam(defaultValue = "", required = false) List<String> qualities,
                                                         @RequestParam(defaultValue = "", required = false) List<String> types) {
-        Page<Item> items;
-        Pageable pageable = PageRequest.of(page, size);
-
-        items = itemService.findAllFilters(pageable, search, craftable, classes, qualities, types);
-        System.out.println(items);
-
-        PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
-
-        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+        return itemService.getItems(page, size, search, craftable, classes, qualities, types);
     }
 
 
-    @PostMapping("/add")
+    @PostMapping
     @Transactional
     public ResponseEntity<ResponseMessage> addItem(@RequestBody Item item) {
-        try {
-
-            String skuPrefix = item.getSku().split(";")[0];
-            String image_url = "";
-
-            if (skuPrefix.matches("\\d+")) {
-                Integer shortenSku = Integer.parseInt(item.getSku().split(";")[0]);
-                image_url = itemImageService.findByDefindexReturnUrl(shortenSku);
-            }
-
-            item.setImage(image_url);
-            
-            itemService.saveItem(item);
-            saleService.updateSkuNewAddedItem(item, item.getSku());
-
-            return new ResponseEntity<>(new ResponseMessage("Item was added"), HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(new ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return itemService.addItem(item);
     }
 
-
-    @GetMapping("/delete")
+    @DeleteMapping
     @Transactional
     public ResponseEntity<ResponseMessage> delete(@RequestParam(value = "sku") String itemSku) {
-        try {
-            itemListService.deleteAllByItemSku(itemSku);
-            messageService.deleteAllByItemSku(itemSku);
-
-            Item item = itemService.findItemBySku(itemSku);
-            saleService.updateItemDeletedNull(item);
-            itemService.deleteBySku(itemSku);
-
-            return new ResponseEntity<>(new ResponseMessage("Item was deleted"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Failed to delete Item"), HttpStatus.valueOf(400));
-        }
+       return itemService.deleteItem(itemSku);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> update(@RequestBody Item item) {
-        try {
-            itemService.updateItem(item);
-            return new ResponseEntity<>("Item was updated successfully", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the item", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping
+    public ResponseEntity<String> updateItem(@RequestBody Item item) {
+        return itemService.updateItem(item);
     }
 
-    @PutMapping("/updatePrice")
-    public ResponseEntity<String> updatePrice(@RequestBody Map<String, Object> requestBody) {
-        try {
-            String sku = (String) requestBody.get("sku");
-            Double mpPrice = Double.parseDouble( (String) requestBody.get("mpPrice"));
-
-            Item item = itemService.findItemBySku(sku);
-            item.setMarketplacePrice(mpPrice);
-            itemService.saveItem(item);
-
-            return new ResponseEntity<>("Price was updated", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PutMapping("/marketplace-price")
+    public ResponseEntity<String> updateItemPrice(@RequestBody Map<String, Object> requestBody) {
+        return itemService.updateItemPrice(requestBody);
     }
 }

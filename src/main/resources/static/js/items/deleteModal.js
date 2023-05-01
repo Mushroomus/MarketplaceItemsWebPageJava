@@ -19,8 +19,8 @@
          var alertMessage = parent.$('#alertMessage');
 
          $.ajax({
-             url: "delete?sku=" + itemSku,
-             type: "GET",
+             url: "/items?sku=" + itemSku,
+             type: "DELETE",
              contentType: "application/json",
              dataType: 'json',
              success: function (response, status, xhr) {

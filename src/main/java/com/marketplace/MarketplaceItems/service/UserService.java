@@ -15,19 +15,7 @@ import java.time.LocalDateTime;
 
 @Service
 public interface UserService {
-
     User getCurrentUser();
-
-    Page<User> findAll(Pageable pageable);
-
-    void saveUser(User user);
-
-    void deleteUserById(Integer id);
-
-    void updateUser(User user);
-
-    User findByUsername(String username);
-
     ResponseEntity<ResponseMessage> addUser(User user);
     ResponseEntity<PagedModel<User>> getUserList(int page, int size, String search, String role, String startDate, String endDate);
     ResponseEntity<ResponseMessage> deleteUser(int id);

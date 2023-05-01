@@ -43,7 +43,7 @@
         }
         currentPage = page;
 
-        let url = "list-refresh";
+        let url = "/items";
         url += "?page=" + page;
 
         if(searchFilter == true) {

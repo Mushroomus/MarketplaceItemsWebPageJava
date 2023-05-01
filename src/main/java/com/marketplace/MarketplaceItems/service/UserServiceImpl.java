@@ -5,7 +5,9 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.User;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.model.UpdateUserRequest;
+import com.marketplace.MarketplaceItems.service.Manager.ItemListUser;
 import com.marketplace.MarketplaceItems.service.Manager.MessageUser;
+import com.marketplace.MarketplaceItems.service.Manager.SaleUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService, MessageUser {
+public class UserServiceImpl implements UserService, MessageUser, ItemListUser, SaleUser {
 
     private UserDAO userDAO;
 
@@ -186,20 +188,6 @@ public class UserServiceImpl implements UserService, MessageUser {
         String username = auth.getName();
         return userDAO.findByUsername(username);
     }
-
-    @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userDAO.findAll(pageable);
-    };
-
-    @Override
-    public void saveUser(User user) { userDAO.save(user); }
-
-    @Override
-    public void deleteUserById(Integer id) { userDAO.deleteById(id); }
-
-    @Override
-    public void updateUser(User user) { userDAO.save(user); }
 
     @Override
     public User findByUsername(String username) { return userDAO.findByUsername(username); }

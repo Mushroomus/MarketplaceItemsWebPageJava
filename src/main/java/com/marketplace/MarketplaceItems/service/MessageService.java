@@ -12,11 +12,6 @@ import java.util.Optional;
 
 @Service
 public interface MessageService {
-    void saveMessage(Message theMessage);
-    void deleteAllByItemSku(String itemSku);
-    void deleteAllByUserId(int id_user);
-    void deleteById(Long id);
-    Optional<Message> findById(Long id);
     ResponseEntity<String> acceptMessage(Long messageId);
     ResponseEntity<String> rejectMessage(Long messageId);
     ResponseEntity<String> getMessages(int page, int size, String search, String types, String startDate, String endDate);

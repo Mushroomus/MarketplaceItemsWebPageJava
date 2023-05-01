@@ -29,5 +29,5 @@ public class ItemList {
 
     @ManyToOne
     @JoinColumn(name = "id_list")
-    private List list;
+    private ListDetails list;
 }

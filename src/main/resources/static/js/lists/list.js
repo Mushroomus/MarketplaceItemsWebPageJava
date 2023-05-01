@@ -3,7 +3,7 @@ var totalPages = 0;
 var filter = false;
 
 function createUrl(page) {
-    var url = "fetch-list?page=" + page;
+    var url = "/lists?page=" + page;
 
     if(filter) {
           var searchInput = $('#searchInput').val().trim();
@@ -266,7 +266,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: "POST",
-                    url: "/lists/create",
+                    url: "/lists",
                     contentType: "application/json",
                     data: JSON.stringify({
                         username: username,
