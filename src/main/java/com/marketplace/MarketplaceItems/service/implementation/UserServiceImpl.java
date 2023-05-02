@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
         }
     }
 
+    /*
     private Page<User> findAll(Pageable pageable, String search, String role, LocalDateTime startDate, LocalDateTime endDate) {
         Specification<User> spec = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -109,6 +110,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
 
         return userDAO.findAll(spec, pageable);
     }
+     */
 
     @Override
     public ResponseEntity<PagedModel<User>> getUserList(int page, int size, String search, String role, String startDate, String endDate) {
@@ -134,14 +136,13 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
             end = LocalDateTime.parse(dateEndString, formatterDate);
         }
 
-
-        users = findAll(pageable, search, role, start, end);
-
+        users =  userDAO.findAll(search, role, start, end, getCurrentUser().getId(), pageable);
         PagedModel<User> pagedModel = PagedModel.of(users.getContent(), new PagedModel.PageMetadata(users.getSize(), users.getNumber(), users.getTotalElements()));
 
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
 
+    @Override
     public ResponseEntity<ResponseMessage> deleteUser(@RequestParam int id) {
         /*
         itemListService.deleteAllByUserId(id);
@@ -157,6 +158,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
         }
     }
 
+    @Override
     public ResponseEntity<String> updateUser(UpdateUserRequest request) {
 
         User user = request.getUser();

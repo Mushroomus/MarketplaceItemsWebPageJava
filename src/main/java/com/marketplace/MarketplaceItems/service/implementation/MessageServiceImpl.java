@@ -170,6 +170,7 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    /*
     private Page<Message> findAll(Pageable pageable, String search, List<String> types, LocalDateTime startDate, LocalDateTime endDate) {
         Specification<Message> spec = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -199,6 +200,7 @@ public class MessageServiceImpl implements MessageService {
 
         return messageDAO.findAll(spec, pageable);
     }
+     */
 
     @Override
     public ResponseEntity<String> getMessages(int page, int size, String search, String types, String startDate, String endDate) {
@@ -229,7 +231,7 @@ public class MessageServiceImpl implements MessageService {
         if(types != null && !types.equals(""))
             typeList = Arrays.asList(types.split(","));
 
-        Page<Message> messagesPage = findAll(paging, search, typeList, start, end);
+        Page<Message> messagesPage = messageDAO.findAll(search, typeList, start, end, paging);
 
         List<Message> editedMessages = messagesPage.stream()
                 .map(message -> {

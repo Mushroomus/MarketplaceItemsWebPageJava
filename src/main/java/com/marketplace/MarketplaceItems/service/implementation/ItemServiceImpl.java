@@ -48,7 +48,11 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
         Page<Item> items;
         Pageable pageable = PageRequest.of(page, size);
 
-        items =  findAllFilters(pageable, search, craftable, classes, qualities, types);
+        List<String> nullableClasses = Optional.ofNullable(classes).filter(list -> !list.isEmpty()).orElse(null);
+        List<String> nullableQualities = Optional.ofNullable(qualities).filter(list -> !list.isEmpty()).orElse(null);
+        List<String> nullableTypes = Optional.ofNullable(types).filter(list -> !list.isEmpty()).orElse(null);
+
+        items = itemDAO.findAllFilters(search, craftable, nullableClasses, nullableQualities, nullableTypes, pageable);
         PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
 
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
@@ -135,71 +139,6 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public Page<Item> findAll(Pageable page) { return itemDAO.findAll(page); };
-
-    @Override
-    public Page<Item> findAllFilters(Pageable pageable, String search, String craftable, List<String> classes, List<String> qualities, List<String> types) {
-
-        Specification<Item> spec = (root, query, builder) -> {
-            List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
-
-            if(!search.equals("")){
-                String searchPattern = "%" + search + "%";
-                predicates.add(builder.like(root.get("name"), searchPattern ));
-            }
-            if(!craftable.equals("")) {
-                boolean craftableValue = craftable.equals("Yes") ? true : false;
-                predicates.add(builder.equal(root.get("craftable"), craftableValue ));
-            }
-            if (classes.size() > 0) {
-                predicates.add(builder.in(root.get("classItem")).value(classes));
-            }
-            if (qualities.size() > 0) {
-                predicates.add(builder.in(root.get("quality")).value(qualities));
-            }
-            if (types.size() > 0) {
-                predicates.add(builder.in(root.get("type")).value(types));
-            }
-
-            return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
-        };
-
-        return itemDAO.findAll(spec, pageable);
-
-    }
-
-    /*
-    @Override
-    public Page<Item> findAll(Pageable pageable, String craftable, List<String> classes, List<String> qualities, List<String> types) {
-
-        Specification<Item> spec = (root, query, builder) -> {
-            List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
-
-            if(craftable != null && !craftable.equals("Any")) {
-                boolean craftableValue = craftable.equals("Yes") ? true : false;
-                predicates.add(builder.equal(root.get("craftable"), craftableValue ));
-            }
-            if (classes != null && !classes.isEmpty()) {
-                predicates.add(builder.in(root.get("classItem")).value(classes));
-            }
-            if (qualities != null && !qualities.isEmpty()) {
-                predicates.add(builder.in(root.get("quality")).value(qualities));
-            }
-            if (types != null && !types.isEmpty()) {
-                predicates.add(builder.in(root.get("type")).value(types));
-            }
-            return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
-        };
-
-        return itemDAO.findAll(spec, pageable);
-    };
-    @Override
-    public Page<Item> findAll(Pageable pageable, String search) {
-        String searchPattern = "%" + search + "%";
-        return itemDAO.findByNameLikeIgnoreCaseOrSkuLikeIgnoreCase(searchPattern, searchPattern, pageable);
-    }
-    */
 
     @Override
     public void saveItem(Item item) { itemDAO.save(item); };

@@ -178,9 +178,9 @@ public class ItemListServiceImpl implements ItemListService {
 
         ListDetails listDetails = itemListAndListDetailsOperations.findListByName(name);
 
-        java.util.List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
+        List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
-        java.util.List<Item> items = new ArrayList<>();
+        List<Item> items = new ArrayList<>();
 
         for(ItemList record : results) {
             items.add( record.getItem() );
@@ -296,14 +296,8 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public ResponseEntity<PagedModel<Item>> getItemList(int page, int size, String search, String craftable, java.util.List<String> classes, java.util.List<String> qualities, java.util.List<String> types)
+    public ResponseEntity<PagedModel<Item>> getItemList(int page, int size, String search, String craftable, List<String> classes, List<String> qualities, List<String> types)
     {
-        Page<Item> items;
-        Pageable pageable = PageRequest.of(page, 5);
-
-        items = itemListAndItemOperations.findAllFilters(pageable, search, craftable, classes, qualities, types);
-        PagedModel<Item> pagedModel = PagedModel.of(items.getContent(), new PagedModel.PageMetadata(items.getSize(), items.getNumber(), items.getTotalElements()));
-
-        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+        return itemListAndItemOperations.getItems(page, size, search, craftable, classes, qualities, types);
     }
 }

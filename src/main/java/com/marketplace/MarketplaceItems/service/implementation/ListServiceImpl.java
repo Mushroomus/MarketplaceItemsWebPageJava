@@ -30,6 +30,4 @@ public class ListServiceImpl implements ItemListAndListDetailsOperations {
     public ListDetails findListByNameAndUser(String name, User user) {
         return listDAO.findListByNameAndUser(name, user);
     }
-
-    ;
 }

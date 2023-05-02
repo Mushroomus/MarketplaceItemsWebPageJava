@@ -21,7 +21,6 @@ import java.util.Map;
 
 @Service
 public interface SaleService {
-    List<Sale> findAll(User user, String craftable, List<String> classes, List<String> qualities, List<String> types, LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice);
     Map<String, Boolean> checkSales();
     ResponseEntity<PagedModel<Sale>> getSales(int page, int size, String craftable, List<String> classes, List<String> qualities, List<String> types, String startDate, String endDate, String minPrice, String maxPrice);
     ResponseEntity<String> handleFileUpload(MultipartFile file) throws IOException, CsvException;
