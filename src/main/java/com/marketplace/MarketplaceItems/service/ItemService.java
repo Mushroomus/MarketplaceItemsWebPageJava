@@ -16,6 +16,6 @@ public interface ItemService {
     ResponseEntity<PagedModel<Item>> getItems(int page, int size, String search, String craftable, List<String> classes, List<String> qualities, List<String> types);
     ResponseEntity<ResponseMessage> addItem(Item item);
     ResponseEntity<ResponseMessage> deleteItem(String itemSku);
-    ResponseEntity<String> updateItem(Item item);
-    ResponseEntity<String> updateItemPrice( Map<String, Object> requestBody);
+    ResponseEntity<ResponseMessage> updateItem(Item item);
+    ResponseEntity<ResponseMessage> updateItemPrice( Map<String, Object> requestBody);
 }

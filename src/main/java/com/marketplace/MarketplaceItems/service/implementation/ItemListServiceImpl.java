@@ -7,15 +7,16 @@ import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.ItemList;
 import com.marketplace.MarketplaceItems.entity.ListDetails;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.exception.DataRetrievalException;
+import com.marketplace.MarketplaceItems.exception.InternalServerErrorException;
+import com.marketplace.MarketplaceItems.exception.RecordNotFoundException;
 import com.marketplace.MarketplaceItems.model.*;
 import com.marketplace.MarketplaceItems.service.ItemListService;
 import com.marketplace.MarketplaceItems.service.operation.ItemListAndItemOperations;
 import com.marketplace.MarketplaceItems.service.operation.ItemListAndListDetailsOperations;
 import com.marketplace.MarketplaceItems.service.operation.ItemListUserOperations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class ItemListServiceImpl implements ItemListService {
     private ItemListAndListDetailsOperations itemListAndListDetailsOperations;
 
     @Autowired
-    public ItemListServiceImpl(ItemListDAO theItemListDAO, ItemListAndItemOperations theItemListAndItemOperations, ItemListUserOperations theItemListUserOperations, ItemListAndListDetailsOperations theItemListAndListDetailsOperations) {
+    public ItemListServiceImpl(ItemListDAO theItemListDAO, @Qualifier("itemServiceImpl") ItemListAndItemOperations theItemListAndItemOperations, @Qualifier("userServiceImpl") ItemListUserOperations theItemListUserOperations, @Qualifier("listServiceImpl") ItemListAndListDetailsOperations theItemListAndListDetailsOperations) {
         itemListDAO = theItemListDAO;
         itemListAndItemOperations = theItemListAndItemOperations;
         itemListUserOperations = theItemListUserOperations;
@@ -52,10 +53,9 @@ public class ItemListServiceImpl implements ItemListService {
         User user = itemListUserOperations.getCurrentUser();
         List<User.ListInfoModel> listInfo = user.getListNamesWithItemCount();
         List<ItemList> lists = itemListDAO.findByUserId(user.getId());
-        int uniqueListNames = lists.stream()
+        int uniqueListNames = (int) lists.stream()
                 .map(itemList -> itemList.getList().getName())
-                .distinct()
-                .collect(Collectors.toList()).size();
+                .distinct().count();
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("listInfo", listInfo);
@@ -70,13 +70,17 @@ public class ItemListServiceImpl implements ItemListService {
 
     @Override
     public void deleteItemList(String name) {
-        ListDetails foundList = itemListAndListDetailsOperations.findListByName(name);
-        if (foundList != null) {
-            List<ItemList> itemsList = itemListDAO.findByListId(foundList.getId());
-            itemListDAO.deleteAll(itemsList);
-            itemListAndListDetailsOperations.deleteList(foundList);
-        } else {
-            throw new IllegalArgumentException("List not found");
+        try {
+            ListDetails foundList = itemListAndListDetailsOperations.findListByName(name);
+            if (foundList != null) {
+                List<ItemList> itemsList = itemListDAO.findByListId(foundList.getId());
+                itemListDAO.deleteAll(itemsList);
+                itemListAndListDetailsOperations.deleteList(foundList);
+            } else {
+                throw new RecordNotFoundException("List not found");
+            }
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occurred while deleting the list");
         }
     }
 
@@ -84,18 +88,23 @@ public class ItemListServiceImpl implements ItemListService {
     public Map<String, Object> getCreateListTableData() {
         Map<String, Object> model = new HashMap<>();
 
-        User user = itemListUserOperations.getCurrentUser();
-        List<ItemList> lists = itemListDAO.findByUserId(user.getId());
+        try {
+            User user = itemListUserOperations.getCurrentUser();
+            List<ItemList> lists = itemListDAO.findByUserId(user.getId());
 
-        List<String> listNames = lists.stream()
-                .map(x -> x.getList().getName())
-                .collect(Collectors.toList());
+            List<String> listNames = lists.stream()
+                    .map(x -> x.getList().getName())
+                    .collect(Collectors.toList());
+
+            model.put("listNames", String.join(",", listNames).replace("[", "").replace("]", "").replace("\"", ""));
+        } catch (Exception e) {
+            throw new DataRetrievalException("Error retrieving list names", e);
+        }
 
         List<String> classesList = Arrays.asList("Multi-class", "Scout", "Soldier", "Pyro", "Demoman", "Heavy", "Engineer", "Medic", "Sniper", "Spy");
         List<String> qualityList = Arrays.asList("Genuine", "Vintage", "Unique", "Strange", "Haunted");
         List<String> typeList = Arrays.asList("Cosmetics", "Currencies", "Tools", "Paints", "Action", "Weapons", "Strange Parts", "Botkillers", "Festive Weapons", "Halloween");
 
-        model.put("listNames", String.join(",", listNames).replace("[", "").replace("]", "").replace("\"", ""));
         model.put("craftableOptions", Arrays.asList("Any", "Yes", "No"));
         model.put("classesList", classesList);
         model.put("qualityList", qualityList);
@@ -111,36 +120,39 @@ public class ItemListServiceImpl implements ItemListService {
         List<String> itemSku = request.getItemSku();
         String listName = request.getListName();
 
-        User user = itemListUserOperations.findByUsername(username);
+        User user = itemListUserOperations.findUserByUsername(username);
 
         if (user == null) {
-            return new ResponseEntity<>(new ResponseMessage("User not found"), HttpStatus.BAD_REQUEST);
+            throw new RecordNotFoundException("User not found");
         }
 
-        ListDetails listDetails = new ListDetails();
-        listDetails.setName(listName);
-        listDetails.setDate(LocalDateTime.now());
-        listDetails.setUser(user);
-        itemListAndListDetailsOperations.saveList(listDetails);
+        try {
+            ListDetails listDetails = ListDetails.builder()
+                                        .name(listName)
+                                        .date(LocalDateTime.now())
+                                        .user(user)
+                                        .build();
+            itemListAndListDetailsOperations.saveList(listDetails);
 
+            for (String theItemSku : itemSku) {
 
-        for (String theItemSku : itemSku) {
+                Item item = itemListAndItemOperations.findItemBySku(theItemSku);
 
-            Item item = itemListAndItemOperations.findItemBySku(theItemSku);
+                if (item == null) {
+                    throw new RecordNotFoundException("Item not found");
+                }
 
-            if (item == null) {
-                return new ResponseEntity<>(new ResponseMessage("Item not found"), HttpStatus.BAD_REQUEST);
+                ItemList itemList = ItemList.builder()
+                        .item(item)
+                        .user(user)
+                        .list(listDetails)
+                        .build();
+                itemListDAO.save(itemList);
             }
-
-            ItemList itemList = ItemList.builder()
-                    .item(item)
-                    .user(user)
-                    .list(listDetails)
-                    .build();
-            itemListDAO.save(itemList);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error occured while creating list");
         }
-
-        return new ResponseEntity<>(new ResponseMessage("List was created"), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("List was created"));
     }
 
     @Override
@@ -166,27 +178,31 @@ public class ItemListServiceImpl implements ItemListService {
                 itemListDAO.save(itemList);
             }
         } catch(Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Something went wrong"), HttpStatus.valueOf(404));
+            throw new InternalServerErrorException("Error occured while saving edited list");
         }
-        return new ResponseEntity<>(new ResponseMessage("List was edited"), HttpStatus.valueOf(200));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("List was edited"));
     }
 
     @Override
     public ResponseEntity<List<Item>> fetchRightList(@RequestParam(value="listName") String name)
     {
-        User user = itemListUserOperations.getCurrentUser();
+        try {
+            User user = itemListUserOperations.getCurrentUser();
 
-        ListDetails listDetails = itemListAndListDetailsOperations.findListByName(name);
+            ListDetails listDetails = itemListAndListDetailsOperations.findListByName(name);
 
-        List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
+            List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
-        List<Item> items = new ArrayList<>();
+            List<Item> items = new ArrayList<>();
 
-        for(ItemList record : results) {
-            items.add( record.getItem() );
+            for (ItemList record : results) {
+                items.add(record.getItem());
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(items);
+        } catch(Exception e) {
+            throw new InternalServerErrorException("Error occurred while fetching right list");
         }
-
-        return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
     @Override
@@ -195,9 +211,9 @@ public class ItemListServiceImpl implements ItemListService {
         User user = itemListUserOperations.getCurrentUser();
         ListDetails listDetails = itemListAndListDetailsOperations.findListByNameAndUser(name, user);
 
-        java.util.List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
+        List<ItemList> results = itemListDAO.findByUserIdAndListId(user.getId(), listDetails.getId());
 
-        java.util.List<String> apiRequests = results.stream().map(itemList-> "https://api2.prices.tf/prices/" + itemList.getItem().getSku())
+        List<String> apiRequests = results.stream().map(itemList-> "https://api2.prices.tf/prices/" + itemList.getItem().getSku())
                 .collect(Collectors.toList());
 
         String[] apiRequestsArray = apiRequests.toArray(new String[apiRequests.size()]);
@@ -226,7 +242,7 @@ public class ItemListServiceImpl implements ItemListService {
                     }
                 });
 
-        Mono<java.util.List<ItemRequest>> itemRequestsMono = Flux
+        Mono<List<ItemRequest>> itemRequestsMono = Flux
                 .fromArray(apiRequestsArray)
                 .flatMap(path -> client.get()
                         .uri(path)

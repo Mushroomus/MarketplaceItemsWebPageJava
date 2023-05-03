@@ -5,6 +5,8 @@ import com.marketplace.MarketplaceItems.dao.SaleDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Sale;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.exception.InternalServerErrorException;
+import com.marketplace.MarketplaceItems.exception.RecordNotFoundException;
 import com.marketplace.MarketplaceItems.model.SalesItemsDTO;
 import com.marketplace.MarketplaceItems.service.SaleService;
 import com.marketplace.MarketplaceItems.service.operation.ItemSaleOperations;
@@ -14,6 +16,7 @@ import com.marketplace.MarketplaceItems.service.operation.SaleUserOperations;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -60,12 +63,12 @@ public class SaleServiceImpl implements SaleService, MessageSaleOperations, Item
     }
 
     @Autowired
-    public void setSaleUser(SaleUserOperations theSaleUserOperations) {
+    public void setSaleUser(@Qualifier("userServiceImpl") SaleUserOperations theSaleUserOperations) {
         saleUserOperations = theSaleUserOperations;
     }
 
     @Autowired
-    public void setSaleItem(SaleItemOperations theSaleItemOperations) {
+    public void setSaleItem(@Qualifier("itemServiceImpl") SaleItemOperations theSaleItemOperations) {
         saleItemOperations = theSaleItemOperations;
     }
 
@@ -220,20 +223,28 @@ public class SaleServiceImpl implements SaleService, MessageSaleOperations, Item
         }
     }
 
+    private User getUser() {
+        User user = saleUserOperations.getCurrentUser();
+        if (user == null) {
+            throw new RecordNotFoundException("User not found");
+        }
+        return user;
+    }
+
     @Override
     public ResponseEntity<List<String>> getYears() {
         try {
-            List<String> years = getYears(saleUserOperations.getCurrentUser());
-            return ResponseEntity.ok(years);
+            List<String> years = getYears(getUser());
+            return ResponseEntity.status(HttpStatus.OK).body(years);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting years");
         }
     }
 
     @Override
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByMonthInYear(int year) {
         try {
-            List<Object[]> results = getSalesCountByMonthInYear(year, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getSalesCountByMonthInYear(year, getUser());
 
             List<Map<String, Object>> salesByMonth = new ArrayList<>();
             for (Object[] row : results) {
@@ -242,62 +253,58 @@ public class SaleServiceImpl implements SaleService, MessageSaleOperations, Item
                 map.put("count", row[1]);
                 salesByMonth.add(map);
             }
-
-            return ResponseEntity.ok(salesByMonth);
+            return ResponseEntity.status(HttpStatus.OK).body(salesByMonth);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting sales count by month in year");
         }
     }
 
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByMonthInYear(int page, int year, int month) {
         try {
-            List<Object[]> results = getItemsDataFromMonth(year, month, page, 5, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getItemsDataFromMonth(year, month, page, 5, getUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
-
-            return ResponseEntity.ok(itemsByMonth);
+            return ResponseEntity.status(HttpStatus.OK).body(itemsByMonth);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting sales count by month in year");
         }
     }
 
     @Override
     public ResponseEntity<Integer> getItemsMonthTotalPages(@RequestParam int year, @RequestParam int month) {
         try {
-            Integer pages = getItemsDataFromMonthTotalPages(year,month, 5, saleUserOperations.getCurrentUser());
-            return ResponseEntity.ok(pages);
+            Integer pages = getItemsDataFromMonthTotalPages(year,month, 5, getUser());
+            return ResponseEntity.status(HttpStatus.OK).body(pages);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting items month total pages");
         }
     }
 
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getSalesCountByDayInMonth(int year, int month, int day, int page) {
         try {
-            List<Object[]> results = getItemsDataFromDay(year,month,day,page, 5, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getItemsDataFromDay(year,month,day,page, 5, getUser());
             List<SalesItemsDTO> itemsByMonth = SalesItemsDTO.getList(results);
-
-            return ResponseEntity.ok(itemsByMonth);
+            return ResponseEntity.status(HttpStatus.OK).body(itemsByMonth);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting sales count by day in month");
         }
     }
 
     @Override
     public ResponseEntity<Integer> getItemsDayTotalPages(int year, int month, int day) {
         try {
-            Integer pages = getItemsDataFromDayTotalPages(year, month, day, 5, saleUserOperations.getCurrentUser());
-
-            return ResponseEntity.ok(pages);
+            Integer pages = getItemsDataFromDayTotalPages(year, month, day, 5, getUser());
+            return ResponseEntity.status(HttpStatus.OK).body(pages);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting items day total pages");
         }
     }
 
     @Override
     public ResponseEntity<List<Map<String, Object>>> getSalesCountByDayInMonth(int year, int month) {
         try {
-            List<Object[]> results = getSalesCountByDayinMonth(year, month, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getSalesCountByDayinMonth(year, month, getUser());
 
             List<Map<String, Object>> salesByDay = new ArrayList<>();
             for (Object[] row : results) {
@@ -306,10 +313,9 @@ public class SaleServiceImpl implements SaleService, MessageSaleOperations, Item
                 map.put("count", row[1]);
                 salesByDay.add(map);
             }
-            return ResponseEntity.ok(salesByDay);
+            return ResponseEntity.status(HttpStatus.OK).body(salesByDay);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting sales count by day in month");
         }
     }
 
@@ -317,37 +323,32 @@ public class SaleServiceImpl implements SaleService, MessageSaleOperations, Item
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getBestSales(int year, Integer month) {
         try {
-            List<Object[]> results = getBestOrWorstSellingItems(year, month, true, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getBestOrWorstSellingItems(year, month, true, getUser());
             List<SalesItemsDTO> bestSales = SalesItemsDTO.getList(results);
-
-            return ResponseEntity.ok(bestSales);
+            return ResponseEntity.status(HttpStatus.OK).body(bestSales);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting best sales");
         }
     }
 
     @Override
     public ResponseEntity<List<SalesItemsDTO>> getWorstSales(int year, Integer month) {
         try {
-            List<Object[]> results = getBestOrWorstSellingItems(year, month, false, saleUserOperations.getCurrentUser());
+            List<Object[]> results = getBestOrWorstSellingItems(year, month, false, getUser());
             List<SalesItemsDTO> worstSales = SalesItemsDTO.getList(results);
-
-            return ResponseEntity.ok(worstSales);
+            return ResponseEntity.status(HttpStatus.OK).body(worstSales);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting worst sales");
         }
     }
 
     @Override
     public ResponseEntity<List<Integer>> getMonthsByYear(int year) {
         try {
-            List<Integer> results = getMonthsByYear(year, saleUserOperations.getCurrentUser());
-            return ResponseEntity.ok(results);
+            List<Integer> results = getMonthsByYear(year, getUser());
+            return ResponseEntity.status(HttpStatus.OK).body(results);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new InternalServerErrorException("Error occurred while getting months by year");
         }
     }
 

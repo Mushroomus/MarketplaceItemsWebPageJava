@@ -22,7 +22,6 @@ public class ListServiceImpl implements ItemListAndListDetailsOperations {
     @Override
     public void deleteList(ListDetails listDetails) { listDAO.delete(listDetails); }
 
-
     @Override
     public void saveList(ListDetails theListDetails) { listDAO.save(theListDetails); }
 

@@ -2,24 +2,23 @@ package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.ItemDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
+import com.marketplace.MarketplaceItems.exception.InternalServerErrorException;
+import com.marketplace.MarketplaceItems.exception.RecordNotFoundException;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.ItemImageService;
 import com.marketplace.MarketplaceItems.service.ItemService;
 import com.marketplace.MarketplaceItems.service.operation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ItemServiceImpl implements ItemService, MessageItemOperations, ItemListAndItemOperations, SaleItemOperations {
@@ -34,12 +33,12 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
     }
 
     @Autowired
-    public void setItemSale(ItemSaleOperations theItemSaleOperations) {
+    public void setItemSale(@Qualifier("saleServiceImpl") ItemSaleOperations theItemSaleOperations) {
         itemSaleOperations = theItemSaleOperations;
     }
 
     @Autowired
-    public void setItemImageService(ItemImageService theItemImageService) {
+    public void setItemImageService(@Qualifier("itemImageServiceImpl") ItemImageService theItemImageService) {
         itemImageService = theItemImageService;
     }
 
@@ -70,14 +69,11 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
             }
 
             item.setImage(image_url);
-
             itemDAO.save(item);
             itemSaleOperations.updateSkuNewAddedItem(item, item.getSku());
-
-            return new ResponseEntity<>(new ResponseMessage("Item was added"), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Item was added"));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(new ResponseMessage("Error occured while adding an Item"), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException("Error occured while adding an Item");
         }
     }
     @Override
@@ -87,19 +83,17 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
             itemListService.deleteAllByItemSku(itemSku);
             messageService.deleteAllByItemSku(itemSku);
              */
-
             Item item = itemDAO.findItemBySku(itemSku);
             itemSaleOperations.updateItemDeletedNull(item);
             itemDAO.deleteById(itemSku);
-
-            return new ResponseEntity<>(new ResponseMessage("Item was deleted"), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Item was deleted"));
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Failed to delete Item"), HttpStatus.valueOf(400));
+            throw new InternalServerErrorException("Failed to delete Item");
         }
     }
 
     @Override
-    public ResponseEntity<String> updateItem(Item item) {
+    public ResponseEntity<ResponseMessage> updateItem(Item item) {
         try {
             Optional<Item> searchItem = itemDAO.findById(item.getSku());
 
@@ -116,16 +110,16 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
 
                 itemDAO.save(updateItem);
             } else {
-                System.out.println("Not Found");
+                throw new RecordNotFoundException("Item not found");
             }
-            return new ResponseEntity<>("Item was updated successfully", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Item was updated successfully"));
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the item", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException("Error occurred while updating the item");
         }
     }
 
     @Override
-    public ResponseEntity<String> updateItemPrice( Map<String, Object> requestBody) {
+    public ResponseEntity<ResponseMessage> updateItemPrice( Map<String, Object> requestBody) {
         try {
             String sku = (String) requestBody.get("sku");
             Double mpPrice = Double.parseDouble( (String) requestBody.get("mpPrice"));
@@ -134,24 +128,29 @@ public class ItemServiceImpl implements ItemService, MessageItemOperations, Item
             item.setMarketplacePrice(mpPrice);
             itemDAO.save(item);
 
-            return new ResponseEntity<>("Price was updated", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Price was updated"));
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException("Error occured while updating item price");
         }
     }
 
     @Override
-    public void saveItem(Item item) { itemDAO.save(item); };
-
-    @Override
-    public void deleteBySku(String sku) { itemDAO.deleteById(sku); }
-
-    @Override
-    public Item findItemBySku(String sku) { return itemDAO.findItemBySku(sku); }
-
-    @Override
-    public void updateMarketplacePriceBySku(String sku, Double marketplacePrice) {
-        itemDAO.updateMarketplacePriceBySku(sku, marketplacePrice);
+    public void saveItem(Item item) {
+        itemDAO.save(item);
     }
 
+    @Override
+    public void deleteItemBySku(String sku) {
+        itemDAO.deleteById(sku);
+    }
+
+    @Override
+    public Item findItemBySku(String sku) {
+        return itemDAO.findItemBySku(sku);
+    }
+
+    @Override
+    public void updateItemMarketplacePriceBySku(String sku, Double marketplacePrice) {
+        itemDAO.updateMarketplacePriceBySku(sku, marketplacePrice);
+    }
 }

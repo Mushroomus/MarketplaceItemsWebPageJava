@@ -1,36 +1,36 @@
 package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketplace.MarketplaceItems.dao.MessageDAO;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
-import com.marketplace.MarketplaceItems.model.MessagesResponse;
+import com.marketplace.MarketplaceItems.exception.BadRequestException;
+import com.marketplace.MarketplaceItems.exception.InternalServerErrorException;
+import com.marketplace.MarketplaceItems.model.GetMessagesResponse;
+import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.ItemImageService;
 import com.marketplace.MarketplaceItems.service.MessageService;
 import com.marketplace.MarketplaceItems.service.operation.MessageItemOperations;
 import com.marketplace.MarketplaceItems.service.operation.MessageSaleOperations;
 import com.marketplace.MarketplaceItems.service.operation.MessageUserOperations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.Predicate;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class MessageServiceImpl implements MessageService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public  MessageServiceImpl(MessageDAO theMessageDAO, ItemImageService theItemImageService, MessageItemOperations theMessageItemOperations, MessageSaleOperations theMessageSaleOperations, MessageUserOperations theMessageUserOperations) {
+    public  MessageServiceImpl(MessageDAO theMessageDAO, @Qualifier("itemImageServiceImpl") ItemImageService theItemImageService, @Qualifier("itemServiceImpl") MessageItemOperations theMessageItemOperations, @Qualifier("saleServiceImpl") MessageSaleOperations theMessageSaleOperations, @Qualifier("userServiceImpl") MessageUserOperations theMessageUserOperations) {
         messageDAO = theMessageDAO;
         itemImageService = theItemImageService;
         messageItemOperations = theMessageItemOperations;
@@ -54,12 +54,13 @@ public class MessageServiceImpl implements MessageService {
         messageUserOperations = theMessageUserOperations;
 
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
     @Override
-    public ResponseEntity<String> acceptMessage(Long messageId) {
+    public ResponseEntity<ResponseMessage> acceptMessage(Long messageId) {
 
         Optional<Message> theMessageOptional = messageDAO.findById(messageId);
 
@@ -68,9 +69,7 @@ public class MessageServiceImpl implements MessageService {
         if(theMessageOptional.isPresent()) {
             theMessage = theMessageOptional.get();
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+            throw new InternalServerErrorException("Message is missing");
         }
 
         try {
@@ -98,9 +97,7 @@ public class MessageServiceImpl implements MessageService {
                     messageItemOperations.saveItem(theAddItem);
                     messageSaleOperations.updateSkuNewAddedItem(theAddItem, theAddItem.getSku());
                     messageDAO.deleteById(theMessage.getId());
-                    return ResponseEntity.status(HttpStatus.OK)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+                    return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Request was accepted"));
 
                 case "update":
                     Item theUpdateItem = Item.builder()
@@ -116,18 +113,14 @@ public class MessageServiceImpl implements MessageService {
 
                     messageItemOperations.saveItem(theUpdateItem);
                     messageDAO.deleteById(theMessage.getId());
-                    return ResponseEntity.status(HttpStatus.OK)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+                    return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Request was accepted"));
 
                 case "updatePrice":
                     String sku = theMessage.getItem().getSku();
                     Double price = theMessage.getMarketplacePrice();
-                    messageItemOperations.updateMarketplacePriceBySku(sku, price);
+                    messageItemOperations.updateItemMarketplacePriceBySku(sku, price);
                     messageDAO.deleteById(theMessage.getId());
-                    return ResponseEntity.status(HttpStatus.OK)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+                    return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Request was accepted"));
 
                 case "delete":
                     String skuToDelete = theMessage.getItem().getSku();
@@ -139,92 +132,41 @@ public class MessageServiceImpl implements MessageService {
                      */
 
                     messageSaleOperations.updateItemDeletedNull(theMessage.getItem());
-                    messageItemOperations.deleteBySku(skuToDelete);
-                    return ResponseEntity.status(HttpStatus.OK)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body("{ \"error\": \"" + "Request was accepted" + "\" }");
+                    messageItemOperations.deleteItemBySku(skuToDelete);
+                    return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Request was accepted"));
 
                 default:
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body("{ \"error\": \"" + "Invalid message type" + "\" }");
+                    throw new BadRequestException("Invalid message type");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+            throw new InternalServerErrorException("Something went wrong");
         }
     }
 
     @Override
-    public ResponseEntity<String> rejectMessage(Long messageId) {
+    public ResponseEntity<ResponseMessage> rejectMessage(Long messageId) {
         try {
             messageDAO.deleteById(messageId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{ \"error\": \"" + "Request was rejected" + "\" }");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Request was rejected"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{ \"error\": \"" + "Something went wrong" + "\" }");
+            throw new InternalServerErrorException("Error occured while rejecting message");
         }
     }
 
-    /*
-    private Page<Message> findAll(Pageable pageable, String search, List<String> types, LocalDateTime startDate, LocalDateTime endDate) {
-        Specification<Message> spec = (root, query, builder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if(search != null && !search.isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                predicates.add(builder.or(
-                        builder.like(root.get("item").get("name"), searchPattern),
-                        builder.like(root.get("user").get("username"), searchPattern)
-                ));
-                System.out.println(search);
-            }
-            if (types != null && !types.isEmpty()) {
-                predicates.add(builder.in(root.get("messageType")).value(types));
-                System.out.println(types);
-            }
-            if (startDate != null) {
-                predicates.add(builder.greaterThanOrEqualTo(root.get("date"), startDate));
-                System.out.println(startDate);
-            }
-            if (endDate != null) {
-                predicates.add(builder.lessThanOrEqualTo(root.get("date"), endDate));
-                System.out.println(endDate);
-            }
-            return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
-        };
-
-        return messageDAO.findAll(spec, pageable);
+    private LocalDateTime parseDate(String dateString) {
+        if (dateString == null || dateString.equals("null")) {
+            return null;
+        }
+        long timestamp = Long.parseLong(dateString);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
     }
-     */
 
     @Override
-    public ResponseEntity<String> getMessages(int page, int size, String search, String types, String startDate, String endDate) {
+    public ResponseEntity<GetMessagesResponse> getMessages(int page, int size, String search, String types, String startDate, String endDate) {
 
         Pageable paging = PageRequest.of(page, size);
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
-        LocalDateTime start = null;
-        if (startDate != null && !startDate.equals("null")) {
-            long timestamp = Long.parseLong(startDate);
-            Date date = new Date(timestamp);
-            String dateStartString = formatter.format(date);
-            start = LocalDateTime.parse(dateStartString, formatterDate);
-        }
-
-        LocalDateTime end = null;
-        if (endDate != null && !endDate.equals("null")) {
-            long timestamp = Long.parseLong(endDate);
-            Date date = new Date(timestamp);
-            String dateEndString = formatter.format(date);
-            end = LocalDateTime.parse(dateEndString, formatterDate);
-        }
+        LocalDateTime start = parseDate(startDate);
+        LocalDateTime end = parseDate(endDate);
 
         List<String> typeList = null;
 
@@ -234,13 +176,11 @@ public class MessageServiceImpl implements MessageService {
         Page<Message> messagesPage = messageDAO.findAll(search, typeList, start, end, paging);
 
         List<Message> editedMessages = messagesPage.stream()
-                .map(message -> {
-
+                .peek(message -> {
                     if (message.getUser() != null) {
                         message.setUsername(message.getUser().getUsername());
                         message.setUser(null);
                     }
-                    return message;
                 })
                 .collect(Collectors.toList());
 
@@ -248,43 +188,35 @@ public class MessageServiceImpl implements MessageService {
         int totalPages = messagesPage.getTotalPages();
         long totalItems = messagesPage.getTotalElements();
 
-        MessagesResponse response = new MessagesResponse();
-        response.setMessages(editedMessages);
-        response.setTotalPages(totalPages);
-        response.setTotalElements(totalItems);
-        response.setCurrentPage(currentPage);
-
+        GetMessagesResponse response = GetMessagesResponse
+                                        .builder()
+                                        .messages(editedMessages)
+                                        .totalPages(totalPages)
+                                        .totalElements(totalItems)
+                                        .currentPage(currentPage)
+                                        .build();
         try {
-            String jsonResponse = objectMapper.writeValueAsString(response);
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonResponse);
-
-        } catch (JsonProcessingException e) {
-            String errorMessage = "An error occurred while processing the JSON response";
-            System.out.println(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body("{ \"error\": \"" + errorMessage + "\" }");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("An error occurred while processing the JSON response");
         }
     }
 
     @Override
-    public ResponseEntity<String> createMessage(Message request, String itemSku) {
+    public ResponseEntity<ResponseMessage> createMessage(Message request, String itemSku) {
 
-        try{
+        try {
             User user = messageUserOperations.getCurrentUser();
             request.setUser(user);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
+            throw new InternalServerErrorException("Error occured while setting user");
         }
 
         if(itemSku != null) {
             try {
                 request.setItem(messageItemOperations.findItemBySku(itemSku));
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
+                throw new InternalServerErrorException("Error occured while setting item");
             }
         }
 
@@ -293,16 +225,16 @@ public class MessageServiceImpl implements MessageService {
         Set<ConstraintViolation<Message>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> violation.getMessage())
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining(", "));
-            return ResponseEntity.badRequest().body(errorMessage);
+            throw new BadRequestException(errorMessage);
         }
 
         try {
             messageDAO.save(request);
-            return ResponseEntity.ok().body("{\"message\": \"Request was sent\"}");
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Message was created"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Something went wrong\"}");
+            throw new InternalServerErrorException("Error occured while saving message");
         }
     }
 }

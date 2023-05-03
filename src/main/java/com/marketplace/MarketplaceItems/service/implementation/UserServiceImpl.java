@@ -2,6 +2,8 @@ package com.marketplace.MarketplaceItems.service.implementation;
 
 import com.marketplace.MarketplaceItems.dao.UserDAO;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.exception.BadRequestException;
+import com.marketplace.MarketplaceItems.exception.InternalServerErrorException;
 import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.model.UpdateUserRequest;
 import com.marketplace.MarketplaceItems.service.UserService;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.criteria.Predicate;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.ZoneOffset;
 
 @Service
 public class UserServiceImpl implements UserService, MessageUserOperations, ItemListUserOperations, SaleUserOperations {
@@ -46,7 +43,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
         if(username == null || username.equals(""))
             return "Username is empty";
 
-        if(ifUpdate != true) {
+        if(!ifUpdate) {
             User existingUser =  userDAO.findByUsername(username);
             if (existingUser != null)
                 return "Username already exists";
@@ -79,67 +76,32 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
 
         try {
             userDAO.save(user);
-            return new ResponseEntity<>(new ResponseMessage("User was added"), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("User was added"));
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Error occured while adding an user"), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException("Error occured while adding an user");
         }
     }
 
-    /*
-    private Page<User> findAll(Pageable pageable, String search, String role, LocalDateTime startDate, LocalDateTime endDate) {
-        Specification<User> spec = (root, query, builder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if(search != null && !search.isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                predicates.add(builder.like(root.get("username"), searchPattern  ));
-            }
-            if (role != null && !role.isEmpty()) {
-                predicates.add(builder.equal(root.get("role"), role));
-            }
-            if (startDate != null) {
-                predicates.add(builder.greaterThanOrEqualTo(root.get("date"), startDate));
-            }
-            if (endDate != null) {
-                predicates.add(builder.lessThanOrEqualTo(root.get("date"), endDate));
-            }
-            predicates.add(builder.notEqual(root.get("id"), getCurrentUser().getId()));
-
-            return predicates.isEmpty() ? builder.conjunction() : builder.and(predicates.toArray(new javax.persistence.criteria.Predicate[predicates.size()]));
-        };
-
-        return userDAO.findAll(spec, pageable);
+    private LocalDateTime parseDate(String dateStr) {
+        if (dateStr == null || "null".equals(dateStr)) {
+            return null;
+        }
+        long timestamp = Long.parseLong(dateStr);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC);
     }
-     */
 
     @Override
     public ResponseEntity<PagedModel<User>> getUserList(int page, int size, String search, String role, String startDate, String endDate) {
         Page<User> users;
         Pageable pageable = PageRequest.of(page, size);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
-        LocalDateTime start = null;
-        if (startDate != null && !startDate.equals("null")) {
-            long timestamp = Long.parseLong(startDate);
-            Date date = new Date(timestamp);
-            String dateStartString = formatter.format(date);
-            start = LocalDateTime.parse(dateStartString, formatterDate);
-        }
-
-        LocalDateTime end = null;
-        if (endDate != null && !endDate.equals("null")) {
-            long timestamp = Long.parseLong(endDate);
-            Date date = new Date(timestamp);
-            String dateEndString = formatter.format(date);
-            end = LocalDateTime.parse(dateEndString, formatterDate);
-        }
+        LocalDateTime start = parseDate(startDate);
+        LocalDateTime end = parseDate(endDate);
 
         users =  userDAO.findAll(search, role, start, end, getCurrentUser().getId(), pageable);
         PagedModel<User> pagedModel = PagedModel.of(users.getContent(), new PagedModel.PageMetadata(users.getSize(), users.getNumber(), users.getTotalElements()));
 
-        return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
     }
 
     @Override
@@ -152,9 +114,9 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
          */
         try {
             userDAO.deleteById(id);
-            return new ResponseEntity<>(new ResponseMessage("User was deleted"), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("User was deleted"));
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseMessage("Failed to delete user"), HttpStatus.OK);
+            throw new InternalServerErrorException("Failed to delete user");
         }
     }
 
@@ -167,7 +129,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
         String resultValidation = validateUser(user, changePassword, true);
 
         if (!resultValidation.equals("valid")) {
-            return new ResponseEntity<>(resultValidation, HttpStatus.BAD_REQUEST);
+            throw new BadRequestException(resultValidation);
         }
 
         user.setDate(LocalDateTime. now());
@@ -177,9 +139,9 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
 
         try {
             userDAO.save(user);
-            return new ResponseEntity<>("User was updated successfully", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body("User was updated successfully");
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred while updating the user", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException("Error occurred while updating the user");
         }
     }
 
@@ -191,5 +153,7 @@ public class UserServiceImpl implements UserService, MessageUserOperations, Item
     }
 
     @Override
-    public User findByUsername(String username) { return userDAO.findByUsername(username); }
+    public User findUserByUsername(String username) {
+        return userDAO.findByUsername(username);
+    }
 }

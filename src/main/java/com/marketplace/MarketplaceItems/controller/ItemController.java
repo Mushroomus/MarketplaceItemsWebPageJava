@@ -80,12 +80,12 @@ public class ItemController {
     }
 
     @PutMapping
-    public ResponseEntity<String> updateItem(@RequestBody Item item) {
+    public ResponseEntity<ResponseMessage> updateItem(@RequestBody Item item) {
         return itemService.updateItem(item);
     }
 
     @PutMapping("/marketplace-price")
-    public ResponseEntity<String> updateItemPrice(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<ResponseMessage> updateItemPrice(@RequestBody Map<String, Object> requestBody) {
         return itemService.updateItemPrice(requestBody);
     }
 }

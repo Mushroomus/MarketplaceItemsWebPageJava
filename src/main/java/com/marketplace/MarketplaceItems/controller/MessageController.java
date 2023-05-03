@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketplace.MarketplaceItems.entity.Item;
 import com.marketplace.MarketplaceItems.entity.Message;
 import com.marketplace.MarketplaceItems.entity.User;
+import com.marketplace.MarketplaceItems.model.GetMessagesResponse;
+import com.marketplace.MarketplaceItems.model.ResponseMessage;
 import com.marketplace.MarketplaceItems.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,27 +48,27 @@ public class MessageController {
 
     @Transactional
     @GetMapping("{messageId}/accept")
-    public ResponseEntity<String> acceptMessage(@PathVariable("messageId") Long messageId) {
+    public ResponseEntity<ResponseMessage> acceptMessage(@PathVariable("messageId") Long messageId) {
         return messageService.acceptMessage(messageId);
     }
 
     @GetMapping("{messageId}/reject")
-    public ResponseEntity<String> rejectMessage(@PathVariable("messageId") Long messageId) {
+    public ResponseEntity<ResponseMessage> rejectMessage(@PathVariable("messageId") Long messageId) {
        return messageService.rejectMessage(messageId);
     }
 
     @GetMapping
-    public ResponseEntity<String> getMessages(@RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "4") int size,
-                                                               @RequestParam(value = "search", required = false) String search,
-                                                               @RequestParam(value = "types", required = false) String types,
-                                                               @RequestParam(value = "startDate", required = false) String startDate,
-                                                               @RequestParam(value = "endDate", required = false) String endDate) {
+    public ResponseEntity<GetMessagesResponse> getMessages(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "4") int size,
+                                                           @RequestParam(value = "search", required = false) String search,
+                                                           @RequestParam(value = "types", required = false) String types,
+                                                           @RequestParam(value = "startDate", required = false) String startDate,
+                                                           @RequestParam(value = "endDate", required = false) String endDate) {
         return messageService.getMessages(page, size, search, types, startDate, endDate);
     }
 
     @PostMapping
-    public ResponseEntity<String> createMessage(@RequestBody Message request, @RequestParam(name="sku", required = false) String itemSku) {
+    public ResponseEntity<ResponseMessage> createMessage(@RequestBody Message request, @RequestParam(name="sku", required = false) String itemSku) {
         return messageService.createMessage(request, itemSku);
     }
 }
